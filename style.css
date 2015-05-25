@@ -1,0 +1,236 @@
+/*** General page styles ****/
+html{
+    width: 100%;
+    height: 100%;
+}
+body{
+    background-color: lavender;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    font-family: 'Lato', sans-serif;
+    letter-spacing: 1px;
+}
+
+.container{
+    width: 100%;
+    height: 100%;
+    padding: 0;
+}
+.row{
+    margin-left: 0 !important;
+    margin-bottom: 1em;
+}
+.full-width{
+    width: 100%;
+}
+.full-height{
+    height: 100%;
+}
+.main-content{
+    height: inherit;
+    padding: 0;
+}
+.boid-container {
+    padding: 0;
+}
+#restart-btn{
+    width: 8em;
+    height: 3em;
+    color: #DBFFB8;
+    text-shadow: 0 1px #1C4048;
+    border-radius: 0.3em;
+    border: 1px solid  cadetblue;
+    background: -webkit-linear-gradient(left, cadetblue, #245580); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, cadetblue, #245580); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, cadetblue, #245580); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, cadetblue, #245580); /* Standard syntax */
+}
+div.running-input{
+    top: 0.5em;
+
+}
+input#running{
+    width: 1.4em;
+    height: 1.4em;
+}
+label#running-label{
+    float:left;
+    vertical-align: top;
+    display:inline;
+    color:  #1C4048;
+}
+/*** SIDEBAR  ***/
+div.sidebar{
+    top: 0;
+    bottom: 0;
+    display: none;
+    color:  lavender;
+    position: fixed;
+    height: 100%;
+}
+.sb-blue{
+    background: -webkit-linear-gradient(left, #245580, cadetblue); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, #245580, cadetblue); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, #245580, cadetblue); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, #245580, cadetblue); /* Standard syntax */
+    text-shadow: 1px 1px #11262B;
+    border-left: 1px solid #1C4048;
+}
+.sb-red{
+    background: -webkit-linear-gradient(left, #630022, #ce8483); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, #630022, #ce8483); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right,#630022, #ce8483); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, #630022, #ce8483); /* Standard syntax */
+    text-shadow: 1px 1px #3f0000;
+    border-left: 1px solid #3f0000;
+}
+div.sidebar h4, div.sidebar h5{
+    text-shadow: 1px 1px #11262B;
+}
+.sidebar-input, .sidebar-select{
+    border-radius: 0.2em;
+    padding-left: 0.5em;
+}
+.sb-red-input, .sb-red-select{
+    background-color: #500128;
+    border: 1px solid rgba(230, 230, 250, 0.8);
+}
+.sb-blue-input, .sb-blue-select{
+    background-color: #1C4048;
+    /*border: 1px solid #11262B;*/
+    border: 1px solid rgba(230, 230, 250, 0.8);
+}
+.sidebar-select{
+    width: 100%;
+    min-width: 4em;
+}
+.sidebar-button{
+    background-color: lavender;
+    border-radius: 0.3em;
+    border: 1px solid rgba(230, 230, 250, 0.8);
+}
+.sb-red-button{
+    color: #640100;
+}
+.sb-blue-button{
+    color: #1C4048;
+}
+/**** SIDEBAR SHOW BUTTON ***/
+div.sidebar-show{
+    width: 6em;
+    height: 6em;
+    position: fixed;
+    right: -10px;
+}
+div#sb-blue-show{
+    bottom: 2em;
+}
+div#sb-red-show{
+    bottom: 10em;
+}
+button.sidebar-effect{
+    width: inherit;
+    height: inherit;
+    border-bottom-left-radius: 0.5em;
+    border-top-left-radius: 0.5em;
+    outline:none;
+    right: -10px;
+}
+button#sb-blue-effect{
+    background: -webkit-linear-gradient(right, #245580, #1C4048 ); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(left, #245580, #1C4048); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(left, #245580, #1C4048); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to left, #245580, cadetblue); /* Standard syntax */
+    /*background-color: #568E90;*/
+    border: 1px solid #1C4048;
+    border-right: none;
+}
+button#sb-red-effect{
+    background: -webkit-linear-gradient(right, #630022, #ce8483 ); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(left, #630022, #ce8483 ); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(left, #630022, #ce8483 ); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to left, #630022, #ce8483); /* Standard syntax */
+    border: 1px solid #4f001e;
+    border-right: none;
+}
+i.fa.fa-angle-left{
+    font-size: 4em;
+    color: lavender;
+}
+/**** END SIDEBAR BUTTON ***/
+/*** EXPERIMENT SIDEBAR (RED) *****/
+input#new-experiment-btn, input#save-experiment-csv{
+    min-width: 6em;
+    margin-bottom: 1em;
+}
+input#start-experiment-btn{
+    width: 100%;
+    height: 3em;
+}
+
+/*** END EXPERIMENT SIDEBAR (BLUE) ****/
+/**** Lists (Channels, Frequency Bands) ****/
+ul{
+    left: 0;
+    padding-left: 10%;
+}
+li{
+    list-style-type: none;
+}
+
+input[type=radio]{
+    width: 1.0em;
+    height: 1.0em;
+}
+input[type=number]#perc1, input[type=number]#perc2 {
+    width: 100%;
+    min-width: 3em;
+}
+input[type=number]#ratio, input[type=number]#training-ratio{
+    width: 100%;
+    min-width: 4em;
+}
+/* Frequency Bar chart colours */
+.fft_0hz{
+    fill: navy;
+}
+.fft_delta{
+    fill: royalblue;
+}
+.fft_theta{
+    fill: teal;
+}
+.fft_alpha{
+    fill: cyan;
+}
+.fft_beta{
+    fill: coral;
+}
+.fft_gamma{
+    fill: darkmagenta;
+}
+
+/*** Dialog on new experiment ***/
+.ui-dialog > .ui-widget-header {
+    background: #630022;
+    border: 1px solid #3f0000;
+}
+div#dialog-age-gender, div#dialog-save-warning{
+    background: -webkit-linear-gradient(right,  #630022, #ac5455 ); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(left, #630022, #ac5455 ); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(left, #630022, #ac5455 ); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to left, #630022, #ac5455); /* Standard syntax */
+    border: 1px solid #4f001e;
+    color: lavender;
+    text-shadow: 1px 1px #3f0000;
+    border-radius: 0.2em;
+}
+input#submit-age-gender{
+    width: 100%;
+    height: 3em;
+}
+input#age-select{
+    max-width: 8em;
+}

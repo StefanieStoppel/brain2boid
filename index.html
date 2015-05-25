@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="iso-8859-1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="browser/dependencies/bootstrap-3.3.4-dist/css/bootstrap.min.css"  media="screen">
+    <link rel="stylesheet" type="text/css" href="browser/dependencies/font-awesome-4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="browser/dependencies/jquery-ui-1.11.4.custom/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="browser/dependencies/jquery-ui-1.11.4.custom/jquery-ui.theme.min.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+    <!-- load external dependencies -->
+    <script src="browser/dependencies/jquery-2.1.3.js"></script>
+    <script src="browser/dependencies/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
+    <script type="javascript" src="browser/dependencies/bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
+
+</head>
+<body onload="init()">
+
+<div class="container">
+
+    <div class="row full-height">
+
+        <div class="main-content col-xs-6 col-sm-8">
+
+            <div class="boid-container col-xs-12"></div> <!-- container for boids -->
+            <div class="col-xs-12">
+                <div class="col-xs-12 col-sm-3">
+                    <input type="button" name="restart" id="restart-btn" value="Restart">
+                </div>
+                <div class="running-input col-xs-12 col-sm-3">
+                    <label id="running-label" for="running">
+                        <input type="checkbox" name="boids-running" id="running"/>  Running</label>
+                </div>
+                <svg class="chart-svg" width="840" height="400"></svg>
+            </div><!-- running and restart-->
+        </div>
+
+        <!-- SIDEBAR 1 - EXPERIMENT MODE SELECTION -->
+
+        <div class="sidebar sb-red col-xs-6 col-sm-4 full-height">
+            <h4>Experiment</h4>
+
+            <div class="row">
+
+                <div class="col-xs-6">
+                    <!-- new experiment btn-->
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <input type="button" name="new-experiment" class="sidebar-button sb-red-button" id="new-experiment-btn" value="New">
+                        </div>
+                    </div>
+
+                </div>
+                <!-- save experiment btn, gender-->
+                <div class="col-xs-6">
+                    <div class="col-xs-12 col-sm-5">
+                        <input type="button" name="save-experiment" class="sidebar-button sb-red-button" id="save-experiment-csv" value="Save as .csv">
+                    </div>
+
+                </div>
+            </div>
+
+                <div class="row">
+
+
+                </div>
+
+
+            <h4>Mode</h4>
+            <div class="row">
+                <div class="col-xs-2">
+                    <input type="radio" name="experiment-mode" class="sidebar-input sb-red-input" id="mode-calibration" value="0" checked>
+                </div>
+                <div class="col-xs-10">
+                    <label for="mode-calibration">Calibration</label>
+                </div>
+                <div class="col-xs-2">
+                    <input type="radio" name="experiment-mode" class="sidebar-input sb-red-input" id="mode-first-test" value="1">
+                </div>
+                <div class="col-xs-10">
+                    <label for="mode-first-test">First Test</label>
+                </div>
+                <div class="col-xs-2">
+                    <input type="radio" name="experiment-mode" class="sidebar-input sb-red-input" id="mode-free-nf" value="2">
+                </div>
+                <div class="col-xs-10">
+                    <label for="mode-free-nf">Free Mode</label>
+                </div>
+                <div class="col-xs-2">
+                    <input type="radio" name="experiment-mode" class="sidebar-input sb-red-input" id="mode-second-test" value="3">
+                </div>
+                <div class="col-xs-10">
+                    <label for="mode-second-test">Second Test</label>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-12" style="padding-left:0;">
+                <h4>Experiment Duration</h4>
+
+                <div class="col-xs-12" style="margin-bottom: 1em">
+                    <input type="number" name="experiment-duration" class="sidebar-input sb-red-input" id="experiment-duration" value="60">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12" style="margin-bottom: 1em;">
+                    <input type="button" name="start-experiment" class="sidebar-button sb-red-button" id="start-experiment-btn" value="Start Experiment">
+                </div>
+            </div>
+
+        </div>
+        <div id="sb-red-show" class="sidebar-show">
+            <button id="sb-red-effect" class="sidebar-effect">
+                <i class="fa fa-angle-left"></i>
+            </button>
+        </div>
+        <!-- END SIDEBAR 1 --->
+
+
+        <!-- SIDEBAR 2 - Frequency Band, Channel and Ratio settings --->
+
+        <!--- RATIO DISPLAYS -->
+        <div class="sidebar sb-blue col-xs-6 col-sm-4 full-height">
+            <h4>Ratio display</h4>
+            <div class="row" style="margin-top: 2em;">
+
+                <div class="col-xs-4">
+                    <label for="training-ratio">Training<br>ratio</label>
+                </div>
+                <div class="col-xs-7">
+                    <input type="number" name="training-ratio" class="sidebar-input sb-blue-input" id="training-ratio" value="0">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4">
+                    <label for="ratio">Ratio</label>
+                </div>
+                <div class="col-xs-7">
+                    <input type="number" name="ratio" class="sidebar-input sb-blue-input" id="ratio" value="0">
+                </div>
+            </div>
+            <!--- END RATIO DISPLAYS -->
+
+            <!-- PERCENTILE INPUTS -->
+            <div class="row">
+                <h4>Percentile display</h4>
+                <div class="col-xs-6 col-sm-12" style="padding-left:0;">
+                    <div class="col-xs-12 col-sm-4" style="margin-bottom: 1em; ">
+                        <label id="perc1-label" for="perc1">&#37;-ile &alpha;</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-4" style="margin-bottom: 1em">
+                        <input type="number" name="freq-band-1-percentile" class="sidebar-input sb-blue-input" id="perc1" value="30">
+                    </div>
+                    <div class="col-xs-12 col-sm-4" style="margin-bottom: 1em;">
+                        <input type="button" name="perc1-update" class="sidebar-button sb-blue-button" value="Update">
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-12" style="padding-left:0;">
+                    <div class="col-xs-12 col-sm-4"  style="margin-bottom: 1em;">
+                        <label id="perc2-label" for="perc2">&#37;-ile &beta;</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-4"  style="margin-bottom: 1em;">
+                        <input type="number" name="freq-band-2-percentile" class="sidebar-input sb-blue-input" id="perc2" value="70" >
+                    </div>
+                    <div class="col-xs-12 col-sm-4"  style="margin-bottom: 1em;">
+                        <input type="button" name="perc2-update" class="sidebar-button sb-blue-button" value="Update">
+                    </div>
+                </div>
+                <br>
+            </div>
+            <!-- END PERCENTILE INPUTS -->
+
+            <!-- CHANNEL PICKER -->
+            <div class="row">
+                <h4>Channel Picker</h4>
+                <div class="ch-single col-xs-6">
+                    <select class="channel-picker full-width sidebar-select sb-blue-select">
+                        <option name="ch-picker" id="ch-t9" value="1">T9</option>
+                        <option name="ch-picker" id="ch-fp1" value="2">Fp1</option>
+                        <option name="ch-picker" id="ch-fp2" value="3">Fp2</option>
+                        <option name="ch-picker" id="ch-t10" value="4">T10</option>
+
+                        <option name="ch-picker" id="ch-p-t9-fp1" value="1-2" selected>T9 + Fp1</option>
+                        <option name="ch-picker" id="ch-p-t10-fp2" value="3-4">T10 + Fp2</option>
+                        <option name="ch-picker" id="ch-p-fp1-fp2" value="2-3">Fp1 + Fp2</option>
+                        <option name="ch-picker" id="ch-p-t9-t10" value="1-4">T9 + T10</option>
+                        <option name="ch-picker" id="ch-o-all" value="1-2-3-4">All</option>
+                    </select>
+                </div>
+            </div>
+            <!-- END CHANNEL PICKER -->
+
+            <!-- FREQUENCY BAND PICKER -->
+            <div class="row">
+                <h4>Frequency Band Picker</h4>
+                <div class="fr-band-single col-xs-6">
+                    <select class="frequency-picker full-width sidebar-select sb-blue-select">
+                        <option name="fr-picker" class="fr-single" id="fr-s-delta" value="0">&delta; (Delta) </option>
+                        <option name="fr-picker" class="fr-single" id="fr-s-theta" value="1">&theta; (Theta)</option>
+                        <option name="fr-picker" class="fr-single" id="fr-s-alpha" value="2">&alpha; (Alpha)</option>
+                        <option name="fr-picker" class="fr-single" id="fr-s-beta" value="3">&beta; (Beta)</option>
+                        <option name="fr-picker" class="fr-all" id="fr-s-all" value="1,2,3,4">&gamma; (Gamma)</option>
+
+                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-alpha-beta" value="2,3" selected>&alpha; / &beta;</option>
+                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-alpha-gamma" value="2,4">&alpha; / &gamma; </option>
+                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-alpha-theta" value="2,1">&alpha; / &theta; </option>
+                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-theta-gamma" value="1,4">&theta; / &gamma;</option>
+                    </select>
+                </div>
+            </div>
+            <!-- END FREQUENCY BAND PICKER --->
+
+        </div>
+        <!-- END OF SIDEBAR 2 --->
+
+        <div id="sb-blue-show" class="sidebar-show">
+            <button id="sb-blue-effect" class="sidebar-effect">
+                <i class="fa fa-angle-left"></i>
+            </button>
+        </div>
+
+    </div><!-- div.row --->
+
+    <div id="dialog-age-gender" title="Subject Information">
+        <form action="" method="post">
+            <div class="row">
+                <div class="col-xs-4">
+                    <label for="age-select">Age</label>
+                </div>
+                <div class="col-xs-8">
+                    <input type="number" name="age" class="sidebar-input sb-red-input" id="age-select" value="">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-4">
+                    <label for="gender-selection">Gender</label>
+                </div>
+                <div id="gender-selection">
+                    <div class="col-xs-1">
+                        <input type="radio" name="gender" class="sidebar-input sb-red-input" id="male" value="m">
+                    </div>
+                    <div class="col-xs-2">
+                        <label for="male">m</label>
+                    </div>
+
+                    <div class="col-xs-1">
+                        <input type="radio" name="gender" class="sidebar-input sb-red-input" id="female" value="w">
+                    </div>
+                    <div class="col-xs-3">
+                        <label for="female">w</label>
+                    </div>
+                </div>
+                <p id="warning" style="color: lavender; display: none">*Please fill out the form</p>
+            </div>
+
+            <input id="submit-age-gender" name="age-gender-btn" type="button" class="sidebar-button sb-red-button" value="Submit" >
+        </form>
+    </div>
+
+    <div id="dialog-save-warning" title="Warning">
+        <form action="" method="post">
+            <p style="text-align: center">You are about to start a new experiment session.<br>
+            Press SAVE to save your previous data to a .csv file. <br>
+            Press CONTINUE if you want to continue without saving.</p>
+            <div class="row">
+                <div class="col-xs-6">
+                    <input type="button" name="ok-new-experiment" class="sidebar-button sb-red-button" value="CONTINUE">
+                </div>
+                <div class="col-xs-6">
+                    <input type="button" name="save-experiment" class="sidebar-button sb-red-button" id="save-experiment-csv-2" value="SAVE">
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div><!-- div.container --->
+
+<!-- load js dependencies -->
+<script src="E:/Programmieren/Node.js/node_modules/socket.io/node_modules/socket.io-client/socket.io.js"></script>
+<script src="browser/dependencies/d3.v3.js" charset="utf-8"></script>
+<script src="browser/Constants.js"></script>
+<script src="browser/vector.js"></script>
+<script src="browser/Container.js"></script>
+<script src="browser/boids.js"></script>
+<!--<script src="code.js"></script>-->
+<script src="browser/GraphicsController.js"></script>
+<script src="browser/sidebar-effects.js"></script>
+<script src="browser/UIController.js"></script>
+
+</body>
+</html>

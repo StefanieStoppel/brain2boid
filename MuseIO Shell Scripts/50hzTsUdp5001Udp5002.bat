@@ -1,0 +1,1 @@
+muse-io --50hz --osc-timestamp --osc osc.udp://localhost:5001,osc.udp://localhost:5002

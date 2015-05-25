@@ -1,0 +1,62 @@
+<script src="E:/Programmieren/Node.js/node_modules/socket.io/node_modules/socket.io-client/socket.io.js"></script>
+<script src="browser/dependencies/d3.v3.js" charset="utf-8"></script>
+<script>
+  var socket = io('http://localhost/');
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+  socket.on('osc', function(data){
+  	//console.log(data.osc[0]);
+  	if(data.hasOwnProperty("osc")){
+    	switch(data.osc[0]){
+    		case "/muse/elements/experimental/concentration":
+    			concentration(data);
+    			break;
+    		case "/muse/elements/experimental/mellow":
+    			mellow(data);
+    			break;
+    	}
+    }
+  });
+  //index 1 of data.osc is concentration / mellow value (0 if muse is off head)
+  function concentration(data){
+  	console.log("concentration: " + data.osc[1]);
+  }
+
+  function mellow(data){
+  	console.log("mellow: " + data.osc[1]);
+  }
+
+  /*
+
+  exp = [{ name: "Mellow", value: 0.6, color: "yellow" },
+			{ name: "Concentration", value: 0.4, color: "blue"}];
+  
+  function init(){
+  	var svg = d3.select("body").append("svg")
+			.attr("width", 300)
+			.attr("height", 300);
+	var experimental = d3.layout.pie();
+	experimental.value(function(x){ return x.value });
+	console.log(experimental(exp));
+
+	var arc = new d3.svg.arc();
+	//Radius angeben
+	arc.innerRadius(0);
+	arc.outerRadius(50);
+	//Als Daten für die paths nehme ich die Objekte, 
+	//die das Layout zurückgegeben hat
+	console.log(arc(experimental(exp)));
+	svg.selectAll('path').data(experimental(exp))//startAngle und endAngle sind in fifa(cups) schon drin
+		.enter()
+		.append("path")
+		.attr("d", function(d){ 
+				console.log(arc(d));
+				return arc(d) })
+		.attr("stroke", "black")
+		.attr("fill", function (d, i) { return exp[i].color || "white" })
+		.attr("transform", "translate(100,100)")
+  }
+    */
+</script>
