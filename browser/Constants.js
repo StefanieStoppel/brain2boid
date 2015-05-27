@@ -14,7 +14,7 @@ var NEIGHBOR_DISTANCE = 80,
     MAX_FORCE = 0.03,
     SEPARATION_FACTOR = 1.5,//1.0(c) - 1.8(m); too high (4.0): they separate and turn around their own axis
     ALIGNMENT_FACTOR = 1.3,
-    COHESION_FACTOR = 0.8;//0.8(m) - 1.5(c)
+    COHESION_FACTOR = 1.0;//0.8(m) - 1.5(c)
 //muse experimental values
 var MELLOW = 0,
     CONCENTRATION = 0;
@@ -138,7 +138,7 @@ Constants.prototype.setMinDividendDivisorRatio = function(lowestDividend, highes
     DIVIDEND_DIVISOR_RATIO_MIN = lowestDividend / highestDivisor;
     this.updateColourScale();
     this.setColourByFreqRatio();
-    this.updateBoidSpeedScale();
+   // this.updateBoidSpeedScale();
     //this.updateBoidSizeScale();
     //this.setBoidSizeScaleByFreqRatio();
 };
@@ -146,7 +146,7 @@ Constants.prototype.setMinDividendDivisorRatio = function(lowestDividend, highes
 Constants.prototype.setRatioMin = function(ratioMin){
     DIVIDEND_DIVISOR_RATIO_MIN = ratioMin;
     this.updateBoidSpeedScale();
-    this.updateColourScale();
+    //this.updateColourScale();
     this.setColourByFreqRatio();
 };
 
@@ -173,7 +173,8 @@ Constants.prototype.setRatio = function(ratio){
 };
 
 Constants.prototype.updateColourScale = function(){
-    colourScale.domain([DIVIDEND_DIVISOR_RATIO_MIN, DIVIDEND_DIVISOR_RATIO_MAX]);
+    //colourScale.domain([DIVIDEND_DIVISOR_RATIO_MIN, (DIVIDEND_DIVISOR_RATIO_MAX]);
+    colourScale.domain([DIVIDEND_DIVISOR_RATIO_MIN, (DIVIDEND_DIVISOR_RATIO_MAX + TRAINING_RATIO) / 2]);
 };
 
 Constants.prototype.updateBoidSpeedScale = function(){
