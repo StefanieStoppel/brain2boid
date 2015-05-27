@@ -5,6 +5,10 @@
 //TODO: experiment modes from sidebar
 
 function UIController(){
+    /************************** MAIN AREA ***********************************/
+    this.pointsDisplay = $('p.points-display');
+
+    /************************ RED SIDEBAR *************************************/
     //buttons and other inputs red sidebar
     this.newExperimentBtn =  $('input[name="new-experiment"]');
     this.startExperimentBtn = $('input[name="start-experiment"]');
@@ -13,7 +17,6 @@ function UIController(){
     this.experimentMode = parseInt(this.selectedExperimentModeRadio.val()); //0 - 3
     //set text on startExperiment btn
     this.startExperimentBtn.val('Start ' +  $("label[for='"+ this.selectedExperimentModeRadio.attr('id') + "']").text());
-
 
     this.ageInput = $('input[name="age"]');
     this.genderRadio = $('input[name="gender"]');
@@ -26,9 +29,7 @@ function UIController(){
         autoOpen: false
     });
 
-
-
-
+    /************************ BLUE SIDEBAR **************************************/
     //get selected channel(s) from radio buttons
     this.selectedChannel = $('option[name="ch-picker"]:selected').val();
     this.setSelectedChannelIndices();
@@ -58,13 +59,16 @@ function UIController(){
 
     this.secondFreqBandThresh = ($('input[name="freq-band-2-percentile"]').val() / 10) -1;
 
+    /****************************** GRAPHICS CONTROLLER, CONSTANTS *****************************/
+
     this.graphicsController = new GraphicsController(this.selectedChannelIndices, this.sele);
     this.constants = this.graphicsController.getConstants();
     this.constants.setFrequencyBands(this.bandNames);
 
+    /************************** SOCKET **********************/
     this.socket = io('http://localhost/');
-    //this.socketOSC(this);
-    //Listeners for messages from node (nodeIndex or experimentController)
+
+    //*********************** LISTENERS for messages from node (nodeIndex or experimentController)
     this.socketRatio(this);
     this.onRatioMaxUpdate(this);
     this.onRatioMinUpdate(this);
@@ -72,8 +76,9 @@ function UIController(){
     this.onFrequencyTresholdUpdate();
     this.onRawFFTUpdate();
     this.onHorseshoeUpdate();
+    this.onPointsUpdate();
 
-    //listeners for ui inputs (browser)
+    //******************* LISTENERS for ui inputs (browser)
     this.experimentRunning = false;
     this.onNewExperiment();
     //CONTINUE button in warning dialog clicked (after new experiment btn)
@@ -84,6 +89,18 @@ function UIController(){
     this.onStopExperiment();
     this.onExperimentModeSelection();
 }
+
+/**
+ * Update points display in main area (left corner of svg field with boids)
+ */
+UIController.prototype.onPointsUpdate = function(){
+    var self = this;
+    //TODO: display points as they are earned near the boids
+    this.socket.on('updatePoints', function(data){
+        console.log('Points update received:' + data.points);
+        self.pointsDisplay.text(data.points);
+    });
+};
 
 /**
  * Experiment mode selection changed in red sidebar (radio btns)
@@ -162,7 +179,8 @@ UIController.prototype.onStartExperiment = function(){
         //get mode idx from radio btn and send info via socket
         self.socket.emit('startExperimentButton',
             {mode: parseInt($('input[name="experiment-mode"]:checked').val()),
-             duration: parseInt($('input[name="experiment-duration"]').val())}
+             duration: parseInt($('input[name="experiment-duration"]').val()),
+             percentiles: [ parseInt(self.firstFreqBandThresh), parseInt(self.secondFreqBandThresh) ]}
         );
         self.experimentRunning = true;
         $('.sb-red :input').prop('disabled', true);
@@ -188,11 +206,12 @@ UIController.prototype.onStopExperiment = function(){
                 self.constants.setMaxDividendDivisorRatio(data.percentiles[0][data.percentiles[0].length-1],data.percentiles[1][0]);
                 console.log('received calibration data');
                 //enable sidebar experiment inputs
-                $('.sb-red :input').prop('disabled', false);
+               // $('.sb-red :input').prop('disabled', false);
                 break;
             //TEST 1 finished
             case 1:
-
+                //data.points
+                //TODO: add experiment stopped sign somewhere
                 break;
             //FREE NEUROFEEDBACK finished
             case 2:
@@ -203,6 +222,9 @@ UIController.prototype.onStopExperiment = function(){
 
                 break;
         }
+        //TODO: test
+        //enable sidebar experiment inputs
+        $('.sb-red :input').prop('disabled', false);
     });
 };
 

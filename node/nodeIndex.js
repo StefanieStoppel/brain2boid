@@ -136,11 +136,13 @@ MainController.prototype.experimentStartListener = function(socket){
     var self = this;
     socket.on('startExperimentButton', function(data){// data.mode = experiment mode idx
         if(self.experimentController !== 'undefined'){ //data.duration = duration of experiment mode in seconds
-            console.log('startExperimentButton clicked');
+            console.log('startExperimentButton clicked, mode: ' + data.mode);
             //set mode
             self.experimentController.setMode(data.mode);
             //set duration in seconds, default = 60
             self.experimentController.setDuration(data.duration);
+            self.experimentController.setPercentileDividendIdx(data.percentiles[0]);
+            self.experimentController.setPercentileDivisorIdx(data.percentiles[1]);
             switch(data.mode){
                 //start CALIBRATION
                 case 0:
@@ -160,6 +162,10 @@ MainController.prototype.experimentStartListener = function(socket){
                     break;
                 //start TEST 1
                 case 1:
+                    self.experimentController.test1((function (points) {
+                        console.log('experiment mode ' + data.mode + ' stopped.');
+                        socket.emit('experimentStopped', {mode: data.mode, points: points});
+                    }));
                     //socket.emit('experimentStopped', {mode: data.mode, data: xyz});
                     break;
                 // start FREE NEUROFEEDBACK
@@ -175,6 +181,10 @@ MainController.prototype.experimentStartListener = function(socket){
     });
 };
 
+/**
+ * Experiment mode radio button selection from UIController via socket.
+ * @param socket
+ */
 MainController.prototype.experimentModeListener = function(socket){
     var self = this;
     socket.on('modeSelection', function(data){
@@ -227,9 +237,7 @@ MainController.prototype.frequencyBandSelectionListener = function(socket){
 MainController.prototype.oscListener = function(socket){
     var self = this;
     this.oscServer.on("message", function (msg) {
-        //console.log("Message:");
-        // console.log(msg);
-       //socket.emit('osc', {osc: msg});
+
         if (msg[0] === "/muse/elements/delta_absolute"
             || msg[0] === "/muse/elements/theta_absolute"
             || msg[0] === "/muse/elements/alpha_absolute"
@@ -238,14 +246,14 @@ MainController.prototype.oscListener = function(socket){
         {
             //CALIBRATION RUNNING
             if(typeof self.experimentController !== 'undefined'
-                && self.experimentController.getExperimentRunning())
+                && self.experimentController.getExperimentRunning()
+                && self.experimentController.getMode() === 0)
             {
                 var collMsg = msg;
                 collMsg[0] = getFrequencyBandByOSCPath(msg[0]);
                 console.log('calibrating...');
                 self.experimentController.addToCollection(collMsg);
             }
-
 
             SELECTED_FREQ_BANDS.forEach(function(selBand, selIdx)
             {
@@ -268,12 +276,18 @@ MainController.prototype.oscListener = function(socket){
                                 if(SELECTED_FREQ_BANDS.length === 1)
                                     setDivisor('', [1,1,1,1]);
                                 setRatio();
+                                if(typeof self.experimentController !== 'undefined' && self.experimentController.getExperimentRunning())
+                                    self.experimentController.setRatio(RATIO[1]);
                                 if(RATIO[1] > RATIO_MAX){
                                     RATIO_MAX = RATIO[1];
+                                    if(typeof self.experimentController !== 'undefined' && self.experimentController.getExperimentRunning())
+                                        self.experimentController.setRatioMax(RATIO[1]);
                                     socket.emit('ratio_max',{ratio_max: RATIO_MAX});
                                 }
                                 if(RATIO[1] < RATIO_MIN){
                                     RATIO_MIN = RATIO[1];
+                                    if(typeof self.experimentController !== 'undefined' && self.experimentController.getExperimentRunning())
+                                        self.experimentController.setRatioMin(RATIO[1]);
                                     socket.emit('ratio_min',{ratio_min: RATIO_MIN});
                                 }
                                 socket.emit('ratio', {ratio: RATIO});
@@ -281,12 +295,18 @@ MainController.prototype.oscListener = function(socket){
                                 //console.log(allBand.name + ': ' + msg);
                                 setDivisor(selBand.name, msg.slice(1));
                                 setRatio();
+                                if(typeof self.experimentController !== 'undefined' && self.experimentController.getExperimentRunning())
+                                    self.experimentController.setRatio(RATIO[1]);
                                 if(RATIO[1] > RATIO_MAX){
                                     RATIO_MAX = RATIO[1];
+                                    if(typeof self.experimentController !== 'undefined' && self.experimentController.getExperimentRunning())
+                                        self.experimentController.setRatioMax(RATIO[1]);
                                     socket.emit('ratio_max',{ratio_max: RATIO_MAX});
                                 }
                                 if(RATIO[1] < RATIO_MIN){
                                     RATIO_MIN = RATIO[1];
+                                    if(typeof self.experimentController !== 'undefined' && self.experimentController.getExperimentRunning())
+                                        self.experimentController.setRatioMin(RATIO[1]);
                                     socket.emit('ratio_min',{ratio_min: RATIO_MIN});
                                 }
                                 socket.emit('ratio', {ratio: RATIO});
