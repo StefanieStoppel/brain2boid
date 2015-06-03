@@ -234,3 +234,19 @@ input#submit-age-gender{
 input#age-select{
     max-width: 8em;
 }
+
+/***** TIMER ****/
+div#timer{
+    position: absolute;
+    top: 3.1em;
+    left: 1em;
+    color: cadetblue;
+    font-size: 1.7em;
+    min-width: 4em;
+    float: left;
+}
+img#timer-icon{
+    margin: 0.2em 0.3em 0 0;
+    height: 1em;
+    float: left;
+}

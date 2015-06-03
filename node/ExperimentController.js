@@ -177,26 +177,15 @@ ExperimentController.prototype.getMode = function(){
 };
 
 ExperimentController.prototype.getTest1Points = function(){
-    return this.test1Points.getPoints();
+    return this.test1Points.getTotalPoints();
 };
 
 ExperimentController.prototype.setDuration = function(durInSec){
     this.duration = durInSec * 1000;
 };
 
-ExperimentController.prototype.measure = function(){
-    //measure median frequency for both bands + ratio, min and max ratio, per trial.
-    //also count how many times the ratio crossed the threshold, and the latency of each crossing.
-    var crossedThreshCount = 0,
-        trialRatioMed = 0,
-        trialRatioMin = 1,
-        trialRatioMax = 0;
-
-};
-
 ExperimentController.prototype.setRatioMin = function(ratioMin){
     this.ratioMin = ratioMin;
-
 };
 
 ExperimentController.prototype.setRatioMax = function(ratioMax){
@@ -216,16 +205,14 @@ ExperimentController.prototype.setRatio = function(ratio){
     //console.log('ExperimentController.setRatio()');
     if(this.experimentRunning)
     {
-        console.log('ratio: ' + ratio + ', threshold: ' +this.thresholdRatio);
+        console.log('ratio: ' + ratio + ', threshold: ' + this.thresholdRatio);
         // 1) POINTS: ratio over threshold
-        if(ratio > this.thresholdRatio){
+        if(ratio > this.thresholdRatio)
+        {
             if(self.timeAboveRatio === 0){
                 self.timeAboveRatio = process.hrtime();
                 TIMER = setInterval(function(){
-                    if(self.mode === 1){
-                        self.test1Points.add(100);
-                        self.socket.emit('updatePoints', {points: self.test1Points.getPoints()});
-                    }/*
+                    /*
                     else if(self.mode === 3){
                         self.test2Points.add(10);
                     }*/
@@ -233,22 +220,35 @@ ExperimentController.prototype.setRatio = function(ratio){
                 }, 500);
             }
         }
-        if(ratio < this.thresholdRatio){//clear interval when ratio falls below thresh
+        if(ratio < this.thresholdRatio)
+        {
             if(typeof TIMER !== 'undefined'){
-                clearInterval(TIMER);
+                clearInterval(TIMER);//clear interval when ratio falls below thresh
                 //TODO: write start and end of interval over threshold to json array
                 //TODO: average of all values in that interval: points = deltaRatio = (avgRatioInterval - thresh) * 1000
-                //TIMER = undefined;
                 //time difference
-                var diff = process.hrtime(self.timeAboveRatio);//idx 0: seconds, idx 1: nanoseconds
-               // self.test1Points.add(diff[0]*1000);
-                //self.socket.emit('updatePoints', {points: self.test1Points.getPoints()});
-                self.timeAboveRatio = 0;
+                if(self.timeAboveRatio !== 0){
+                    var diff = process.hrtime(self.timeAboveRatio);//idx 0: seconds, idx 1: nanoseconds
+                    //change from nano- to milliseconds
+                    var ms = Math.floor(diff[1] / 1000000);
+                    if((diff[0] === 0 && ms >= 500) || (diff[0] > 0)){
+                        //var p = Math.floor((diff[0] * 1000 + ms) / 10);
+                        //Points 1): f.e. 1 s 450 ms = 1450 points
+                        var p = Math.floor(diff[0] * 1000 + ms);
+                        if(self.mode === 1){
+                            self.test1Points.addThreshPoints(p);
+                        }else if(self.mode === 3){
+                            self.test2Points.addThreshPoints(p);
+                        }
+                        self.socket.emit('updatePoints', {points: p});
+                    }
+                    self.timeAboveRatio = 0;
+                }
             }
-
         }
     }
 };
+
 
 /***
  * Threshold dividend band and values.

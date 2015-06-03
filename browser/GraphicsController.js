@@ -41,7 +41,6 @@ var HORSESHOE_DATA = [  {horseshoe: 3, cx: 40,  cy: 50, r:20, colour: "green"},
 
 function GraphicsController(selectedChannelIndices, selectedFreqIndices){
     /** BOIDS & CONSTANTS**/
-    //TODO: node
     this.boids = [];
     this.constants = new Constants();
 
@@ -50,18 +49,15 @@ function GraphicsController(selectedChannelIndices, selectedFreqIndices){
 
     this.selectedFreqIndices = selectedFreqIndices;
 
-    //todo: browser
     //append boidSvg field
     this.body = d3.select('body');
     this.boidSvg = this.body.select('.boid-container').append('svg');
     this.boidSvg.attr({ width: AREA_WIDTH, height: AREA_HEIGHT })
         .style("background", "black");
 
-    //todo: node
     //init new boids
     this.newBoids(this.selectedChannelIndices);
 
-    //todo browser
     //add boids to svg
     this.allBoids = this.boidSvg.selectAll("polygon")
         .data(this.boids)
@@ -72,7 +68,6 @@ function GraphicsController(selectedChannelIndices, selectedFreqIndices){
     //draw boids
     this.draw();
 
-    //todo browser
     //horseshoe display
     this.horseshoe = this.setupHorseshoe();
 
@@ -86,8 +81,6 @@ function GraphicsController(selectedChannelIndices, selectedFreqIndices){
     //initialize bar graph
     this.initBarGraph();
 
-    //listen for window resize events
-    //this.onWindowResize();
 }
 
 /**
@@ -113,6 +106,7 @@ GraphicsController.prototype.newBoids = function(channelSelection, freqBandSelec
     //other: left-vs-right, all
     this.boids = [];
     this.addBoids(channelSelection, freqBandSelection);
+    this.mainBoid = this.boids[75];
 };
 
 //adds 50 boids with the specified channel and frequency band attribute
@@ -130,6 +124,10 @@ GraphicsController.prototype.addBoids = function(channelSelection, freqBandSelec
 
 GraphicsController.prototype.getBoids = function(){
     return this.boids;
+};
+
+GraphicsController.prototype.getMainBoidPosition = function(){
+    return this.mainBoid.getPosition();
 };
 
 /**
@@ -337,6 +335,10 @@ GraphicsController.prototype.setSelectedFreqIndices = function(selectedFreqIndic
 
 GraphicsController.prototype.getBoidController = function(){
     return this.boidController;
+};
+
+GraphicsController.prototype.getBoidSVG = function(){
+    return this.boidSvg;
 };
 
 function running() {

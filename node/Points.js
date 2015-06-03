@@ -8,22 +8,50 @@
  * 3) If RATIO_MAX is updated, the user gets extra points.
  *    Each time points are p = RATIO_MAX * 1000
  *
+ *
+ *
  **/
+/**
+ * TODO: - different points counts for 1) - 3)
+ * what do we actually t-test? which points or values?
+ */
 
 function Points(){
-    this.points = 0;
+    this.threshPoints = 0;// 1)
+    this.deltaRatioPoints = 0; // 2)
+    this.ratioMaxPoints = 0; // 3)
+    this.totalPoints = 0;
 }
 
-Points.prototype.add = function(amount){
+Points.prototype.addThreshPoints = function(amount){
     this.points += amount;
+    this.totalPoints += amount;
 };
 
-Points.prototype.substract = function(amount){
-    this.points -= amount;
+Points.prototype.getThreshPoints = function(amount){
+    return this.threshPoints;
 };
 
-Points.prototype.getPoints = function(){
-    return this.points;
+Points.prototype.addDeltaRatioPoints = function(amount){
+    this.points += amount;
+    this.totalPoints += amount;
+};
+
+Points.prototype.getDeltaRatioPoints = function(amount){
+    return this.threshPoints;
+};
+
+Points.prototype.addRatioMaxPoints = function(amount){
+    this.points += amount;
+    this.totalPoints += amount;
+};
+
+Points.prototype.getRatioMaxPoints = function(amount){
+    return this.threshPoints;
+};
+
+Points.prototype.getTotalPoints = function(){
+    return this.totalPoints;
 };
 
 module.exports = Points;

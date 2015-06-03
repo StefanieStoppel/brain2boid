@@ -14,7 +14,7 @@ var NEIGHBOR_DISTANCE = 80,
     MAX_FORCE = 0.03,
     SEPARATION_FACTOR = 1.5,//1.0(c) - 1.8(m); too high (4.0): they separate and turn around their own axis
     ALIGNMENT_FACTOR = 1.3,
-    COHESION_FACTOR = 1.0;//0.8(m) - 1.5(c)
+    COHESION_FACTOR = 1.3;//0.8(m) - 1.5(c)
 //muse experimental values
 var MELLOW = 0,
     CONCENTRATION = 0;
