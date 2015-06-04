@@ -9,6 +9,7 @@ var gauss = require('gauss');
 var Collection = gauss.Collection;
 var Points = require('./Points.js');
 TIMER = undefined;
+MODE_TIMER = undefined;
 
 function ExperimentController(age, gender, mode, socket){ //age and gender of subject, passed from browser input field on experiment start
     //collections for all experiment modes
@@ -44,10 +45,15 @@ function ExperimentController(age, gender, mode, socket){ //age and gender of su
     this.timeAboveRatio = 0;//measures time above threshold for points
     //is experiment running or not
     this.experimentRunning = false;
-    this.duration = 1000;//experiment duration
+    this.duration = 10;//experiment duration
+    this.remainingDuration = 0;
+
+    //Point scores
     this.test1Points = new Points(); // points before neurofeedback
     this.test2Points = new Points(); // points after  neurofeedback
 
+
+    this.touchingForehead = 0;//false
     //TIMER = undefined;// timer for counting points
     //TIMEOUT = undefined;// timer for counting points
 }
@@ -59,6 +65,7 @@ ExperimentController.prototype.setPercentileDividendIdx = function(idx){
 ExperimentController.prototype.setPercentileDivisorIdx = function(idx){
     this.percentilesDivisorIdx = idx;
 };
+
 /**
  * Calibration.
  *
@@ -70,18 +77,23 @@ ExperimentController.prototype.setPercentileDivisorIdx = function(idx){
  * @param percentile2
  * @param emitPercentiles
  */
+/*
 ExperimentController.prototype.calibrate = function(freqBand1, freqBand2, channelName1, percentile1, channelName2, percentile2, emitPercentiles){
     if(this.mode === 0) {
         var self = this;
         this.experimentRunning = true;
-        setTimeout(
-            function () {
+        this.remainingDuration = this.duration;
+        MODE_TIMER = setInterval(function(){
+            self.socket.emit('timerUpdate', {time: self.remainingDuration});
+            self.remainingDuration--;
+            if(self.remainingDuration === 0){
+                clearInterval(MODE_TIMER);
+                MODE_TIMER = undefined;
                 self.experimentRunning = false;
-                var res = self.getQuantileResults(freqBand1, freqBand2, channelName1, percentile1, channelName2, percentile2);
-                emitPercentiles(res);
-            },
-            this.duration
-        );
+                var res = self.getQuantileResults(freqBand1, freqBand2, channelName1, percentile1, channelName2, percentile2);//callback
+                emitPercentiles(res);//callback
+            }
+        }, 1000);
     }
 };
 
@@ -89,52 +101,86 @@ ExperimentController.prototype.test1 = function(emitPoints){
     if(this.mode === 1){
         var self = this;
         this.experimentRunning = true;
-        setTimeout(
-            function(){
+        this.remainingDuration = this.duration;
+        MODE_TIMER = setInterval(function(){
+            self.socket.emit('timerUpdate', {time: self.remainingDuration});
+            self.remainingDuration--;
+            if(self.remainingDuration === 0){
+                clearInterval(MODE_TIMER);
+                MODE_TIMER = undefined;
                 self.experimentRunning = false;
-                //measure:
-                //a) time (latency) to when the ratio is reached
-                emitPoints(self.getTest1Points());
-            },
-            self.duration
-        );
+                emitPoints(self.getTest1Points());//callback
+            }
+        }, 1000);
     }
+};
+*/
+
+ExperimentController.prototype.startExperimentMode = function(mode, callback){
+    var self = this;
+    this.experimentRunning = true;
+    this.remainingDuration = this.duration;
+    MODE_TIMER = setInterval(function(){
+        self.socket.emit('timerUpdate', {time: self.remainingDuration});
+        self.remainingDuration--;
+        if(self.remainingDuration === 0){
+            self.pauseExperiment();
+            self.stopPointsTimer();
+            if(mode === 0) //calibration
+                callback();//callback
+            else if(mode === 1)//test1
+                callback(self.getTest1Points());
+            else if(mode === 2)//free nf
+            {
+                callback();
+            }
+            else if(mode === 3)//test2
+            {
+                callback(self.getTest2Points());
+            }
+        }
+    }, 1000);
 };
 
 ExperimentController.prototype.getQuantileResults = function(freqBand1, freqBand2, channelIdx1, quantile1, channelIdx2, quantile2){
-    //freqBand2, channelName2 and percentile2 can be undefined
-    var firstBandSelChans = this.calibrationCollection.find(function(e) { return e.freqBandName === freqBand1; })
-        .find(function(e) { return e.chan === channelIdx1 || e.chan === channelIdx2; });
-    var vecFirstBandFirstChan = firstBandSelChans.find(function(e) {return e.chan === channelIdx1})
-        .map(function(el){ return el.val; }).toVector();
-    var vecFirstBandSecondChan = firstBandSelChans.find(function(e) {return e.chan === channelIdx2})
-        .map(function(el){ return el.val; }).toVector();
-    var firstBandRes = vecFirstBandFirstChan.add(vecFirstBandSecondChan).divide(2);
-    //TODO: solve error RangeError: Subset quantity is greater than the Vector length
+    if(this.calibrationCollection.length !== 0){
+        //freqBand2, channelName2 and percentile2 can be undefined
+        var firstBandSelChans = this.calibrationCollection.find(function(e) { return e.freqBandName === freqBand1; })
+            .find(function(e) { return e.chan === channelIdx1 || e.chan === channelIdx2; });
+        var vecFirstBandFirstChan = firstBandSelChans.find(function(e) {return e.chan === channelIdx1})
+            .map(function(el){ return el.val; }).toVector();
+        var vecFirstBandSecondChan = firstBandSelChans.find(function(e) {return e.chan === channelIdx2})
+            .map(function(el){ return el.val; }).toVector();
+        var firstBandRes = vecFirstBandFirstChan.add(vecFirstBandSecondChan).divide(2);
+        //TODO: solve error RangeError: Subset quantity is greater than the Vector length
 
-    this.percentilesDividend =  firstBandRes.quantile(quantile1);
-    //TODO: set dividend
-    this.setDividend(this.percentilesDividend[this.percentilesDividendIdx], this.percentilesDividendIdx, freqBand1);
+        this.percentilesDividend =  firstBandRes.quantile(quantile1);
+        //TODO: set dividend
+        this.setDividend(this.percentilesDividend[this.percentilesDividendIdx], this.percentilesDividendIdx, freqBand1);
 
 
-    //TODO: testen was raus kommen wenn nur ein Frequenzband ausgew?hlt wurde
-    var secondBandSelChans = this.calibrationCollection.find(function(e) { return e.freqBandName === freqBand2; })
-        .find(function(e) { return e.chan === channelIdx1 || e.chan === channelIdx2; });
-    var vecSecondBandFirstChan = secondBandSelChans.find(function(e) {return e.chan === channelIdx1})
-        .map(function(el){ return el.val; }).toVector();
-    var vecSecondBandSecondChan = secondBandSelChans.find(function(e) {return e.chan === channelIdx2})
-        .map(function(el){ return el.val; }).toVector();
-    var secondBandRes = vecSecondBandFirstChan.add(vecSecondBandSecondChan).divide(2);
+        //TODO: testen was raus kommen wenn nur ein Frequenzband ausgew?hlt wurde
+        var secondBandSelChans = this.calibrationCollection.find(function(e) { return e.freqBandName === freqBand2; })
+            .find(function(e) { return e.chan === channelIdx1 || e.chan === channelIdx2; });
+        var vecSecondBandFirstChan = secondBandSelChans.find(function(e) {return e.chan === channelIdx1})
+            .map(function(el){ return el.val; }).toVector();
+        var vecSecondBandSecondChan = secondBandSelChans.find(function(e) {return e.chan === channelIdx2})
+            .map(function(el){ return el.val; }).toVector();
+        var secondBandRes = vecSecondBandFirstChan.add(vecSecondBandSecondChan).divide(2);
 
-    this.percentilesDivisor = secondBandRes.quantile(quantile2);
-    //set divisor
-    this.setDivisor(this.percentilesDivisor[this.percentilesDivisorIdx], this.percentilesDivisorIdx, freqBand2);
+        this.percentilesDivisor = secondBandRes.quantile(quantile2);
+        //set divisor
+        this.setDivisor(this.percentilesDivisor[this.percentilesDivisorIdx], this.percentilesDivisorIdx, freqBand2);
 
-    //Quantiles as specified
-    console.log("quantiles for average of band " + freqBand1 + " over channel(s) " + channelIdx1 + ", " +channelIdx2 + ": " +  this.percentilesDividend);
-    console.log("quantiles for average of band " + freqBand2 + " over channel(s) " + channelIdx1 + ", " +channelIdx2 + ": " +  this.percentilesDivisor);
+        //Quantiles as specified
+        console.log("quantiles for average of band " + freqBand1 + " over channel(s) " + channelIdx1 + ", " +channelIdx2 + ": " +  this.percentilesDividend);
+        console.log("quantiles for average of band " + freqBand2 + " over channel(s) " + channelIdx1 + ", " +channelIdx2 + ": " +  this.percentilesDivisor);
 
-    return [this.percentilesDividend, this.percentilesDivisor];
+        return [this.percentilesDividend, this.percentilesDivisor];
+    }else{
+        return null;
+    }
+
 };
 
 /**
@@ -168,6 +214,14 @@ ExperimentController.prototype.getExperimentRunning = function(){
     return this.experimentRunning;
 };
 
+ExperimentController.prototype.pauseExperiment = function(){
+    this.experimentRunning = false;
+    if(MODE_TIMER !== undefined){
+        clearInterval(MODE_TIMER);
+        MODE_TIMER = undefined;
+    }
+};
+
 ExperimentController.prototype.setMode = function(mode){
     this.mode = mode;
 };
@@ -180,8 +234,16 @@ ExperimentController.prototype.getTest1Points = function(){
     return this.test1Points.getTotalPoints();
 };
 
+ExperimentController.prototype.getTest2Points = function(){
+    return this.test2Points.getTotalPoints();
+};
+
 ExperimentController.prototype.setDuration = function(durInSec){
-    this.duration = durInSec * 1000;
+    this.duration = durInSec;
+};
+
+ExperimentController.prototype.getRemainingDuration = function(){
+    return this.remainingDuration;
 };
 
 ExperimentController.prototype.setRatioMin = function(ratioMin){
@@ -200,6 +262,32 @@ ExperimentController.prototype.setRatioMax = function(ratioMax){
     }
 };
 
+ExperimentController.prototype.stopPointsTimer = function(){
+    if(TIMER != undefined){
+        clearInterval(TIMER);
+        TIMER = undefined;
+        console.log('TIMER cleared and set to undefined');
+
+        if(this.timeAboveRatio !== 0){
+            var diff = process.hrtime(this.timeAboveRatio);//idx 0: seconds, idx 1: nanoseconds
+            //change from nano- to milliseconds
+            var ms = Math.floor(diff[1] / 1000000);
+            if((diff[0] === 0 && ms >= 500) || (diff[0] > 0)){
+                //var p = Math.floor((diff[0] * 1000 + ms) / 10);
+                //Points 1): f.e. 1 s 450 ms = 1450 points
+                var p = Math.floor(diff[0] * 1000 + ms);
+                if(this.mode === 1){
+                    this.test1Points.addThreshPoints(p);
+                }else if(this.mode === 3){
+                    this.test2Points.addThreshPoints(p);
+                }
+                this.socket.emit('updatePoints', {points: p});
+            }
+            this.timeAboveRatio = 0;
+        }
+    }
+};
+
 ExperimentController.prototype.setRatio = function(ratio){
     var self = this;
     //console.log('ExperimentController.setRatio()');
@@ -212,18 +300,18 @@ ExperimentController.prototype.setRatio = function(ratio){
             if(self.timeAboveRatio === 0){
                 self.timeAboveRatio = process.hrtime();
                 TIMER = setInterval(function(){
-                    /*
-                    else if(self.mode === 3){
-                        self.test2Points.add(10);
-                    }*/
                     console.log('over ratio');
                 }, 500);
             }
         }
         if(ratio < this.thresholdRatio)
         {
+            this.stopPointsTimer();
+            /*
             if(typeof TIMER !== 'undefined'){
+                console.log('clearing timer');
                 clearInterval(TIMER);//clear interval when ratio falls below thresh
+                TIMER = undefined;
                 //TODO: write start and end of interval over threshold to json array
                 //TODO: average of all values in that interval: points = deltaRatio = (avgRatioInterval - thresh) * 1000
                 //time difference
@@ -244,9 +332,10 @@ ExperimentController.prototype.setRatio = function(ratio){
                     }
                     self.timeAboveRatio = 0;
                 }
-            }
+            }*/
         }
     }
+    //TODO: beim ende des experiments die noch ausstehenden punkte übermitteln
 };
 
 
@@ -285,6 +374,15 @@ ExperimentController.prototype.setDivisor = function(divisorVal, divisorPercenti
 ExperimentController.prototype.setThresholdRatio = function(dividendMed, divisorMed){
     if(this.dividend.value !== 0 && this.divisor.value !== 0)
         this.thresholdRatio = dividendMed / divisorMed;
+};
+
+
+ExperimentController.prototype.setTouchingForehead = function(msg){
+    this.touchingForehead = msg[1];
+};
+
+ExperimentController.prototype.getTouchingForehead = function(){
+    return this.touchingForehead;
 };
 
 module.exports = ExperimentController;

@@ -79,7 +79,7 @@ function GraphicsController(selectedChannelIndices, selectedFreqIndices){
     this.updateBoidSvg();
 
     //initialize bar graph
-    this.initBarGraph();
+    //this.initBarGraph();
 
 }
 
@@ -199,72 +199,7 @@ GraphicsController.prototype.draw = function(){
 };
 
 
-GraphicsController.prototype.initBarGraph = function(){
-    /************ Bar Graph FFT ****************/
-    var xAxis = d3.svg.axis()
-        .scale(x_scale)
-        .orient("bottom")
-        .ticks(15, "Hz");
 
-    var yAxis = d3.svg.axis()
-        .scale(y_scale)
-        .orient("left")
-        .ticks(10, "dB");
-
-    this.chart = d3.select(".chart-svg")
-        .append("g")
-        .attr("class", "chart-group")
-        .attr("transform","translate(40,20)");
-
-    var barWidth = 9.6;
-    this.rect = this.chart.selectAll("rect")
-        .data(fft_Fp1)
-        .enter().append("rect")
-        .attr("transform", function(d,i){ return "translate(" + i * barWidth + ", " + chartHeight + ") rotate(180)";})
-        .attr("height", function(d) { return y_scale(d.value) + "px"; })
-        .attr("width", barWidth - 1)
-        .attr("class", function(d){ return d.class; });
-
-    this.chart.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + chartHeight + ")")
-        .call(xAxis);
-
-    this.chart.append("g")
-        .attr("class", "y axis")
-        .attr("transform", "translate(-10,0)")
-        .call(yAxis);
-
-};
-
-GraphicsController.prototype.update_bargraph = function(){
-    this.rect.data(fft_Fp1);
-    this.rect.attr("height", function(d,i){
-        if(typeof d.value === "number"){
-            return chartHeight - y_scale(d.value) + "px";
-        }
-    });
-};
-
-GraphicsController.prototype.update_fft_data = function(data){
-    var d = data.osc.slice(1,81);
-    for(var j = 0; j < fft_Fp1.length; j++){
-        fft_Fp1[j].value = d[j];
-    }
-};
-
-/*** NOT USED AT THE MOMENT ***/
-GraphicsController.prototype.onWindowResize = function(){
-    var self = this;
-    $( window ).resize(function() {
-        run(false);
-        //change boid svg width
-        AREA_WIDTH = $('html').outerWidth();
-        self.boidSvg.attr({ width: AREA_WIDTH, height: AREA_HEIGHT })
-        run(true);
-    });
-
-};
 
 //horseshoe
 // 3 || 4 = white circle; 2 = coloured outline; 1 = coloured circle
@@ -348,3 +283,73 @@ function running() {
 function run(bool){
     $('#running').attr('checked', bool);
 }
+
+/*
+ GraphicsController.prototype.initBarGraph = function(){
+ var xAxis = d3.svg.axis()
+ .scale(x_scale)
+ .orient("bottom")
+ .ticks(15, "Hz");
+
+ var yAxis = d3.svg.axis()
+ .scale(y_scale)
+ .orient("left")
+ .ticks(10, "dB");
+
+ this.chart = d3.select(".chart-svg")
+ .append("g")
+ .attr("class", "chart-group")
+ .attr("transform","translate(40,20)");
+
+ var barWidth = 9.6;
+ this.rect = this.chart.selectAll("rect")
+ .data(fft_Fp1)
+ .enter().append("rect")
+ .attr("transform", function(d,i){ return "translate(" + i * barWidth + ", " + chartHeight + ") rotate(180)";})
+ .attr("height", function(d) { return y_scale(d.value) + "px"; })
+ .attr("width", barWidth - 1)
+ .attr("class", function(d){ return d.class; });
+
+ this.chart.append("g")
+ .attr("class", "x axis")
+ .attr("transform", "translate(0," + chartHeight + ")")
+ .call(xAxis);
+
+ this.chart.append("g")
+ .attr("class", "y axis")
+ .attr("transform", "translate(-10,0)")
+ .call(yAxis);
+
+ };
+ */
+
+/*
+ GraphicsController.prototype.update_bargraph = function(){
+ this.rect.data(fft_Fp1);
+ this.rect.attr("height", function(d,i){
+ if(typeof d.value === "number"){
+ return chartHeight - y_scale(d.value) + "px";
+ }
+ });
+ };
+
+ GraphicsController.prototype.update_fft_data = function(data){
+ var d = data.osc.slice(1,81);
+ for(var j = 0; j < fft_Fp1.length; j++){
+ fft_Fp1[j].value = d[j];
+ }
+ };
+
+
+ GraphicsController.prototype.onWindowResize = function(){
+ var self = this;
+ $( window ).resize(function() {
+ run(false);
+ //change boid svg width
+ AREA_WIDTH = $('html').outerWidth();
+ self.boidSvg.attr({ width: AREA_WIDTH, height: AREA_HEIGHT })
+ run(true);
+ });
+
+ };
+ */

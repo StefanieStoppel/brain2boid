@@ -23,25 +23,66 @@
     <div class="row full-height">
 
         <div class="main-content col-xs-6 col-sm-8">
+            <div class="row" id="boids-row">
+                <div class="boid-container col-xs-12"><!-- container for boids -->
+                    <div id="timer">
+                        <img id="timer-icon" src="browser/img/timer.png"/>
+                        <p id="timer-text">10 s</p>
+                    </div>
+                    <p class="points-display">0</p>
+                </div>
+            </div>
+            <div class="row" id="control-row">
+                <div class="col-sm-4" id="experiment-options">
+                    <div class="col-sm-4">
+                        <button type="button" name="experiment-control" id="new-experiment-btn">
+                            <i class="fa fa-plus-square"></i>
+                        </button>
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="button" name="experiment-control" id="save-experiment-btn">
+                            <i class="fa fa-floppy-o"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-4" id="experiment-control">
+                    <input type="hidden" name="hidden-experiment-mode" value="0">
+                    <div class="col-sm-4">
+                        <button type="button" name="mode-control" id="prev-mode-btn">
+                            <i class="fa fa-backward"></i>
+                        </button>
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="button" name="mode-control" id="start-mode-btn">
+                            <i class="fa fa-play"></i>
+                        </button>
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="button" name="mode-control" id="next-mode-btn">
+                            <i class="fa fa-forward"></i>
+                        </button>
+                    </div>
 
-            <div class="boid-container col-xs-12">
-                <div id="timer">
-                    <img id="timer-icon" src="browser/img/timer.png"/>
-                    <p id="timer-text">10 s</p>
+                 </div>
+                <div class="col-sm-4">
+                    <div class="row" id="boids-control-row">
+                        <div class="col-xs-12 col-sm-6">
+                            <input type="button" name="restart" id="restart-btn" value="Reset Boids">
+                        </div>
+                        <div class="running-input col-xs-12 col-sm-6">
+                            <label id="running-label" for="running">
+                                <input type="checkbox" name="boids-running" id="running"/>  Running</label>
+                        </div>
+                    </div>
                 </div>
-            </div> <!-- container for boids -->
-            <div class="col-xs-2"><p class="points-display" style="font-size: 1.5em; color: yellow; top: -2em; left: 2em; position: absolute;">0</p></div>
 
-            <div class="col-xs-12">
-                <div class="col-xs-12 col-sm-3">
-                    <input type="button" name="restart" id="restart-btn" value="Restart">
+                <div class="col-sm-12">
+                    <p id="experiment-mode-display">Calibration</p>
                 </div>
-                <div class="running-input col-xs-12 col-sm-3">
-                    <label id="running-label" for="running">
-                        <input type="checkbox" name="boids-running" id="running"/>  Running</label>
-                </div>
-                <svg class="chart-svg" width="840" height="400"></svg>
-            </div><!-- running and restart-->
+
+            </div>
+
+<!-- running and restart-->
         </div>
 
         <!-- SIDEBAR 1 - EXPERIMENT MODE SELECTION -->
@@ -55,7 +96,7 @@
                     <!-- new experiment btn-->
                     <div class="row">
                         <div class="col-xs-12">
-                            <input type="button" name="new-experiment" class="sidebar-button sb-red-button" id="new-experiment-btn" value="New">
+                            <input type="button" name="new-experiment" class="sidebar-button sb-red-button" id="new-experiment-btn1" value="New">
                         </div>
                     </div>
 
@@ -156,7 +197,7 @@
                         <label id="perc1-label" for="perc1">&#37;-ile &alpha;</label>
                     </div>
                     <div class="col-xs-12 col-sm-4" style="margin-bottom: 1em">
-                        <input type="number" name="freq-band-1-percentile" class="sidebar-input sb-blue-input" id="perc1" value="30">
+                        <input type="number" name="freq-band-1-percentile" class="sidebar-input sb-blue-input" id="perc1" value="50">
                     </div>
                     <div class="col-xs-12 col-sm-4" style="margin-bottom: 1em;">
                         <input type="button" name="perc1-update" class="sidebar-button sb-blue-button" value="Update">
@@ -167,7 +208,7 @@
                         <label id="perc2-label" for="perc2">&#37;-ile &beta;</label>
                     </div>
                     <div class="col-xs-12 col-sm-4"  style="margin-bottom: 1em;">
-                        <input type="number" name="freq-band-2-percentile" class="sidebar-input sb-blue-input" id="perc2" value="70" >
+                        <input type="number" name="freq-band-2-percentile" class="sidebar-input sb-blue-input" id="perc2" value="50" >
                     </div>
                     <div class="col-xs-12 col-sm-4"  style="margin-bottom: 1em;">
                         <input type="button" name="perc2-update" class="sidebar-button sb-blue-button" value="Update">

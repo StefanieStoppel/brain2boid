@@ -98,8 +98,10 @@ MainController.prototype.onWebSocketConnection = function(){
         //listen for experiment start btn click
         self.experimentStartListener(socket);
         //listen for experiment mode change
-        self.experimentModeListener(socket);
+        self.experimentModeAndDurationListener(socket);
 
+
+        //todo: put button lsitener in oscserver onconnect
         //receive OSC messages on UDP port 5002 and refer them to index.html
         self.oscServer = new self.osc.Server(5002, '0.0.0.0');
         //listen for osc messaged from muse
@@ -135,7 +137,7 @@ MainController.prototype.newExperimentListener = function(socket){
 MainController.prototype.experimentStartListener = function(socket){
     var self = this;
     socket.on('startExperimentButton', function(data){// data.mode = experiment mode idx
-        if(self.experimentController !== 'undefined'){ //data.duration = duration of experiment mode in seconds
+        if(typeof self.experimentController !== 'undefined'){ //data.duration = duration of experiment mode in seconds
             console.log('startExperimentButton clicked, mode: ' + data.mode);
             //set mode
             self.experimentController.setMode(data.mode);
@@ -146,35 +148,42 @@ MainController.prototype.experimentStartListener = function(socket){
             switch(data.mode){
                 //start CALIBRATION
                 case 0:
-                    //calibrate
-                    self.experimentController.calibrate(
-                        SELECTED_FREQ_BANDS[0].name,
-                        SELECTED_FREQ_BANDS[1].name,
-                        SELECTED_CHANS[0].index,
-                        10,
-                        SELECTED_CHANS[1].index,
-                        10,
-                        (function (percentiles) {
-                            console.log('experiment mode ' + data.mode + ' stopped.');
-                            socket.emit('experimentStopped', {mode: data.mode, percentiles: percentiles});
+                    self.experimentController.startExperimentMode(data.mode,
+                        (function () {
+                        console.log('experiment mode ' + data.mode + ' stopped.');
+                        var res = self.experimentController.getQuantileResults(SELECTED_FREQ_BANDS[0].name,
+                                                                                SELECTED_FREQ_BANDS[1].name,
+                                                                                SELECTED_CHANS[0].index,
+                                                                                10,
+                                                                                SELECTED_CHANS[1].index,
+                                                                                10);
+                        socket.emit('experimentStopped', {mode: data.mode, percentiles: res});
                         })
                     );
                     break;
                 //start TEST 1
                 case 1:
-                    self.experimentController.test1((function (points) {
-                        console.log('experiment mode ' + data.mode + ' stopped.');
-                        socket.emit('experimentStopped', {mode: data.mode, points: points});
-                    }));
-                    //socket.emit('experimentStopped', {mode: data.mode, data: xyz});
+                    self.experimentController.startExperimentMode(data.mode,(function (points) {
+                            console.log('experiment mode ' + data.mode + ' stopped.');
+                            socket.emit('experimentStopped', {mode: data.mode, points: points});
+                        })
+                    );
                     break;
                 // start FREE NEUROFEEDBACK
                 case 2:
-                    //socket.emit('experimentStopped', {mode: data.mode, data: xyz});
+                    self.experimentController.startExperimentMode(data.mode,(function () {
+                            console.log('experiment mode ' + data.mode + ' stopped.');
+                            socket.emit('experimentStopped', {mode: data.mode});
+                        })
+                    );
                     break;
                 //start TEST 2
                 case 3:
-                    //socket.emit('experimentStopped', {mode: data.mode, data: xyz});
+                    self.experimentController.startExperimentMode(data.mode,(function (points) {
+                            console.log('experiment mode ' + data.mode + ' stopped.');
+                            socket.emit('experimentStopped', {mode: data.mode, points: points});
+                        })
+                    );
                     break;
             }
         }
@@ -185,11 +194,12 @@ MainController.prototype.experimentStartListener = function(socket){
  * Experiment mode radio button selection from UIController via socket.
  * @param socket
  */
-MainController.prototype.experimentModeListener = function(socket){
+MainController.prototype.experimentModeAndDurationListener = function(socket){
     var self = this;
-    socket.on('modeSelection', function(data){
-        console.log('experiment mode changed to ' + data.mode);
+    socket.on('modeDurationUpdate', function(data){
+        console.log('experiment mode changed to ' + data.mode + ', duration set to ' + data.duration);
         self.experimentController.setMode(data.mode);
+        self.experimentController.setDuration(data.duration);
     });
 };
 
@@ -276,8 +286,11 @@ MainController.prototype.oscListener = function(socket){
                                 if(SELECTED_FREQ_BANDS.length === 1)
                                     setDivisor('', [1,1,1,1]);
                                 setRatio();
-                                if(typeof self.experimentController !== 'undefined' && self.experimentController.getExperimentRunning())
+                                if(typeof self.experimentController !== 'undefined' && self.experimentController.getExperimentRunning()){
                                     self.experimentController.setRatio(RATIO[1]);
+                                    if(!self.experimentController.getExperimentRunning())
+                                        self.experimentController.stopPointsTimer();
+                                }
                                 if(RATIO[1] > RATIO_MAX){
                                     RATIO_MAX = RATIO[1];
                                     if(typeof self.experimentController !== 'undefined' && self.experimentController.getExperimentRunning())
@@ -295,8 +308,11 @@ MainController.prototype.oscListener = function(socket){
                                 //console.log(allBand.name + ': ' + msg);
                                 setDivisor(selBand.name, msg.slice(1));
                                 setRatio();
-                                if(typeof self.experimentController !== 'undefined' && self.experimentController.getExperimentRunning())
+                                if(typeof self.experimentController !== 'undefined' && self.experimentController.getExperimentRunning()){
                                     self.experimentController.setRatio(RATIO[1]);
+                                    if(!self.experimentController.getExperimentRunning())
+                                        self.experimentController.stopPointsTimer();
+                                }
                                 if(RATIO[1] > RATIO_MAX){
                                     RATIO_MAX = RATIO[1];
                                     if(typeof self.experimentController !== 'undefined' && self.experimentController.getExperimentRunning())
@@ -316,8 +332,24 @@ MainController.prototype.oscListener = function(socket){
                 }
             });
 
-        }else if(msg[0] === '/muse/elements/horseshoe'){
+        }else if(msg[0] === '/muse/elements/horseshoe')//four integers (for each channel)
+        {
             socket.emit('horseshoe', {horseshoe: msg});
+        }
+        else if(msg[0] === '/muse/elements/touching_forehead') //one integer
+        {
+            if(self.experimentController !== undefined){
+                //console.log('touching forehead: ' + msg[1]);
+                if(self.experimentController.getTouchingForehead() !== msg[1])
+                    self.experimentController.setTouchingForehead(msg);
+                if(msg[1] !== 1 && self.experimentController.getExperimentRunning()){
+                    //pause experiment
+                    console.log('WARNING: Experiment paused. Muse is not touching forehead. ');
+                    self.experimentController.pauseExperiment();//sets experimentRunning to false
+                    socket.emit('notTouchingForehead', {pauseExperiment: true, remainingDuration: self.experimentController.getRemainingDuration()});
+                }
+            }
+
         }
     });
     /*

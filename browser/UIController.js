@@ -12,11 +12,15 @@ function UIController(){
 
     /************************ RED SIDEBAR *************************************/
     //buttons and other inputs red sidebar
-    this.newExperimentBtn =  $('input[name="new-experiment"]');
+    this.newExperimentBtn =  $('button#new-experiment-btn');
     this.startExperimentBtn = $('input[name="start-experiment"]');
     this.experimentModeRadio = $('input[name="experiment-mode"]');
     this.selectedExperimentModeRadio = $('input[name="experiment-mode"]:checked');
-    this.experimentMode = parseInt(this.selectedExperimentModeRadio.val()); //0 - 3
+
+    //todo. stuff
+    this.experimentModeDisplay = $('p#experiment-mode-display');
+    this.hiddenExperimentModeInput = $('input[name="hidden-experiment-mode"]');
+    this.experimentMode = parseInt(this.hiddenExperimentModeInput.val()); //0 - 3
     //set text on startExperiment btn
     this.startExperimentBtn.val('Start ' +  $("label[for='"+ this.selectedExperimentModeRadio.attr('id') + "']").text());
 
@@ -70,9 +74,12 @@ function UIController(){
     /************************** SOCKET **********************/
     this.socket = io('http://localhost/');
     this.socket.on('connect', function(){
-        self.onStartExperiment();
+        self.onStartButtonClick();
+        self.onPreviousModeButtonClick();
         self.onStopExperiment();
         self.onExperimentModeSelection();
+        self.onTimerUpdate();
+        self.onNotTouchingForehead();
     });
     //todo. error handling??
 
@@ -82,8 +89,10 @@ function UIController(){
     this.onRatioMinUpdate(this);
     this.averageRatioUpdate(this);
     this.onFrequencyTresholdUpdate();
-    this.onRawFFTUpdate();
+    //this.onRawFFTUpdate();
     this.onHorseshoeUpdate();
+
+
 
    // this.showCircularCountdown(parseInt($('input[name="experiment-duration"]').val()));
 
@@ -100,6 +109,68 @@ function UIController(){
     //TODO: save experiment as csv (in experimentController ->socket message)
 
 }
+
+
+/**** CONTROL PANEL BUTTON LISTENERS ***/
+
+
+UIController.prototype.onStartButtonClick = function(){
+    var self = this;
+    $('button#start-mode-btn').click(function(){
+        //TODO: START EXPERIMENT MODE
+        //TODO: display mode somewhere in main area
+        if(self.experimentMode === 0)
+            self.showExperimentModeStarted("Calibration");
+        else if(self.experimentMode === 1)
+            self.showExperimentModeStarted("First Test");
+        else if(self.experimentMode === 2)
+            self.showExperimentModeStarted("Free Neurofeedback");
+        else if(self.experimentMode === 3)
+            self.showExperimentModeStarted("Second Test");
+
+        var duration =  parseInt($('input[name="experiment-duration"]').val());
+        //get mode idx from radio btn and send info via socket
+        self.socket.emit('startExperimentButton',
+            {mode: parseInt($('input[name="experiment-mode"]:checked').val()),
+             duration: duration,
+             percentiles: [ parseInt(self.firstFreqBandThresh), parseInt(self.secondFreqBandThresh) ]}
+        );
+        self.experimentRunning = true;
+        $('.sb-red :input').prop('disabled', true);
+
+    });
+};
+
+UIController.prototype.onPreviousModeButtonClick = function(){
+    var self = this;
+    $('button#prev-mode-btn').click(function(){
+        self.experimentMode === 0 ? self.experimentMode = 3: self.experimentMode--;
+        self.hiddenExperimentModeInput.val(self.experimentMode);
+        switch(self.experimentMode){
+            case 0:
+                self.experimentModeDisplay.text('Calibration');
+                break;
+            case 1:
+                self.experimentModeDisplay.text('Test 1');
+                break;
+            case 2:
+                self.experimentModeDisplay.text('Neurofeedback');
+                break;
+            case 3:
+                self.experimentModeDisplay.text('Test 2');
+                break;
+        }
+    });
+};
+
+UIController.prototype.onNextModeButtonClick = function(){
+    var self = this;
+    $('button#next-mode-btn').click(function(){
+        self.experimentMode === 3 ? self.experimentMode = 0 : self.experimentMode++;
+        self.hiddenExperimentModeInput.val(self.experimentMode);
+    });
+};
+/***** END CONTROL PANEL BUTTON LISTENERS ****/
 
 /**
  * Update points display in main area (left corner of svg field with boids)
@@ -122,14 +193,15 @@ UIController.prototype.onExperimentModeSelection = function(){
     this.experimentModeRadio.change(function(){
         self.selectedExperimentModeRadio = $(this);
         self.experimentMode = parseInt($(this).val());
-        //send mode to experimentController
-        self.socket.emit('modeSelection', {mode: self.experimentMode});
+        var duration = parseInt(($(this).attr('data-duration')));
+        $('input[name="experiment-duration"]').val(duration);//set duration in input field
+        //send mode and druation to experimentController
+        self.socket.emit('modeDurationUpdate', {mode: self.experimentMode, duration: duration});
         //change text on startExperiment btn
         self.startExperimentBtn.val('Start ' +  $("label[for='"+ $(this).attr('id') + "']").text());
 
-
-        self.setCountdown(parseInt($('input[name="experiment-duration"]').val()));
-
+        //set countdown for experiment mode
+        self.setCountdown(duration);
     });
 };
 
@@ -186,6 +258,25 @@ UIController.prototype.onAgeGenderSubmit = function(){
         }
     });
 };
+UIController.prototype.setCountdown = function(duration){
+    $('#timer-text').text(duration + ' s');
+};
+
+UIController.prototype.onTimerUpdate = function(){
+    var self = this;
+    this.socket.on('timerUpdate', function(data){
+        self.setCountdown(data.time);
+    })
+};
+
+UIController.prototype.startCountdown = function(duration){
+    var text = $('#timer-text');
+    COUNTDOWN = setInterval(function(){
+        text.text(duration-- + ' s');
+        if(duration === 0)
+            clearInterval(COUNTDOWN);
+    }, 990);
+};
 
 /**
  * Display text when experiment mode stops.
@@ -220,50 +311,6 @@ UIController.prototype.showExperimentModeStarted = function(expMode){
     }, 2000)
 };
 
-/**
- * Start experiment btn was clicked.
- */
-UIController.prototype.onStartExperiment = function(){
-    var self = this;
-    this.startExperimentBtn.click(function()
-    {
-        if(self.experimentMode === 0)
-            self.showExperimentModeStarted("Calibration");
-        else if(self.experimentMode === 1)
-            self.showExperimentModeStarted("First Test");
-        else if(self.experimentMode === 2)
-            self.showExperimentModeStarted("Free Neurofeedback");
-        else if(self.experimentMode === 3)
-            self.showExperimentModeStarted("Second Test");
-
-        var duration =  parseInt($('input[name="experiment-duration"]').val());
-        //get mode idx from radio btn and send info via socket
-        self.socket.emit('startExperimentButton',
-            {mode: parseInt($('input[name="experiment-mode"]:checked').val()),
-                duration: duration,
-                percentiles: [ parseInt(self.firstFreqBandThresh), parseInt(self.secondFreqBandThresh) ]}
-        );
-        self.experimentRunning = true;
-        $('.sb-red :input').prop('disabled', true);
-
-        //start countdown
-        self.startCountdown(duration);
-    });
-};
-
-UIController.prototype.setCountdown = function(duration){
-    $('#timer-text').text(duration + ' s');
-};
-
-UIController.prototype.startCountdown = function(duration){
-    var text = $('#timer-text');
-    COUNTDOWN = setInterval(function(){
-        text.text(duration-- + ' s');
-        if(duration === 0)
-            clearInterval(COUNTDOWN);
-    }, 990);
-};
-
 
 /***
  * Message from node that part of an experiment has finished.
@@ -272,42 +319,47 @@ UIController.prototype.startCountdown = function(duration){
 UIController.prototype.onStopExperiment = function(){
     var self = this;
     this.socket.on('experimentStopped', function(data){
-        switch(data.mode){
-            //CALIBRATION finished
-            case 0:
-                self.percentiles = data.percentiles;
-                self.constants.setDividendThreshold(data.percentiles[0][self.firstFreqBandThresh]);
-                self.constants.setDivisorThreshold(data.percentiles[1][self.secondFreqBandThresh]);
-                self.firstFreqBandMin = data.percentiles[0][0];
-                self.secondFreqBandMax = data.percentiles[1][data.percentiles[1].length-1];
-                self.constants.setMinDividendDivisorRatio(self.firstFreqBandMin, self.secondFreqBandMax);
-                self.constants.setMaxDividendDivisorRatio(data.percentiles[0][data.percentiles[0].length-1],data.percentiles[1][0]);
-                console.log('received calibration data');
-                self.showExperimentModeFinished('Calibration');
-                break;
-            //TEST 1 finished
-            case 1:
-                //data.points
-                self.showExperimentModeFinished('First Test');
-                //TODO: save data (points and stuff) and make d3 graph for showing later
-                //TODO: add experiment stopped sign somewhere
-                break;
-            //FREE NEUROFEEDBACK finished
-            case 2:
-                self.showExperimentModeFinished('Free Neurofeedback');
-                break;
-            //TEST 2 finished
-            case 3:
-                self.showExperimentModeFinished('Second Test');
-                break;
+        if(data.percentiles !== null){
+            switch(data.mode){
+                //CALIBRATION finished
+                case 0:
+                    self.percentiles = data.percentiles;
+                    self.constants.setDividendThreshold(data.percentiles[0][self.firstFreqBandThresh]);
+                    self.constants.setDivisorThreshold(data.percentiles[1][self.secondFreqBandThresh]);
+                    self.firstFreqBandMin = data.percentiles[0][0];
+                    self.secondFreqBandMax = data.percentiles[1][data.percentiles[1].length-1];
+                    self.constants.setMinDividendDivisorRatio(self.firstFreqBandMin, self.secondFreqBandMax);
+                    self.constants.setMaxDividendDivisorRatio(data.percentiles[0][data.percentiles[0].length-1],data.percentiles[1][0]);
+                    console.log('received calibration data');
+                    self.showExperimentModeFinished('Calibration');
+                    break;
+                //TEST 1 finished
+                case 1:
+                    //data.points
+                    self.showExperimentModeFinished('First Test');
+                    //TODO: save data (points and stuff) and make d3 graph for showing later
+                    //TODO: add experiment stopped sign somewhere
+                    break;
+                //FREE NEUROFEEDBACK finished
+                case 2:
+                    self.showExperimentModeFinished('Free Neurofeedback');
+                    break;
+                //TEST 2 finished
+                case 3:
+                    self.showExperimentModeFinished('Second Test');
+                    break;
 
+            }
+
+            //update experiment mode selection and duration
+            self.updateModeAndDuration();
+            //stop boids
+            $('#running').attr('checked', false);
+        }else{ //data.percentiles === null -> no values from muse
+            alert('Calibration failed. Please check whether the Muse is connected properly.');
         }
         //enable sidebar experiment inputs
         $('.sb-red :input').prop('disabled', false);
-        //update experiment mode selection and duration
-        self.updateModeAndDuration();
-        //stop boids
-        $('#running').attr('checked', false);
     });
 };
 
@@ -336,6 +388,9 @@ UIController.prototype.updateModeAndDuration = function(){
     this.experimentMode = parseInt(toCheck.val());
     //set countdown
     this.setCountdown(duration);
+
+    //send mode and duration to experimentController
+    this.socket.emit('modeDurationUpdate', {mode: this.experimentMode, duration: duration});
 };
 
 UIController.prototype.onSaveExperiment = function(){
@@ -402,18 +457,30 @@ UIController.prototype.onFrequencySelection = function(){
 /**
  * Listen for raw fft, update bargraph
  */
+/*
 UIController.prototype.onRawFFTUpdate = function(){
     var self = this;
-    this.socket.on('raw_fft0', /*'raw_fft1', 'raw_fft2', 'raw_fft3', */ function(){
+    this.socket.on('raw_fft0', 'raw_fft1', 'raw_fft2', 'raw_fft3',  function(){
         self.graphicsController.update_fft_data(data);
         self.graphicsController.update_bargraph(data);
     });
-};
+};*/
 
 UIController.prototype.onHorseshoeUpdate = function(){
     var self = this;
     this.socket.on('horseshoe', function(data){
         self.setHorseshoe(data.horseshoe);
+    });
+};
+
+UIController.prototype.onNotTouchingForehead = function(){
+    this.socket.on('notTouchingForehead', function(data){
+        if(data.pauseExperiment){
+            console.log('WARNING: Experiment paused. Muse is not placed on the head');
+            //stop boids
+            run(false);
+            //TODO: add pause and start buttons underneath svg -> show animation when paused + stop timer
+        }
     });
 };
 
@@ -453,17 +520,6 @@ UIController.prototype.setHorseshoe = function(data){
     this.graphicsController.updateHorseshoe(data.slice(1));
 };
 
-/***** DRAWING BOIDS *****/
-
-UIController.prototype.onBoidsUpdate = function(self){
-    this.socket.on('boidsUpdate',
-        function(data){
-            self.graphicsController.drawBoids(data);
-        }
-    );
-};
-
-/***** END DRAWING BOIDS *****/
 
 UIController.prototype.setSelectedChannelIndices = function(){
     //one channel => return array with one number

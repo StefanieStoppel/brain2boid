@@ -20,7 +20,6 @@ body{
 }
 .row{
     margin-left: 0 !important;
-    margin-bottom: 1em;
 }
 .full-width{
     width: 100%;
@@ -29,11 +28,13 @@ body{
     height: 100%;
 }
 .main-content{
+    width: 100%;
     height: inherit;
     padding: 0;
 }
 .boid-container {
     padding: 0;
+    height: 500px;
 }
 #restart-btn{
     width: 8em;
@@ -143,7 +144,6 @@ button#sb-blue-effect{
     background: -o-linear-gradient(left, #245580, #1C4048); /* For Opera 11.1 to 12.0 */
     background: -moz-linear-gradient(left, #245580, #1C4048); /* For Firefox 3.6 to 15 */
     background: linear-gradient(to left, #245580, cadetblue); /* Standard syntax */
-    /*background-color: #568E90;*/
     border: 1px solid #1C4048;
     border-right: none;
 }
@@ -249,4 +249,50 @@ img#timer-icon{
     margin: 0.2em 0.3em 0 0;
     height: 1em;
     float: left;
+}
+/****POINTS DISPLAY****/
+p.points-display{
+    font-size: 1.5em;
+    color: yellow;
+    bottom: 0;
+    left: 1em;
+    position: absolute;
+}
+/*****CONTROL ROW*****/
+div#control-row{
+    position: fixed;
+    height: 16.4%;
+    width: 100%;
+    background: linear-gradient(to top, #245580, cadetblue);
+}
+i.fa.fa-play, i.fa.fa-forward, i.fa.fa-backward{
+    font-size: 3em;
+}
+i.fa.fa-floppy-o, i.fa.fa-plus-square{
+    font-size: 2em;
+}
+button[name="mode-control"], button[name="experiment-control"]{
+    margin: 1em;
+    background-color: lavender;
+    text-shadow: 1px 1px #1C4048;
+    box-shadow: 2px 2px #1C4048;
+    border-radius: 0.3em;
+    border: #245580;
+    color: #1C4048;
+    outline:none;
+}
+button[name="experiment-control"]{
+    height: 3.2em;
+    width: 3.2em;
+}
+button[name="mode-control"]:active,  button[name="experiment-control"]:active{
+    top: 2px;
+    border: none;
+    position: relative;
+    box-shadow: none;
+}
+p#experiment-mode-display{
+    text-align: center;
+    font-size: 1.3em;
+    color: lavender;
 }
