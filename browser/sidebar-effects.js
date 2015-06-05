@@ -15,13 +15,16 @@ $(document).ready(function(){
     /** Show and hide sidebar with animation **/
     sidebarButton.on('click', function(){
         var btn = this;
-        var btnIdx;
+        var btnIdx, toggledParent, otherParent;
         sidebarButton.each(function(idx, el){
             if(el === btn){
                 btnIdx = idx;
-                $(el).parent('.sidebar-show').css('z-index', 10);
+                toggledParent = $(el).parent('.sidebar-show');
+                toggledParent.css('z-index', 10);
+
             }else{
-                $(el).parent('.sidebar-show').css('z-index', 1);
+                otherParent = $(el).parent('.sidebar-show');
+                otherParent.css('z-index', 1);
             }
         });
         //which button was clicked?
@@ -29,22 +32,25 @@ $(document).ready(function(){
         var sb = $(sidebar[btnIdx]); //corresponding sidebar
         //hidden sidebar
         if(sb.css('display') === "none"){
+
             //bring sidebar to front
             sb.css('z-index', 10);
             //unhide sidebar
             sb.show();
             //animate sidebar
             sb.animate({
-                right: "0px"
-            }, 500, function(){
+                right: "0px",
+                opacity: 1
+            }, 400, function(){
                 //animation complete
             });
             //animate button
 
             outerWidth = sb.outerWidth();
             $(this).parent().animate({
-                right : outerWidth - 2
-            }, 510, function(){
+                right : outerWidth - 2,
+                opacity: 1
+            }, 400, function(){
                 //animation complete
             });
 
@@ -52,21 +58,26 @@ $(document).ready(function(){
             $(arrow[btnIdx]).animateRotate(0, 180, 500, 'linear');
         }//showing sidebar
         else {
+
             //animate sidebar
             outerWidth = sb.outerWidth();
             sb.animate({
-                right: - outerWidth +5 + 'px'
-            }, 520, function(){
+                right: - outerWidth +5 + 'px',
+                opacity: 0.5
+            }, 400, function(){
                 //animation complete
                 sb.hide();//hide sidebar completely
             });
 
             //animate button
             $(this).parent().animate({
-                right : '-10px'
-            }, 500, function(){
+                right : '-10px',
+                opacity: 0.5
+            }, 400, function(){
                 //animation complete
             });
+
+
 
             //rotate fa arrow back
             $(arrow[btnIdx]).animateRotate(180, 0, 500, 'linear');

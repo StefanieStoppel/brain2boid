@@ -126,10 +126,17 @@ div.sidebar-show{
     right: -10px;
 }
 div#sb-blue-show{
-    bottom: 2em;
+    bottom: 16em;
+    z-index: 10;
+    right: -10px;
+    opacity: 0.5;
 }
+
 div#sb-red-show{
-    bottom: 10em;
+    bottom: 8em;
+    z-index: 10;
+    right: -10px;
+    opacity: 0.5;
 }
 button.sidebar-effect{
     width: inherit;
@@ -264,65 +271,62 @@ div#control-row{
     height: 16.4%;
     width: 100%;
     background: linear-gradient(to top, #245580, cadetblue);
+    background: rgba(0, 0, 0, 0) linear-gradient(to top, #07113B, #A4D5FF) repeat scroll 0% 100%;
 }
-i.fa.fa-play, i.fa.fa-forward, i.fa.fa-backward{
-    font-size: 3em;
+i.fa.fa-play, i.fa.fa-forward, i.fa.fa-backward, i.fa.fa-arrows-alt{
+    font-size: 2em;
+}
+i.fa.fa-play, i.fa.fa-forward{
+    left: 0.1em;
+    position: relative;
+}
+i.fa.fa-backward{
+    left: -0.1em;
+    position: relative;
 }
 i.fa.fa-floppy-o, i.fa.fa-plus-square{
     font-size: 2em;
 }
-/**button[name="mode-control"], button[name="experiment-control"]{
-    margin: 1em;
-    background-color: lavender;
-    text-shadow: 1px 1px #1C4048;
-    box-shadow: 2px 2px #1C4048;
-    border-radius: 0.3em;
-    border: #245580;
-    color: #1C4048;
-    outline:none;
-}**/
-button[name="mode-control"], button[name="experiment-control"]{
-    margin: 1em;
-    background-color: rgb(10, 10, 100);
+button[name="mode-control"], button[name="experiment-control"], button[name="expand-control"]{
+    margin: 0.5em;
     text-shadow: 1px 1px #000000;
-    box-shadow: 1px 2px #B9D8DF;
-    border-radius: 0.3em;
+    box-shadow: 1px 2px 4px #070D2C;
+    border-radius: 2em;
     border: #245580;
     color: #FFFFFF;
     outline: none;
-
+    width: 4em;
+    height: 4em;
+    background: rgb(232,238,244); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(232,238,244,1) 1%, rgba(115,177,231,1) 24%, rgba(7,32,142,1) 50%, rgba(32,89,204,1) 79%, rgba(135,188,234,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,rgba(232,238,244,1)), color-stop(24%,rgba(115,177,231,1)), color-stop(50%,rgba(7,32,142,1)), color-stop(79%,rgba(32,89,204,1)), color-stop(100%,rgba(135,188,234,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, rgba(232,238,244,1) 1%,rgba(115,177,231,1) 24%,rgba(7,32,142,1) 50%,rgba(32,89,204,1) 79%,rgba(135,188,234,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, rgba(232,238,244,1) 1%,rgba(115,177,231,1) 24%,rgba(7,32,142,1) 50%,rgba(32,89,204,1) 79%,rgba(135,188,234,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, rgba(232,238,244,1) 1%,rgba(115,177,231,1) 24%,rgba(7,32,142,1) 50%,rgba(32,89,204,1) 79%,rgba(135,188,234,1) 100%); /* IE10+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e8eef4', endColorstr='#87bcea',GradientType=0 ); /* IE6-9 */
+    background: transparent linear-gradient(to bottom, #E8EEF4 1%, #5D9BD1 24%, #033a6e 50%, #395792 79%, #5E98CB 100%) repeat scroll 0% 0%;
 }
-/**button[name="mode-control"], button[name="experiment-control"]{
-    margin: 1em;
-    background-color: #76BDCD;
-    text-shadow: 1px 1px 1px #000000;
-    box-shadow: 1px 3px 1px #1F3E45;
-    border-radius: 0.3em;
-    border: #245580;
-    color: lavender;
-    outline: none;
-    button[name="experiment-control"]{
-        height: 3.2em;
-    width: 3.2em;
-}*/
-button[name="experiment-control"]{
-    width: 3em;
-    height: 3em;
+button[name="mode-control"]:active,  button[name="experiment-control"]:active, button[name="expand-control"]:active{
+    top: 2px;
+    border: none;
+    position: relative;
+    box-shadow: none;
+    background: transparent linear-gradient(to bottom, #395792 1%, #5D9BD1 24%, #E8EEF4 50%, #5E98CB 79%, #1A2865 100%) repeat scroll 0% 0%;
 }
-button[name="mode-control"]:active,  button[name="experiment-control"]:active,
-button[name="mode-control"]:disabled, button[name="experiment-control"]:disabled{
+button[name="mode-control"]:disabled, button[name="experiment-control"]:disabled, button[name="expand-control"]:disabled{
+    background: transparent linear-gradient(to bottom, #cfcfcf 1%, #8c8c8c 24%, #434547 50%, #676767 79%, #b8b8b8 100%) repeat scroll 0% 0%;
     top: 2px;
     border: none;
     position: relative;
     box-shadow: none;
 }
-button[name="mode-control"]:disabled, button[name="experiment-control"]:disabled{
-    background-color: #898989;
-}
 p#experiment-mode-display{
     text-align: center;
     font-size: 1.6em;
     color: lavender;
+    top: 0.76em;
+    position: relative;
+    text-shadow: 1px 1px #02203c;
 }
 div#battery-display{
     position: fixed;
