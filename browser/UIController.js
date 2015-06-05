@@ -2,25 +2,30 @@
  * Created by Stefanie on 10.05.2015.
  */
 
-//TODO: experiment modes from sidebar
 
 var COUNTDOWN = undefined;
 
 function UIController(){
+    this.museConnected = false;
+    this.experimentControllerSet = false;
+    this.calibrationFinished = false;
     /************************** MAIN AREA ***********************************/
     this.pointsDisplay = $('p.points-display');
 
     /************************ RED SIDEBAR *************************************/
     //buttons and other inputs red sidebar
     this.newExperimentBtn =  $('button#new-experiment-btn');
+    this.saveExperimentBtn = $('button#save-experiment-btn');
     this.startExperimentBtn = $('input[name="start-experiment"]');
     this.experimentModeRadio = $('input[name="experiment-mode"]');
     this.selectedExperimentModeRadio = $('input[name="experiment-mode"]:checked');
 
-    //todo. stuff
+
     this.experimentModeDisplay = $('p#experiment-mode-display');
     this.hiddenExperimentModeInput = $('input[name="hidden-experiment-mode"]');
     this.experimentMode = parseInt(this.hiddenExperimentModeInput.val()); //0 - 3
+    this.hiddenExperimentDuration = $('input[name="experiment-duration"]');
+    this.duration = parseInt(this.hiddenExperimentDuration.val());
     //set text on startExperiment btn
     this.startExperimentBtn.val('Start ' +  $("label[for='"+ this.selectedExperimentModeRadio.attr('id') + "']").text());
 
@@ -74,16 +79,14 @@ function UIController(){
     /************************** SOCKET **********************/
     this.socket = io('http://localhost/');
     this.socket.on('connect', function(){
-        self.onStartButtonClick();
-        self.onPreviousModeButtonClick();
-        self.onStopExperiment();
-        self.onExperimentModeSelection();
         self.onTimerUpdate();
-        self.onNotTouchingForehead();
+        self.onTouchingForehead();
+        self.onExperimentCreated();
     });
     //todo. error handling??
 
     //*********************** LISTENERS for messages from node (nodeIndex or experimentController)
+    this.onMuseConnected();
     this.socketRatio(this);
     this.onRatioMaxUpdate(this);
     this.onRatioMinUpdate(this);
@@ -91,8 +94,6 @@ function UIController(){
     this.onFrequencyTresholdUpdate();
     //this.onRawFFTUpdate();
     this.onHorseshoeUpdate();
-
-
 
    // this.showCircularCountdown(parseInt($('input[name="experiment-duration"]').val()));
 
@@ -103,62 +104,182 @@ function UIController(){
     //******************* LISTENERS for ui inputs (browser)
     this.experimentRunning = false;
     this.onNewExperiment();
+    this.onSaveExperiment();
+    this.onStartModeButtonClick();
+    this.onPreviousModeButtonClick();
+    this.onNextModeButtonClick();
+    this.onStopExperiment();
+    this.onExperimentModeSelection();
+
     //CONTINUE button in warning dialog clicked (after new experiment btn)
     this.onContinueNewExperiment(this);
-    //SAVE button in warning dialog clicked (after new experiment btn)
-    //TODO: save experiment as csv (in experimentController ->socket message)
 
 }
 
+UIController.prototype.onExperimentCreated = function(){
+    var self = this;
+    this.socket.on('experimentCreated', function(data){
+        self.experimentControllerSet = data.experimentCreated;
+    });
+}
+
+/**
+ * New experiment btn was clicked.
+ * Open dialog to input subject age and gender.
+ *
+ */
+UIController.prototype.onNewExperiment = function(){
+    var self = this;
+    this.newExperimentBtn.click(function(){
+        //open warning dialog
+        if(self.museConnected)
+            self.saveWarning.dialog('open');
+        else
+            self.displayMuseNotConnected();
+    });
+};
+
+/********************************* DIALOG BOX BUTTON LISTENERS *******/
+
+/**
+ * Continue btn in new experiment dialog clicked
+ * @param self
+ */
+UIController.prototype.onContinueNewExperiment = function(self){
+    $('input[name="ok-new-experiment"]').click(function(){
+        self.ageGenderDialog.children(':input[type="radio"]').removeAttr('checked');
+        self.ageGenderDialog.children(':input[type="number"]').val('');
+
+        //open dialog for new experiment inputs
+        self.ageGenderDialog.dialog('open');
+        //TODO: send socket message to reset all data to experimentcontroller after showing warning dialog (with save option)
+        self.onAgeGenderSubmit();
+        //close warning dialog
+        self.saveWarning.dialog('close');
+
+        //new calibration needs to be done
+        self.calibrationFinished = false;
+    });
+};
+
+/**
+ * Listen for button submit in dialog box (age gender)
+ */
+UIController.prototype.onAgeGenderSubmit = function(){
+    var self = this;
+    var warning = $('#warning');
+    $('input[name="age-gender-btn"]').click(function(){
+        var selGender = $('input[name="gender"]:checked');
+        //inputs selected
+        if( self.ageInput.val() !== ''
+            && selGender !== []){
+            self.socket.emit('newExperiment',
+                {   age: parseInt(self.ageInput.val()),
+                    gender: selGender.val(),
+                    mode: self.experimentMode
+                });
+            self.ageGenderDialog.dialog('close');
+        }//inputs empty
+        else{
+            if(warning.css('display', 'none')) //show warning
+                warning.css('display', 'inline');
+        }
+    });
+};
+
+/*************************** END DIALOG BOX BUTTON LISTENERS ******/
+
+UIController.prototype.onSaveExperiment = function(){
+    var self = this;
+    this.saveExperimentBtn.click(function(){
+        if(self.museConnected && self.experimentControllerSet)
+            //TODO: SAVE CSV FILE -> socket message to node
+            console.log('SAVE CSV DATA HERE');
+        else if(!self.museConnected)
+            self.displayMuseNotConnected();
+        else if(self.museConnected  && !self.experimentControllerSet)
+            self.displayExperimentNotCreated();
+    });
+    //TODO: save experiment data from json array (node -> experimentController) to csv file with date, time and subject number in name
+};
+
+
+
+UIController.prototype.pauseExperiment = function(bool){ //true = pause, false = unpause
+    run(false);
+
+    //todo: animation with fotawesome pause icon
+    //TODO: show animation when paused + stop timer
+    //var icon = '';
+   // bool ? icon = $('i.fa.fa-pause') :  icon = $('i.fa.fa-play');
+   // $(icon).fadeIn('slow');
+};
+
+UIController.prototype.resumeExperiment = function(){
+    run(true);
+};
 
 /**** CONTROL PANEL BUTTON LISTENERS ***/
+/**
+ * Muse is not connected. Show warning.
+ */
 
 
-UIController.prototype.onStartButtonClick = function(){
+UIController.prototype.onStartModeButtonClick = function(){
     var self = this;
     $('button#start-mode-btn').click(function(){
-        //TODO: START EXPERIMENT MODE
-        //TODO: display mode somewhere in main area
-        if(self.experimentMode === 0)
-            self.showExperimentModeStarted("Calibration");
-        else if(self.experimentMode === 1)
-            self.showExperimentModeStarted("First Test");
-        else if(self.experimentMode === 2)
-            self.showExperimentModeStarted("Free Neurofeedback");
-        else if(self.experimentMode === 3)
-            self.showExperimentModeStarted("Second Test");
+        if(self.museConnected && self.experimentControllerSet){
+            if(self.experimentMode === 0)
+                self.showExperimentModeStarted("Calibration");
+            else if(self.experimentMode === 1)
+                self.showExperimentModeStarted("First Test");
+            else if(self.experimentMode === 2)
+                self.showExperimentModeStarted("Free Neurofeedback");
+            else if(self.experimentMode === 3)
+                self.showExperimentModeStarted("Second Test");
 
-        var duration =  parseInt($('input[name="experiment-duration"]').val());
-        //get mode idx from radio btn and send info via socket
-        self.socket.emit('startExperimentButton',
-            {mode: parseInt($('input[name="experiment-mode"]:checked').val()),
-             duration: duration,
-             percentiles: [ parseInt(self.firstFreqBandThresh), parseInt(self.secondFreqBandThresh) ]}
-        );
-        self.experimentRunning = true;
-        $('.sb-red :input').prop('disabled', true);
-
+            //get mode idx from radio btn and send info via socket
+            self.socket.emit('startExperimentButton',
+                {mode: self.experimentMode,
+                    duration: self.duration,
+                    percentiles: [ parseInt(self.firstFreqBandThresh), parseInt(self.secondFreqBandThresh) ]}
+            );
+            self.experimentRunning = true;
+            $('.sb-red :input').prop('disabled', true);
+            //TODO: on test 1 start boids dont run, why?
+            self.resumeExperiment();//run boids
+        }else if(!self.museConnected){
+            self.displayMuseNotConnected();
+        }else if(self.museConnected && !self.experimentControllerSet){
+            self.displayExperimentNotCreated();
+        }
     });
 };
 
 UIController.prototype.onPreviousModeButtonClick = function(){
     var self = this;
     $('button#prev-mode-btn').click(function(){
-        self.experimentMode === 0 ? self.experimentMode = 3: self.experimentMode--;
-        self.hiddenExperimentModeInput.val(self.experimentMode);
-        switch(self.experimentMode){
-            case 0:
-                self.experimentModeDisplay.text('Calibration');
-                break;
-            case 1:
-                self.experimentModeDisplay.text('Test 1');
-                break;
-            case 2:
-                self.experimentModeDisplay.text('Neurofeedback');
-                break;
-            case 3:
-                self.experimentModeDisplay.text('Test 2');
-                break;
+        if(self.museConnected && self.experimentControllerSet){
+            self.experimentMode === 0 ? self.experimentMode = 3: self.experimentMode--;
+            self.hiddenExperimentModeInput.val(self.experimentMode);
+            switch(self.experimentMode){
+                case 0:
+                    self.experimentModeDisplay.text('Calibration');
+                    break;
+                case 1:
+                    self.experimentModeDisplay.text('Test 1');
+                    break;
+                case 2:
+                    self.experimentModeDisplay.text('Neurofeedback');
+                    break;
+                case 3:
+                    self.experimentModeDisplay.text('Test 2');
+                    break;
+            }
+        }else if(!self.museConnected){
+            self.displayMuseNotConnected();
+        }else if(self.museConnected && !self.experimentControllerSet){
+            self.displayExperimentNotCreated();
         }
     });
 };
@@ -166,8 +287,38 @@ UIController.prototype.onPreviousModeButtonClick = function(){
 UIController.prototype.onNextModeButtonClick = function(){
     var self = this;
     $('button#next-mode-btn').click(function(){
-        self.experimentMode === 3 ? self.experimentMode = 0 : self.experimentMode++;
-        self.hiddenExperimentModeInput.val(self.experimentMode);
+        if(self.museConnected && self.experimentControllerSet){
+            self.experimentMode === 3 ? self.experimentMode = 0 : self.experimentMode++;
+            self.hiddenExperimentModeInput.val(self.experimentMode);
+            switch(self.experimentMode){
+                case 0:
+                    self.experimentModeDisplay.text('Calibration');
+                    self.duration = 10;
+                    break;
+                case 1:
+                    self.experimentModeDisplay.text('Test 1');
+                    self.duration = 60;
+                    break;
+                case 2:
+                    self.experimentModeDisplay.text('Neurofeedback');
+                    self.duration = 120;
+                    break;
+                case 3:
+                    self.experimentModeDisplay.text('Test 2');
+                    self.duration = 60;
+
+                    break;
+            }
+        }else if(!self.museConnected){
+            self.displayMuseNotConnected();
+        }else if(self.museConnected && !self.experimentControllerSet){
+            self.displayExperimentNotCreated();
+        }
+        self.hiddenExperimentDuration.val(self.duration);
+        //set countdown
+        self.setCountdown(self.duration);
+        //todo. socket message to node
+        self.socket.emit('experimentModeChanged', {mode: self.experimentMode, duration: self.duration});
     });
 };
 /***** END CONTROL PANEL BUTTON LISTENERS ****/
@@ -205,59 +356,7 @@ UIController.prototype.onExperimentModeSelection = function(){
     });
 };
 
-/**
- * New experiment btn was clicked.
- * Open dialog to input subject age and gender.
- *
- */
-UIController.prototype.onNewExperiment = function(){
-    //TODO: TEST
-    var self = this;
-    this.newExperimentBtn.click(function(){
-        //open warning dialog
-        self.saveWarning.dialog('open');
-    });
-};
 
-UIController.prototype.onContinueNewExperiment = function(self){
-    $('input[name="ok-new-experiment"]').click(function(){
-        //TODO: delete input field contents
-        self.ageGenderDialog.children(':input[type="radio"]').removeAttr('checked');
-        self.ageGenderDialog.children(':input[type="number"]').val('');
-
-        //open dialog for new experiment inputs
-        self.ageGenderDialog.dialog('open');
-        //TODO: send socket message to reset all data to experimentcontroller after showing warning dialog (with save option)
-        self.onAgeGenderSubmit();
-        //close warning dialog
-        self.saveWarning.dialog('close');
-    });
-};
-
-/**
- * Listen for button submit in dialog box (age gender)
- */
-UIController.prototype.onAgeGenderSubmit = function(){
-    var self = this;
-    var warning = $('#warning');
-    $('input[name="age-gender-btn"]').click(function(){
-        var selGender = $('input[name="gender"]:checked');
-        //inputs selected
-        if( self.ageInput.val() !== ''
-            && selGender !== []){
-            self.socket.emit('newExperiment',
-                {   age: parseInt(self.ageInput.val()),
-                    gender: selGender.val(),
-                    mode: self.experimentMode
-                });
-            self.ageGenderDialog.dialog('close');
-        }//inputs empty
-        else{
-            if(warning.css('display', 'none')) //show warning
-                warning.css('display', 'inline');
-        }
-    });
-};
 UIController.prototype.setCountdown = function(duration){
     $('#timer-text').text(duration + ' s');
 };
@@ -299,16 +398,18 @@ UIController.prototype.showExperimentModeFinished = function(expMode){
  * @param expMode
  */
 UIController.prototype.showExperimentModeStarted = function(expMode){
-    var boidSVG = this.graphicsController.getBoidSVG();
-    var text = boidSVG.append('text')
-        .attr({ 'x': boidSVG.attr('width')/2-60,
-            'y': boidSVG.attr('height')/2-15,
-            'fill': 'cadetblue',
-            'font-size': '3em'})
-        .text(expMode + ' Started');
-    setTimeout(function(){
-        text.remove();
-    }, 2000)
+    if(this.museConnected && this.experimentControllerSet){
+        var boidSVG = this.graphicsController.getBoidSVG();
+        var text = boidSVG.append('text')
+            .attr({ 'x': boidSVG.attr('width')/2-60,
+                'y': boidSVG.attr('height')/2-15,
+                'fill': 'cadetblue',
+                'font-size': '3em'})
+            .text(expMode + ' Started');
+        setTimeout(function(){
+            text.remove();
+        }, 2000)
+    }
 };
 
 
@@ -321,6 +422,9 @@ UIController.prototype.onStopExperiment = function(){
     this.socket.on('experimentStopped', function(data){
         if(data.percentiles !== null){
             switch(data.mode){
+                case -1: //last experiment mode failed
+                    //TODO: add handling for experiment failed
+                    break;
                 //CALIBRATION finished
                 case 0:
                     self.percentiles = data.percentiles;
@@ -332,17 +436,17 @@ UIController.prototype.onStopExperiment = function(){
                     self.constants.setMaxDividendDivisorRatio(data.percentiles[0][data.percentiles[0].length-1],data.percentiles[1][0]);
                     console.log('received calibration data');
                     self.showExperimentModeFinished('Calibration');
+                    self.calibrationFinished = true; //TODO: ADD ERROR HANDLING IN CASE OF NO RESULTS
                     break;
                 //TEST 1 finished
                 case 1:
                     //data.points
                     self.showExperimentModeFinished('First Test');
                     //TODO: save data (points and stuff) and make d3 graph for showing later
-                    //TODO: add experiment stopped sign somewhere
                     break;
                 //FREE NEUROFEEDBACK finished
                 case 2:
-                    self.showExperimentModeFinished('Free Neurofeedback');
+                    self.showExperimentModeFinished('Neurofeedback');
                     break;
                 //TEST 2 finished
                 case 3:
@@ -350,9 +454,8 @@ UIController.prototype.onStopExperiment = function(){
                     break;
 
             }
-
             //update experiment mode selection and duration
-            self.updateModeAndDuration();
+            self.selectNextMode();
             //stop boids
             $('#running').attr('checked', false);
         }else{ //data.percentiles === null -> no values from muse
@@ -366,40 +469,82 @@ UIController.prototype.onStopExperiment = function(){
 /**
  * Automatically select next experiment mode and set experiment duration.
  */
-//TODO: TEST
-UIController.prototype.updateModeAndDuration = function(){
-    var toCheckIdx = 0;
-    var modes = this.selectedExperimentModeRadio.closest('div.row')
-        .find('input[name="experiment-mode"]');
+//TODO: DELETE??
+UIController.prototype.selectNextMode = function(){
+    //"click" on nextmode btn
+    $('button#next-mode-btn').click();
+};
 
-    modes.each(function(idx, el){
-        if($(el).attr('checked') === 'checked'){
-            idx === 3 ? toCheckIdx = 0 : toCheckIdx = idx+1;
-            $(el).attr('checked', false);
-            return false;
+
+/******************************************* RATIO UPDATES ********************************/
+//gets frequency ratio updates from node.js via websocket
+UIController.prototype.socketRatio = function(self){
+    this.socket.on('ratio', function(data){
+        self.constants.setRatio(data.ratio);
+    });
+};
+
+//gets moving average frequency ratio updates from node.js via websocket
+UIController.prototype.averageRatioUpdate = function(self){
+    this.socket.on('mov_avg_ratio', function(data){
+       // self.boidController.getConstants().setMovAvgRatio(data.mov_avg_ratio);
+        console.log(data.bands + ' mov avg:\t' + data.mov_avg_ratio);
+    });
+};
+
+UIController.prototype.onRatioMaxUpdate = function(self){
+    this.socket.on('ratio_max', function(data){
+        self.constants.setRatioMax(data.ratio_max);
+        console.log('RATIO_MAX updated: ' + data.ratio_max);
+    })
+};
+
+UIController.prototype.onRatioMinUpdate = function(self){
+    this.socket.on('ratio_min', function(data){
+        self.constants.setRatioMin(data.ratio_min);
+        console.log('RATIO_MIN updated: ' + data.ratio_min);
+    })
+};
+
+
+/********************* MUSE CONNECTION *******************/
+UIController.prototype.onMuseConnected = function(){
+    var self = this;
+    this.socket.on('museConnected', function(data){
+        self.setMuseConnected(data.museConnected);
+        self.experimentControllerSet = data.experimentControllerSet;
+    });
+};
+
+UIController.prototype.setMuseConnected = function(bool){
+    this.museConnected = bool;
+};
+
+/**
+ * Experiment is paused when muse is not touching the head and resumed if muse is on the head,
+ * given that one was started before.
+ */
+UIController.prototype.onTouchingForehead = function(){
+    var self = this;
+    this.socket.on('notTouchingForehead', function(data){
+        if(data.pauseExperiment){//stops boids too
+            alert('WARNING: Experiment paused. Muse is not placed on the head');
+            self.pauseExperiment();
         }
     });
-    var toCheck = $(modes[toCheckIdx]);
-    toCheck.attr('checked',true);
-    var duration = toCheck.attr('data-duration');
-     $('input[name="experiment-duration"]').val(duration);
-    //change text on startExperiment btn
-    this.startExperimentBtn.val('Start ' +  $("label[for='"+ toCheck.attr('id') + "']").text());
-    this.experimentMode = parseInt(toCheck.val());
-    //set countdown
-    this.setCountdown(duration);
+    this.socket.on('touchingForehead', function(data){
+        if(data.resumeExperiment){
+            alert('Muse is touching forehead. Resuming experiment.');
+            self.resumeExperiment();
 
-    //send mode and duration to experimentController
-    this.socket.emit('modeDurationUpdate', {mode: this.experimentMode, duration: duration});
+        }
+    })
 };
 
-UIController.prototype.onSaveExperiment = function(){
-    //TODO: save experiment data from json array (node -> experimentController) to csv file with date, time and subject number in name
-};
-
+/***********************************    CHANNEL AND FREQUENCY BAND SELECTION *******************/
 UIController.prototype.onFrequencyTresholdUpdate = function(){
     var self = this;
-    //frequency band sliders
+    //frequency band btns + inputs
     $('input[name="perc1-update"]').click(function(){
         self.firstFreqBandThresh = ($('input[name="freq-band-1-percentile"]').val() / 10) -1;
         self.constants.setDividendThreshold(self.percentiles[0][self.firstFreqBandThresh]);
@@ -439,7 +584,7 @@ UIController.prototype.onFrequencySelection = function(){
             $('#running').attr('checked', false);
         }
         self.graphicsController.setSelectedFreqIndices(self.selectedFrequencies);
-       // self.graphicsController.setSelectedChannelIndices(self.selectedChannelIndices);
+        // self.graphicsController.setSelectedChannelIndices(self.selectedChannelIndices);
         self.graphicsController.resetBoids(self.graphicsController);
 
         self.bandNames = [];
@@ -450,76 +595,8 @@ UIController.prototype.onFrequencySelection = function(){
         d3.select('#perc1-label').text('%-ile ' + self.bandNames[0]);
         d3.select('#perc2-label').text('%-ile ' + self.bandNames[1]);
         //TODO: get updated calibration values
-
     });
 };
-
-/**
- * Listen for raw fft, update bargraph
- */
-/*
-UIController.prototype.onRawFFTUpdate = function(){
-    var self = this;
-    this.socket.on('raw_fft0', 'raw_fft1', 'raw_fft2', 'raw_fft3',  function(){
-        self.graphicsController.update_fft_data(data);
-        self.graphicsController.update_bargraph(data);
-    });
-};*/
-
-UIController.prototype.onHorseshoeUpdate = function(){
-    var self = this;
-    this.socket.on('horseshoe', function(data){
-        self.setHorseshoe(data.horseshoe);
-    });
-};
-
-UIController.prototype.onNotTouchingForehead = function(){
-    this.socket.on('notTouchingForehead', function(data){
-        if(data.pauseExperiment){
-            console.log('WARNING: Experiment paused. Muse is not placed on the head');
-            //stop boids
-            run(false);
-            //TODO: add pause and start buttons underneath svg -> show animation when paused + stop timer
-        }
-    });
-};
-
-//gets frequency ratio updates from node.js via websocket
-UIController.prototype.socketRatio = function(self){
-    this.socket.on('ratio', function(data){
-        //TODO: maybe set ratio frequency band names here as well
-        self.constants.setRatio(data.ratio);
-       // console.log(data.ratio[0] + ':\t' + data.ratio[1] );
-    });
-};
-
-//gets moving average frequency ratio updates from node.js via websocket
-UIController.prototype.averageRatioUpdate = function(self){
-    this.socket.on('mov_avg_ratio', function(data){
-       // self.boidController.getConstants().setMovAvgRatio(data.mov_avg_ratio);
-        console.log(data.bands + ' mov avg:\t' + data.mov_avg_ratio);
-    });
-};
-
-UIController.prototype.onRatioMaxUpdate = function(self){
-    this.socket.on('ratio_max', function(data){
-        self.constants.setRatioMax(data.ratio_max);
-        console.log('RATIO_MAX updated: ' + data.ratio_max);
-    })
-};
-
-UIController.prototype.onRatioMinUpdate = function(self){
-    this.socket.on('ratio_min', function(data){
-        self.constants.setRatioMin(data.ratio_min);
-        console.log('RATIO_MIN updated: ' + data.ratio_min);
-    })
-};
-
-//1 = good; 2 = ok; 3 = bad
-UIController.prototype.setHorseshoe = function(data){
-    this.graphicsController.updateHorseshoe(data.slice(1));
-};
-
 
 UIController.prototype.setSelectedChannelIndices = function(){
     //one channel => return array with one number
@@ -538,6 +615,29 @@ UIController.prototype.setSelectedChannelIndices = function(){
 };
 
 
+/***************** HORSESHOE **********************/
+UIController.prototype.onHorseshoeUpdate = function(){
+    var self = this;
+    this.socket.on('horseshoe', function(data){
+        self.updateHorseshoe(data.horseshoe);
+    });
+};
+
+//1 = good; 2 = ok; 3 = bad
+UIController.prototype.updateHorseshoe = function(data){
+    this.graphicsController.updateHorseshoe(data.slice(1));
+};
+
+/****************** WARNING ALERTS ******************/
+UIController.prototype.displayMuseNotConnected = function(){
+    alert('WARNING: Muse is not connected! Please connect it and retry.');
+};
+
+UIController.prototype.displayExperimentNotCreated = function(){
+    alert('WARNING: No experiment was created! Create one and retry.');
+};
+
+/****************** UNUSED ATM *******************/
 //index 1 of data.osc is concentration / mellow value (0 if muse is off head)
 UIController.prototype.setConcentration = function(data){
     //console.log("concentration: " + data.osc[1]);
@@ -548,6 +648,23 @@ UIController.prototype.setMellow = function(data){
     //console.log("mellow: " + data.osc[1]);
     this.constants.setMellow(data.osc[1]);
 };
+
+
+
+/**
+ * Listen for raw fft, update bargraph
+ */
+/*
+ UIController.prototype.onRawFFTUpdate = function(){
+ var self = this;
+ this.socket.on('raw_fft0', 'raw_fft1', 'raw_fft2', 'raw_fft3',  function(){
+ self.graphicsController.update_fft_data(data);
+ self.graphicsController.update_bargraph(data);
+ });
+ };*/
+
+
+/***************************** BODY ONLOAD ***************************/
 
 //called body onload
 function init(){

@@ -57,10 +57,8 @@ MainController.prototype.init = function(){
         });
     }
 
-    //gauss for movinge percentile
-    //var Calibration = require('./Calibration.js');
-    //this.calibration = new Calibration(10);
-
+    this.experimentController = undefined;
+    this.firstMessage = true;
     //connection to browser via WebSocket
     this.onWebSocketConnection();
 };
@@ -85,26 +83,9 @@ MainController.prototype.onWebSocketConnection = function(){
     //connection with Browser via WebSocket
     this.io.on('connection', function (socket) {
         console.log("WebSocket connected..");
-
-        /*** BLUE SIDEBAR ***/
-        //channel selection lsitener
-        self.channelSelectionListener(socket);
-        //frequency band selection listener
-        self.frequencyBandSelectionListener(socket);
-
-        /****** RED SIDEBAR ****/
-        //listen for new experiment btn click
-        self.newExperimentListener(socket);
-        //listen for experiment start btn click
-        self.experimentStartListener(socket);
-        //listen for experiment mode change
-        self.experimentModeAndDurationListener(socket);
-
-
-        //todo: put button lsitener in oscserver onconnect
         //receive OSC messages on UDP port 5002 and refer them to index.html
         self.oscServer = new self.osc.Server(5002, '0.0.0.0');
-        //listen for osc messaged from muse
+        //listen for osc messages from muse
         self.oscListener(socket);
     });
 };
@@ -130,6 +111,7 @@ MainController.prototype.newExperimentListener = function(socket){
         console.log('new experiment set up for ' + data.age + ', '+ data.gender + ', ' + 'mode: ' + data.mode);
         //init experiment with mode, gender  and age
         self.experimentController = new ExperimentController(data.age, data.gender, data.mode, socket);
+        socket.emit('experimentCreated', { experimentCreated: true});
     });
 };
 
@@ -194,9 +176,9 @@ MainController.prototype.experimentStartListener = function(socket){
  * Experiment mode radio button selection from UIController via socket.
  * @param socket
  */
-MainController.prototype.experimentModeAndDurationListener = function(socket){
+MainController.prototype.experimentModeChangeListener = function(socket){
     var self = this;
-    socket.on('modeDurationUpdate', function(data){
+    socket.on('experimentModeChanged', function(data){
         console.log('experiment mode changed to ' + data.mode + ', duration set to ' + data.duration);
         self.experimentController.setMode(data.mode);
         self.experimentController.setDuration(data.duration);
@@ -247,7 +229,25 @@ MainController.prototype.frequencyBandSelectionListener = function(socket){
 MainController.prototype.oscListener = function(socket){
     var self = this;
     this.oscServer.on("message", function (msg) {
+        if(self.firstMessage === true){//add listeners only when we are sure we are receiving data from muse
+            //send muse connected message
+            socket.emit('museConnected',{museConnected: true});
+            /*** BLUE SIDEBAR ***/
+            //channel selection lsitener
+            self.channelSelectionListener(socket);
+            //frequency band selection listener
+            self.frequencyBandSelectionListener(socket);
 
+            /****** RED SIDEBAR ****/
+                //listen for new experiment btn click
+            self.newExperimentListener(socket);
+
+            //listen for experiment start btn click
+            self.experimentStartListener(socket);
+            //listen for experiment mode change
+            self.experimentModeChangeListener(socket);
+            self.firstMessage = false;
+        }
         if (msg[0] === "/muse/elements/delta_absolute"
             || msg[0] === "/muse/elements/theta_absolute"
             || msg[0] === "/muse/elements/alpha_absolute"
@@ -339,14 +339,29 @@ MainController.prototype.oscListener = function(socket){
         else if(msg[0] === '/muse/elements/touching_forehead') //one integer
         {
             if(self.experimentController !== undefined){
-                //console.log('touching forehead: ' + msg[1]);
+                var remainingDuration = self.experimentController.getDuration();
                 if(self.experimentController.getTouchingForehead() !== msg[1])
                     self.experimentController.setTouchingForehead(msg);
-                if(msg[1] !== 1 && self.experimentController.getExperimentRunning()){
+                if(msg[1] !== 1 && self.experimentController.getExperimentRunning()) // PAUSE EXPERIMENT
+                {
                     //pause experiment
                     console.log('WARNING: Experiment paused. Muse is not touching forehead. ');
                     self.experimentController.pauseExperiment();//sets experimentRunning to false
-                    socket.emit('notTouchingForehead', {pauseExperiment: true, remainingDuration: self.experimentController.getRemainingDuration()});
+                    socket.emit('notTouchingForehead', {pauseExperiment: true, remainingDuration: remainingDuration});
+                }
+                else if(msg[1] === 1 && self.experimentController.getExperimentPaused() && remainingDuration > 0){ //RESUME REXPERIMENT
+                    socket.emit('touchingForehead', {resumeExperiment: true, remainingDuration: remainingDuration});
+                    console.log('INFO: Experiment resumed. Muse is placed on head.');
+                    self.experimentController.resumeExperiment((function () {
+                        var res = self.experimentController.getQuantileResults(SELECTED_FREQ_BANDS[0].name,
+                            SELECTED_FREQ_BANDS[1].name,
+                            SELECTED_CHANS[0].index,
+                            10,
+                            SELECTED_CHANS[1].index,
+                            10);
+                        socket.emit('experimentStopped', {mode: self.experimentController.getMode(), percentiles: res});
+                    }));//TODO: CALLBACK FUNCTION TO EMIT SOCKET MESSAGE
+
                 }
             }
 

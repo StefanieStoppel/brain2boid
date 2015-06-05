@@ -45,8 +45,8 @@ function ExperimentController(age, gender, mode, socket){ //age and gender of su
     this.timeAboveRatio = 0;//measures time above threshold for points
     //is experiment running or not
     this.experimentRunning = false;
+    this.experimentPaused = false;
     this.duration = 10;//experiment duration
-    this.remainingDuration = 0;
 
     //Point scores
     this.test1Points = new Points(); // points before neurofeedback
@@ -66,65 +66,14 @@ ExperimentController.prototype.setPercentileDivisorIdx = function(idx){
     this.percentilesDivisorIdx = idx;
 };
 
-/**
- * Calibration.
- *
- * @param freqBand1
- * @param freqBand2
- * @param channelName1
- * @param percentile1
- * @param channelName2
- * @param percentile2
- * @param emitPercentiles
- */
-/*
-ExperimentController.prototype.calibrate = function(freqBand1, freqBand2, channelName1, percentile1, channelName2, percentile2, emitPercentiles){
-    if(this.mode === 0) {
-        var self = this;
-        this.experimentRunning = true;
-        this.remainingDuration = this.duration;
-        MODE_TIMER = setInterval(function(){
-            self.socket.emit('timerUpdate', {time: self.remainingDuration});
-            self.remainingDuration--;
-            if(self.remainingDuration === 0){
-                clearInterval(MODE_TIMER);
-                MODE_TIMER = undefined;
-                self.experimentRunning = false;
-                var res = self.getQuantileResults(freqBand1, freqBand2, channelName1, percentile1, channelName2, percentile2);//callback
-                emitPercentiles(res);//callback
-            }
-        }, 1000);
-    }
-};
-
-ExperimentController.prototype.test1 = function(emitPoints){
-    if(this.mode === 1){
-        var self = this;
-        this.experimentRunning = true;
-        this.remainingDuration = this.duration;
-        MODE_TIMER = setInterval(function(){
-            self.socket.emit('timerUpdate', {time: self.remainingDuration});
-            self.remainingDuration--;
-            if(self.remainingDuration === 0){
-                clearInterval(MODE_TIMER);
-                MODE_TIMER = undefined;
-                self.experimentRunning = false;
-                emitPoints(self.getTest1Points());//callback
-            }
-        }, 1000);
-    }
-};
-*/
-
 ExperimentController.prototype.startExperimentMode = function(mode, callback){
     var self = this;
     this.experimentRunning = true;
-    this.remainingDuration = this.duration;
     MODE_TIMER = setInterval(function(){
-        self.socket.emit('timerUpdate', {time: self.remainingDuration});
-        self.remainingDuration--;
-        if(self.remainingDuration === 0){
-            self.pauseExperiment();
+        self.socket.emit('timerUpdate', {time: self.duration});
+        self.duration--;
+        if(self.duration === 0){
+            self.stopExperiment();
             self.stopPointsTimer();
             if(mode === 0) //calibration
                 callback();//callback
@@ -214,12 +163,32 @@ ExperimentController.prototype.getExperimentRunning = function(){
     return this.experimentRunning;
 };
 
-ExperimentController.prototype.pauseExperiment = function(){
+ExperimentController.prototype.getExperimentPaused = function(){
+    return this.experimentPaused;
+};
+
+ExperimentController.prototype.stopExperiment = function(){
+    this.experimentPaused = false;
     this.experimentRunning = false;
-    if(MODE_TIMER !== undefined){
-        clearInterval(MODE_TIMER);
-        MODE_TIMER = undefined;
+    this.clearTimer(MODE_TIMER);
+};
+
+ExperimentController.prototype.pauseExperiment = function(){
+    this.experimentPaused = true;
+    this.experimentRunning = false;
+    this.clearTimer(MODE_TIMER);
+};
+
+ExperimentController.prototype.clearTimer = function(timer){
+    if(timer !== undefined){
+        clearInterval(timer);
+        timer = undefined;
     }
+};
+
+ExperimentController.prototype.resumeExperiment = function(callback){
+    this.experimentPaused = false;
+    this.startExperimentMode(this.mode, callback);
 };
 
 ExperimentController.prototype.setMode = function(mode){
@@ -242,8 +211,8 @@ ExperimentController.prototype.setDuration = function(durInSec){
     this.duration = durInSec;
 };
 
-ExperimentController.prototype.getRemainingDuration = function(){
-    return this.remainingDuration;
+ExperimentController.prototype.getDuration = function(){
+    return this.duration;
 };
 
 ExperimentController.prototype.setRatioMin = function(ratioMin){

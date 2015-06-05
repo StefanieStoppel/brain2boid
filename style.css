@@ -293,6 +293,6 @@ button[name="mode-control"]:active,  button[name="experiment-control"]:active{
 }
 p#experiment-mode-display{
     text-align: center;
-    font-size: 1.3em;
+    font-size: 1.6em;
     color: lavender;
 }
