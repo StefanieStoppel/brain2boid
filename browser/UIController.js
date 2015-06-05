@@ -205,7 +205,7 @@ UIController.prototype.onSaveExperiment = function(){
 
 
 
-UIController.prototype.pauseExperiment = function(bool){ //true = pause, false = unpause
+UIController.prototype.pauseExperiment = function(){ //true = pause, false = unpause
     run(false);
 
     //todo: animation with fotawesome pause icon
@@ -244,8 +244,12 @@ UIController.prototype.onStartModeButtonClick = function(){
                     duration: self.duration,
                     percentiles: [ parseInt(self.firstFreqBandThresh), parseInt(self.secondFreqBandThresh) ]}
             );
+            //set experimentRunning
             self.experimentRunning = true;
+            //disable red sidebar inputs
             $('.sb-red :input').prop('disabled', true);
+            //reset Points display
+            self.resetPoints();
             //TODO: on test 1 start boids dont run, why?
             self.resumeExperiment();//run boids
         }else if(!self.museConnected){
@@ -334,6 +338,11 @@ UIController.prototype.onPointsUpdate = function(){
         self.points += data.points;
         self.pointsDisplay.text(self.points);
     });
+};
+
+UIController.prototype.resetPoints = function(){
+    this.points = 0;
+    this.pointsDisplay.text(this.points);
 };
 
 /**
@@ -536,7 +545,6 @@ UIController.prototype.onTouchingForehead = function(){
         if(data.resumeExperiment){
             alert('Muse is touching forehead. Resuming experiment.');
             self.resumeExperiment();
-
         }
     })
 };
@@ -564,7 +572,8 @@ UIController.prototype.onChannelSelection = function(){
         self.socket.emit('channelSelection', { selectedChannels: self.selectedChannelIndices });
         //if running, uncheck
         if(running()){
-            $('#running').attr('checked', false);
+            run(false);
+            //$('#running').attr('checked', false);
         }
         self.graphicsController.setSelectedChannelIndices(self.selectedChannelIndices);
         self.graphicsController.resetBoids(self.graphicsController);
@@ -581,7 +590,8 @@ UIController.prototype.onFrequencySelection = function(){
 
         //if boid animation is running, uncheck
         if(running()){
-            $('#running').attr('checked', false);
+            run(false);
+            //$('#running').attr('checked', false);
         }
         self.graphicsController.setSelectedFreqIndices(self.selectedFrequencies);
         // self.graphicsController.setSelectedChannelIndices(self.selectedChannelIndices);

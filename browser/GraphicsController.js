@@ -198,9 +198,6 @@ GraphicsController.prototype.draw = function(){
         .attr('fill', function(boid){ return boid.getColour() });
 };
 
-
-
-
 //horseshoe
 // 3 || 4 = white circle; 2 = coloured outline; 1 = coloured circle
 GraphicsController.prototype.setupHorseshoe = function(){
@@ -281,7 +278,7 @@ function running() {
 }
 
 function run(bool){
-    $('#running').attr('checked', bool);
+    $('#running').prop('checked', bool);
 }
 
 /*

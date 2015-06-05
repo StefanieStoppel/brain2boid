@@ -271,7 +271,7 @@ i.fa.fa-play, i.fa.fa-forward, i.fa.fa-backward{
 i.fa.fa-floppy-o, i.fa.fa-plus-square{
     font-size: 2em;
 }
-button[name="mode-control"], button[name="experiment-control"]{
+/**button[name="mode-control"], button[name="experiment-control"]{
     margin: 1em;
     background-color: lavender;
     text-shadow: 1px 1px #1C4048;
@@ -280,10 +280,34 @@ button[name="mode-control"], button[name="experiment-control"]{
     border: #245580;
     color: #1C4048;
     outline:none;
+}**/
+button[name="mode-control"], button[name="experiment-control"]{
+    margin: 1em;
+    background-color: rgb(10, 10, 100);
+    text-shadow: 1px 1px #000000;
+    box-shadow: 1px 2px #B9D8DF;
+    border-radius: 0.3em;
+    border: #245580;
+    color: #FFFFFF;
+    outline: none;
+
 }
-button[name="experiment-control"]{
-    height: 3.2em;
+/**button[name="mode-control"], button[name="experiment-control"]{
+    margin: 1em;
+    background-color: #76BDCD;
+    text-shadow: 1px 1px 1px #000000;
+    box-shadow: 1px 3px 1px #1F3E45;
+    border-radius: 0.3em;
+    border: #245580;
+    color: lavender;
+    outline: none;
+    button[name="experiment-control"]{
+        height: 3.2em;
     width: 3.2em;
+}*/
+button[name="experiment-control"]{
+    width: 3em;
+    height: 3em;
 }
 button[name="mode-control"]:active,  button[name="experiment-control"]:active{
     top: 2px;
