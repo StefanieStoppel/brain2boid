@@ -25,6 +25,7 @@ var MOV_AVG;
 var DIVIDEND = [], DIVISOR = [];
 var RATIO = [];
 var RATIO_MIN = 0.5, RATIO_MAX = 0;
+var REMAINING_BATTERY = 0;
 
 var ExperimentController = require('./ExperimentController.js');
 
@@ -331,11 +332,12 @@ MainController.prototype.oscListener = function(socket){
                     });
                 }
             });
-
+        /*****************HORSESHOE*******************/
         }else if(msg[0] === '/muse/elements/horseshoe')//four integers (for each channel)
         {
             socket.emit('horseshoe', {horseshoe: msg});
         }
+        /******************TOUCHING FOREHEAD**************************/
         else if(msg[0] === '/muse/elements/touching_forehead') //one integer
         {
             if(self.experimentController !== undefined){
@@ -363,6 +365,15 @@ MainController.prototype.oscListener = function(socket){
                     }));//TODO: CALLBACK FUNCTION TO EMIT SOCKET MESSAGE
 
                 }
+            }
+        }
+        /***********************BATTERY*************************/
+        else if(msg[0] === '/muse/batt'){//four integers. idx 0 is battery precentage remaining (divide by 100)
+            var charge = Math.round(msg[1]/100);
+            console.log(charge);
+            if(REMAINING_BATTERY !== charge){
+                REMAINING_BATTERY = charge;
+                socket.emit('batteryUpdate', {charge: charge});
             }
 
         }

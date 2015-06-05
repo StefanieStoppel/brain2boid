@@ -247,10 +247,11 @@ ExperimentController.prototype.stopPointsTimer = function(){
                 var p = Math.floor(diff[0] * 1000 + ms);
                 if(this.mode === 1){
                     this.test1Points.addThreshPoints(p);
+                    this.socket.emit('updatePoints', {points: p});
                 }else if(this.mode === 3){
                     this.test2Points.addThreshPoints(p);
+                    this.socket.emit('updatePoints', {points: p});
                 }
-                this.socket.emit('updatePoints', {points: p});
             }
             this.timeAboveRatio = 0;
         }

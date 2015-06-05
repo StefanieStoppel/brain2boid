@@ -9,6 +9,7 @@ function UIController(){
     this.museConnected = false;
     this.experimentControllerSet = false;
     this.calibrationFinished = false;
+    this.enableControlButtons(false); //disable prev and next experiment mode buttons before calibration is done
     /************************** MAIN AREA ***********************************/
     this.pointsDisplay = $('p.points-display');
 
@@ -94,6 +95,7 @@ function UIController(){
     this.onFrequencyTresholdUpdate();
     //this.onRawFFTUpdate();
     this.onHorseshoeUpdate();
+    this.onBatteryUpdate();
 
    // this.showCircularCountdown(parseInt($('input[name="experiment-duration"]').val()));
 
@@ -121,7 +123,7 @@ UIController.prototype.onExperimentCreated = function(){
     this.socket.on('experimentCreated', function(data){
         self.experimentControllerSet = data.experimentCreated;
     });
-}
+};
 
 /**
  * New experiment btn was clicked.
@@ -159,6 +161,8 @@ UIController.prototype.onContinueNewExperiment = function(self){
 
         //new calibration needs to be done
         self.calibrationFinished = false;
+        //disable next and prev mode btns until calibration finished
+        self.enableControlButtons(false);
     });
 };
 
@@ -325,6 +329,14 @@ UIController.prototype.onNextModeButtonClick = function(){
         self.socket.emit('experimentModeChanged', {mode: self.experimentMode, duration: self.duration});
     });
 };
+
+/**
+ * Enable or disable next and previous mdoe buttons.
+ * @param enable
+ */
+UIController.prototype.enableControlButtons = function(enable){
+    $('#next-mode-btn, #prev-mode-btn').prop('disabled', !enable);
+};
 /***** END CONTROL PANEL BUTTON LISTENERS ****/
 
 /**
@@ -446,6 +458,7 @@ UIController.prototype.onStopExperiment = function(){
                     console.log('received calibration data');
                     self.showExperimentModeFinished('Calibration');
                     self.calibrationFinished = true; //TODO: ADD ERROR HANDLING IN CASE OF NO RESULTS
+                    self.enableControlButtons(true); //enable next and prev buttons
                     break;
                 //TEST 1 finished
                 case 1:
@@ -624,6 +637,17 @@ UIController.prototype.setSelectedChannelIndices = function(){
     }
 };
 
+/***************** BATTERY ***********************/
+UIController.prototype.onBatteryUpdate = function(){
+    var self = this;
+    this.socket.on('batteryUpdate', function(data){
+        self.updateBatteryDisplay(data.charge);
+    });
+};
+
+UIController.prototype.updateBatteryDisplay = function(charge){
+    this.graphicsController.updateBatteryDisplay(charge);
+};
 
 /***************** HORSESHOE **********************/
 UIController.prototype.onHorseshoeUpdate = function(){

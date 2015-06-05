@@ -51,7 +51,8 @@ function GraphicsController(selectedChannelIndices, selectedFreqIndices){
 
     //append boidSvg field
     this.body = d3.select('body');
-    this.boidSvg = this.body.select('.boid-container').append('svg');
+    this.boidSvg = this.body.select('#boid-svg');
+    //this.boidSvg = this.body.select('.boid-container').append('svg');
     this.boidSvg.attr({ width: AREA_WIDTH, height: AREA_HEIGHT })
         .style("background", "black");
 
@@ -70,6 +71,9 @@ function GraphicsController(selectedChannelIndices, selectedFreqIndices){
 
     //horseshoe display
     this.horseshoe = this.setupHorseshoe();
+    //battery display
+    this.setupBatteryDisplay();
+
 
     //init restartButton and listen for clicks
     this.restartButton = this.body.select('#restart-btn');
@@ -246,6 +250,18 @@ GraphicsController.prototype.updateHorseshoe = function(horseshoeValues){
                 return "none";
             }
         });
+};
+
+GraphicsController.prototype.setupBatteryDisplay = function(){
+    this.batteryCharge = $('div#battery-charge');
+    this.batteryChargeWidth = parseInt(this.batteryCharge.width());
+};
+
+GraphicsController.prototype.updateBatteryDisplay = function(charge){
+    this.batteryCharge.width( (charge/100) * this.batteryChargeWidth );
+    if(charge < 10){
+        this.batteryCharge.css('background-color', 'red');
+    }
 };
 
 GraphicsController.prototype.getSelectedChannelIndices = function(){

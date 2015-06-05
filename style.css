@@ -309,14 +309,47 @@ button[name="experiment-control"]{
     width: 3em;
     height: 3em;
 }
-button[name="mode-control"]:active,  button[name="experiment-control"]:active{
+button[name="mode-control"]:active,  button[name="experiment-control"]:active,
+button[name="mode-control"]:disabled, button[name="experiment-control"]:disabled{
     top: 2px;
     border: none;
     position: relative;
     box-shadow: none;
 }
+button[name="mode-control"]:disabled, button[name="experiment-control"]:disabled{
+    background-color: #898989;
+}
 p#experiment-mode-display{
     text-align: center;
     font-size: 1.6em;
     color: lavender;
+}
+div#battery-display{
+    position: fixed;
+    top: 3em;
+    right: 4em;
+}
+div#battery-body{
+    width: 3em;
+    height: 1.5em;
+    background: black;
+    border-radius: 0.3em;
+    border: 2px solid white;
+}
+div#battery-pole{
+    width: 0.5em;
+    height: 0.8em;
+    border-radius: 0.2em;
+    border: 2px solid white;
+    position: fixed;
+    top: 47px;
+    right: 3.6em;
+}
+div#battery-charge{
+    background-color: white;
+    width: 2.3em;
+    height: 0.8em;
+    border-radius: 0.2em;
+    margin-top: 0.2em;
+    margin-left: 0.2em;
 }
