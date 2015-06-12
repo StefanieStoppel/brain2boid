@@ -88,6 +88,12 @@ MainController.prototype.onWebSocketConnection = function(){
         self.oscServer = new self.osc.Server(5002, '0.0.0.0');
         //listen for osc messages from muse
         self.oscListener(socket);
+
+        /*** BLUE SIDEBAR ***/
+            //channel selection lsitener
+        self.channelSelectionListener(socket);
+        //frequency band selection listener
+        self.frequencyBandSelectionListener(socket);
     });
 };
 
@@ -206,10 +212,13 @@ MainController.prototype.frequencyBandSelectionListener = function(socket){
             SELECTED_FREQ_BANDS[idx] = FREQ_BANDS[band];
         });
         //get quantiles from Calibration for newly selected bands and send them over websocket
-        socket.emit('percentiles', {
-            percentiles: self.experimentController.getQuantileResults(SELECTED_FREQ_BANDS[0].name, SELECTED_FREQ_BANDS[1].name,
-                SELECTED_CHANS[0].index, 10, SELECTED_CHANS[1].index, 10)
-        });
+        if(self.experimentController !== undefined && self.experimentController.getCalibrationCollectionLength() !== 0){
+            socket.emit('percentiles', {
+                percentiles: self.experimentController.getQuantileResults(SELECTED_FREQ_BANDS[0].name, SELECTED_FREQ_BANDS[1].name,
+                    SELECTED_CHANS[0].index, 10, SELECTED_CHANS[1].index, 10)
+            });
+        }
+
         //set RATIOS back to default
         RATIO_MAX = 0;
         RATIO_MIN = 0.5;
@@ -222,11 +231,7 @@ MainController.prototype.oscListener = function(socket){
         if(self.firstMessage === true){//add listeners only when we are sure we are receiving data from muse
             //send muse connected message
             socket.emit('museConnected',{museConnected: true});
-            /*** BLUE SIDEBAR ***/
-            //channel selection lsitener
-            self.channelSelectionListener(socket);
-            //frequency band selection listener
-            self.frequencyBandSelectionListener(socket);
+
 
             /****** RED SIDEBAR ****/
                 //listen for new experiment btn click
@@ -359,7 +364,7 @@ MainController.prototype.oscListener = function(socket){
         /***********************BATTERY*************************/
         else if(msg[0] === '/muse/batt'){//four integers. idx 0 is battery precentage remaining (divide by 100)
             var charge = Math.round(msg[1]/100);
-           // console.log(charge);
+            console.log(charge);
             if(REMAINING_BATTERY !== charge){
                 REMAINING_BATTERY = charge;
                 socket.emit('batteryUpdate', {charge: charge});

@@ -52,19 +52,28 @@ function UIController(){
     //Frequency band name and idx mapping
     this.frequencyBandNames = ['delta','theta','alpha','beta','gamma'];
     //frequency selection, array of numbers
-    this.selectedFrequencies = $('option[name="fr-picker"]:selected').val().split(',').map(Number);
+    //TODO: FIX
+    var self = this;
+    this.selectedFrequencies = [];
+    //this.selectedFrequencies = $('option[name="fr-picker"]:selected').val().map(Number);
+    $('option[name="fr-picker"]:selected').each(function(idx, el){
+        self.selectedFrequencies.push(parseInt($(el).val()));
+    });
     //listen for frequency selection changes in UI
     this.onFrequencySelection();
     //make array with absolute frequency bands. ratios will be calculated later.
-    var self = this;
+
     this.frequencyBandsAbs = [];
-    $('input[name="fr-picker"].fr-single').each(function(idx, el){
+    $('input[name="fr-dividend"].fr-single').each(function(idx, el){
         self.frequencyBandsAbs.push([0,0,0,0]);
     });
     //set selected frequency band names in Constants
     this.bandNames = [];
-    this.selectedFrequencies.forEach(function(el){
-        self.bandNames.push(self.frequencyBandNames[el]);
+    this.selectedFrequencies.forEach(function(idx, el){
+        if(el !== -1)
+            self.bandNames.push(self.frequencyBandNames[idx]);
+        else
+            self.bandNames.push('none');
     });
 
     //Frequency band ratio slider setup and listen for changes
@@ -600,9 +609,18 @@ UIController.prototype.onChannelSelection = function(){
 
 UIController.prototype.onFrequencySelection = function(){
     var self = this;
-    $('select.frequency-picker').change(function(){
+    $('select.frequency-picker').change(function(idx, el)
+    {
+        if($(this).attr('id') === 'select-fr-dividend')
+        {
+            self.selectedFrequencies[0] = parseInt($(this).val());
+        }
+        else if($(this).attr('id') === 'select-fr-divisor')
+        {
+            self.selectedFrequencies[1] = parseInt($(this).val());
+        }
         //always an array
-        self.selectedFrequencies = $(this).val().split(',').map(Number);
+        //self.selectedFrequencies = $(this).val().split(',').map(Number);
         //send frequency selection to node.js over websocket
         self.socket.emit('frequencyBandSelection', { selectedFrequencyBands: self.selectedFrequencies });
 
@@ -617,8 +635,11 @@ UIController.prototype.onFrequencySelection = function(){
 
         self.bandNames = [];
         //update selected frequency band names
-        self.selectedFrequencies.forEach(function(el){
-            self.bandNames.push(self.frequencyBandNames[el]);
+        self.selectedFrequencies.forEach(function(idx, el){
+            if(el !== -1)
+                self.bandNames.push(self.frequencyBandNames[idx]);
+            else
+                self.bandNames.push('none');
         });
         d3.select('#perc1-label').text('%-ile ' + self.bandNames[0]);
         d3.select('#perc2-label').text('%-ile ' + self.bandNames[1]);

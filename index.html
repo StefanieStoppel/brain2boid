@@ -170,13 +170,67 @@
                 <i class="fa fa-angle-left"></i>
             </button>
         </div>
-        <!-- END SIDEBAR 1 --->
+        <!-- END SIDEBAR RED --->
 
 
-        <!-- SIDEBAR 2 - Frequency Band, Channel and Ratio settings --->
+        <!-- SIDEBAR BLUE - Frequency Band, Channel and Ratio settings --->
 
-        <!--- RATIO DISPLAYS -->
         <div class="sidebar sb-blue col-xs-6 col-sm-4 full-height">
+            <h3>Einstellungen</h3>
+            <!-- CHANNEL PICKER -->
+            <div class="row">
+                <h4>Kan&auml;le</h4>
+                <div class="ch-single col-xs-6">
+                    <select class="channel-picker full-width sidebar-select sb-blue-select">
+                        <option name="ch-picker" id="ch-t9" value="1">T9</option>
+                        <option name="ch-picker" id="ch-fp1" value="2">Fp1</option>
+                        <option name="ch-picker" id="ch-fp2" value="3">Fp2</option>
+                        <option name="ch-picker" id="ch-t10" value="4">T10</option>
+
+                        <option name="ch-picker" id="ch-p-t9-fp1" value="1-2" selected>T9 + Fp1</option>
+                        <option name="ch-picker" id="ch-p-t10-fp2" value="3-4">T10 + Fp2</option>
+                        <option name="ch-picker" id="ch-p-fp1-fp2" value="2-3">Fp1 + Fp2</option>
+                        <option name="ch-picker" id="ch-p-t9-t10" value="1-4">T9 + T10</option>
+                        <option name="ch-picker" id="ch-o-all" value="1-2-3-4">All</option>
+                    </select>
+                </div>
+            </div>
+            <!-- END CHANNEL PICKER -->
+
+            <!-- FREQUENCY BAND PICKER -->
+            <div class="row">
+                <h4>Trainingsprotokoll</h4>
+                <div class="fr-band-single col-xs-6">
+                    <select id="select-fr-dividend" class="frequency-picker full-width sidebar-select sb-blue-select">
+                        <option name="fr-picker" class="fr-dividend" id="fr-dividend-delta" value="0">&delta; (Delta) </option>
+                        <option name="fr-picker" class="fr-dividend" id="fr-dividend-theta" value="1">&theta; (Theta)</option>
+                        <option name="fr-picker" class="fr-dividend" id="fr-dividend-alpha" value="2" selected>&alpha; (Alpha)</option>
+                        <option name="fr-picker" class="fr-dividend" id="fr-dividend-beta" value="3">&beta; (Beta)</option>
+                        <option name="fr-picker" class="fr-dividend" id="fr-dividend-all" value="4">&gamma; (Gamma)</option>
+
+                        <!--
+                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-alpha-beta" value="2,3" selected>&alpha; / &beta;</option>
+                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-alpha-gamma" value="2,4">&alpha; / &gamma; </option>
+                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-alpha-theta" value="2,1">&alpha; / &theta; </option>
+                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-theta-gamma" value="1,4">&theta; / &gamma;</option>-->
+                    </select>
+                </div>
+                <div class="fr-band-single col-xs-6">
+                    <select id="select-fr-divisor" class="frequency-picker full-width sidebar-select sb-blue-select">
+                        <option name="fr-picker" class="fr-divisor" id="fr-divisor-none" value="-1"> - </option>
+                        <option name="fr-picker" class="fr-divisor" id="fr-divisor-delta" value="0">&delta; (Delta) </option>
+                        <option name="fr-picker" class="fr-divisor" id="fr-divisor-theta" value="1">&theta; (Theta)</option>
+                        <option name="fr-picker" class="fr-divisor" id="fr-divisor-alpha" value="2">&alpha; (Alpha)</option>
+                        <option name="fr-picker" class="fr-divisor" id="fr-divisor-beta" value="3" selected>&beta; (Beta)</option>
+                        <option name="fr-picker" class="fr-divisor" id="fr-divisor-all" value="4">&gamma; (Gamma)</option>
+                    </select>
+                </div>
+
+
+            </div>
+            <!-- END FREQUENCY BAND PICKER --->
+
+            <!--- RATIO DISPLAYS -->
             <h4>Ratio display</h4>
             <div class="row" style="margin-top: 2em;">
 
@@ -226,56 +280,19 @@
             </div>
             <!-- END PERCENTILE INPUTS -->
 
-            <!-- CHANNEL PICKER -->
-            <div class="row">
-                <h4>Channel Picker</h4>
-                <div class="ch-single col-xs-6">
-                    <select class="channel-picker full-width sidebar-select sb-blue-select">
-                        <option name="ch-picker" id="ch-t9" value="1">T9</option>
-                        <option name="ch-picker" id="ch-fp1" value="2">Fp1</option>
-                        <option name="ch-picker" id="ch-fp2" value="3">Fp2</option>
-                        <option name="ch-picker" id="ch-t10" value="4">T10</option>
 
-                        <option name="ch-picker" id="ch-p-t9-fp1" value="1-2" selected>T9 + Fp1</option>
-                        <option name="ch-picker" id="ch-p-t10-fp2" value="3-4">T10 + Fp2</option>
-                        <option name="ch-picker" id="ch-p-fp1-fp2" value="2-3">Fp1 + Fp2</option>
-                        <option name="ch-picker" id="ch-p-t9-t10" value="1-4">T9 + T10</option>
-                        <option name="ch-picker" id="ch-o-all" value="1-2-3-4">All</option>
-                    </select>
-                </div>
-            </div>
-            <!-- END CHANNEL PICKER -->
-
-            <!-- FREQUENCY BAND PICKER -->
-            <div class="row">
-                <h4>Frequency Band Picker</h4>
-                <div class="fr-band-single col-xs-12">
-                    <select class="frequency-picker full-width sidebar-select sb-blue-select">
-                        <option name="fr-picker" class="fr-single" id="fr-s-delta" value="0">&delta; (Delta) </option>
-                        <option name="fr-picker" class="fr-single" id="fr-s-theta" value="1">&theta; (Theta)</option>
-                        <option name="fr-picker" class="fr-single" id="fr-s-alpha" value="2">&alpha; (Alpha)</option>
-                        <option name="fr-picker" class="fr-single" id="fr-s-beta" value="3">&beta; (Beta)</option>
-                        <option name="fr-picker" class="fr-all" id="fr-s-all" value="1,2,3,4">&gamma; (Gamma)</option>
-
-                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-alpha-beta" value="2,3" selected>&alpha; / &beta;</option>
-                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-alpha-gamma" value="2,4">&alpha; / &gamma; </option>
-                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-alpha-theta" value="2,1">&alpha; / &theta; </option>
-                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-theta-gamma" value="1,4">&theta; / &gamma;</option>
-                    </select>
-                </div>
-                <div class="col-xs-4">
-                    <div class="row" id="boids-control-row">
-                        <div class="col-xs-6">
-                            <input type="button" name="restart" id="restart-btn" value="Reset Boids">
-                        </div>
-                        <div class="running-input col-xs-12">
-                            <label id="running-label" for="running">
-                                <input type="checkbox" name="boids-running" id="running"/>  Running</label>
-                        </div>
+            <div class="col-xs-4">
+                <div class="row" id="boids-control-row">
+                    <div class="col-xs-6">
+                        <input type="button" name="restart" id="restart-btn" value="Reset Boids">
+                    </div>
+                    <div class="running-input col-xs-12">
+                        <label id="running-label" for="running">
+                            <input type="checkbox" name="boids-running" id="running"/>  Running</label>
                     </div>
                 </div>
             </div>
-            <!-- END FREQUENCY BAND PICKER --->
+
 
         </div>
         <!-- END OF SIDEBAR 2 --->

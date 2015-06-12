@@ -62,6 +62,10 @@ function ExperimentController(age, gender, mode, socket){ //age and gender of su
     //TIMEOUT = undefined;// timer for counting points
 }
 
+ExperimentController.prototype.getCalibrationCollectionLength = function(){
+    return this.calibrationCollection.length;
+};
+
 ExperimentController.prototype.setPercentileDividendIdx = function(idx){
     this.percentilesDividendIdx = idx;
 };
@@ -256,19 +260,23 @@ ExperimentController.prototype.setRatioMax = function(ratioMax){
     }
 };
 
+ExperimentController.prototype.pushExperimentData = function(){
+    this.jsonExpData.push(
+        {"ratio": ratio.toString(),
+            "trainingRatio": this.trainingRatio.value.toString(),
+            "quotientName": this.trainingRatio.quotientName,
+            "mode": this.mode.toString()}
+    );
+    console.log('added new json data entry');
+};
+
 ExperimentController.prototype.setRatio = function(ratio){
     if(this.experimentRunning)
     {
         //TODO: SAVE AS CSV AND TEST
         //add values to jsonExpData if mode === 1 || mode === 3
         if(this.mode === 1 || this.mode === 3){
-            this.jsonExpData.push(
-                {"ratio": ratio.toString(),
-                "trainingRatio": this.trainingRatio.value.toString(),
-                "quotientName": this.trainingRatio.quotientName,
-                "mode": this.mode.toString()}
-            );
-            console.log('added new json data entry');
+            this.pushExperimentData();
         }
 
         console.log('ratio: ' + ratio + ', threshold: ' + this.thresholdRatio);
