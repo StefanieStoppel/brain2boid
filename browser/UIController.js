@@ -6,6 +6,7 @@
 var COUNTDOWN = undefined;
 
 function UIController(){
+
     this.museConnected = false;
     this.experimentControllerSet = false;
     this.calibrationFinished = false;
@@ -116,6 +117,10 @@ function UIController(){
     //CONTINUE button in warning dialog clicked (after new experiment btn)
     this.onContinueNewExperiment(this);
 
+    /*****FULLSCREEN MODE****/
+    this.fullscreen = false;
+    this.onFullscreen();
+
 }
 
 UIController.prototype.onExperimentCreated = function(){
@@ -207,6 +212,60 @@ UIController.prototype.onSaveExperiment = function(){
     //TODO: save experiment data from json array (node -> experimentController) to csv file with date, time and subject number in name
 };
 
+
+/***
+ * Message from node that part of an experiment has finished.
+ * The data send via the WebSocket contains the experiment mode idx (0-3) and other data.
+ */
+UIController.prototype.onStopExperiment = function(){
+    var self = this;
+    this.socket.on('experimentStopped', function(data){
+        if(data.percentiles !== null){
+            switch(data.mode){
+                case -1: //last experiment mode failed
+                    //TODO: add handling for experiment failed
+                    break;
+                //CALIBRATION finished
+                case 0:
+                    self.percentiles = data.percentiles;
+                    self.constants.setDividendThreshold(data.percentiles[0][self.firstFreqBandThresh]);
+                    self.constants.setDivisorThreshold(data.percentiles[1][self.secondFreqBandThresh]);
+                    self.firstFreqBandMin = data.percentiles[0][0];
+                    self.secondFreqBandMax = data.percentiles[1][data.percentiles[1].length-1];
+                    self.constants.setMinDividendDivisorRatio(self.firstFreqBandMin, self.secondFreqBandMax);
+                    self.constants.setMaxDividendDivisorRatio(data.percentiles[0][data.percentiles[0].length-1],data.percentiles[1][0]);
+                    console.log('received calibration data');
+                    self.showExperimentModeFinished('Calibration');
+                    self.calibrationFinished = true; //TODO: ADD ERROR HANDLING IN CASE OF NO RESULTS
+                    self.enableControlButtons(true); //enable next and prev buttons
+                    break;
+                //TEST 1 finished
+                case 1:
+                    //data.points
+                    self.showExperimentModeFinished('First Test');
+                    //TODO: save data (points and stuff) and make d3 graph for showing later
+                    break;
+                //FREE NEUROFEEDBACK finished
+                case 2:
+                    self.showExperimentModeFinished('Neurofeedback');
+                    break;
+                //TEST 2 finished
+                case 3:
+                    self.showExperimentModeFinished('Second Test');
+                    break;
+
+            }
+            //update experiment mode selection and duration
+            self.selectNextMode();
+            //stop boids
+            $('#running').attr('checked', false);
+        }else{ //data.percentiles === null -> no values from muse
+            alert('Calibration failed. Please check whether the Muse is connected properly.');
+        }
+        //enable sidebar experiment inputs
+        $('.sb-red :input').prop('disabled', false);
+    });
+};
 
 
 UIController.prototype.pauseExperiment = function(){ //true = pause, false = unpause
@@ -434,60 +493,6 @@ UIController.prototype.showExperimentModeStarted = function(expMode){
 };
 
 
-/***
- * Message from node that part of an experiment has finished.
- * The data send via the WebSocket contains the experiment mode idx (0-3) and other data.
- */
-UIController.prototype.onStopExperiment = function(){
-    var self = this;
-    this.socket.on('experimentStopped', function(data){
-        if(data.percentiles !== null){
-            switch(data.mode){
-                case -1: //last experiment mode failed
-                    //TODO: add handling for experiment failed
-                    break;
-                //CALIBRATION finished
-                case 0:
-                    self.percentiles = data.percentiles;
-                    self.constants.setDividendThreshold(data.percentiles[0][self.firstFreqBandThresh]);
-                    self.constants.setDivisorThreshold(data.percentiles[1][self.secondFreqBandThresh]);
-                    self.firstFreqBandMin = data.percentiles[0][0];
-                    self.secondFreqBandMax = data.percentiles[1][data.percentiles[1].length-1];
-                    self.constants.setMinDividendDivisorRatio(self.firstFreqBandMin, self.secondFreqBandMax);
-                    self.constants.setMaxDividendDivisorRatio(data.percentiles[0][data.percentiles[0].length-1],data.percentiles[1][0]);
-                    console.log('received calibration data');
-                    self.showExperimentModeFinished('Calibration');
-                    self.calibrationFinished = true; //TODO: ADD ERROR HANDLING IN CASE OF NO RESULTS
-                    self.enableControlButtons(true); //enable next and prev buttons
-                    break;
-                //TEST 1 finished
-                case 1:
-                    //data.points
-                    self.showExperimentModeFinished('First Test');
-                    //TODO: save data (points and stuff) and make d3 graph for showing later
-                    break;
-                //FREE NEUROFEEDBACK finished
-                case 2:
-                    self.showExperimentModeFinished('Neurofeedback');
-                    break;
-                //TEST 2 finished
-                case 3:
-                    self.showExperimentModeFinished('Second Test');
-                    break;
-
-            }
-            //update experiment mode selection and duration
-            self.selectNextMode();
-            //stop boids
-            $('#running').attr('checked', false);
-        }else{ //data.percentiles === null -> no values from muse
-            alert('Calibration failed. Please check whether the Muse is connected properly.');
-        }
-        //enable sidebar experiment inputs
-        $('.sb-red :input').prop('disabled', false);
-    });
-};
-
 /**
  * Automatically select next experiment mode and set experiment duration.
  */
@@ -529,7 +534,7 @@ UIController.prototype.onRatioMinUpdate = function(self){
 };
 
 
-/********************* MUSE CONNECTION *******************/
+/********************* MUSE CONNECTION & ON FOREHEAD *******************/
 UIController.prototype.onMuseConnected = function(){
     var self = this;
     this.socket.on('museConnected', function(data){
@@ -635,6 +640,20 @@ UIController.prototype.setSelectedChannelIndices = function(){
             this.selectedChannelIndices = this.selectedChannel.split('-').map(Number);
         }
     }
+};
+
+/******************** FULLSCREEN ******************/
+UIController.prototype.onFullscreen = function(){
+    var self = this;
+    $('button#expand-btn').click(function(){
+        if(!self.fullscreen){
+            window.open("", "_self", "");
+           // window.close();
+            window.open("file:///E:/Programmieren/Node.js/node_modules/test-module/index.html", "page", "toolbars=no,location=no,resizable=no");
+            //TODO: anstatt selbes fenster nochmal öffnen -> neues fenster mit index_trainer.html -> enthält Einstellungen für Freuenzbänder, Kanalauswahl
+            // , Artefaktanzeige, EEG-Anzeige pro Kanal
+        }
+    });
 };
 
 /***************** BATTERY ***********************/

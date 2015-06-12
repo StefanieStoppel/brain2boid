@@ -254,11 +254,13 @@ GraphicsController.prototype.updateHorseshoe = function(horseshoeValues){
 
 GraphicsController.prototype.setupBatteryDisplay = function(){
     this.batteryCharge = $('div#battery-charge');
+    this.batteryChargeText = $('span#battery-charge-text');
     this.batteryChargeWidth = parseInt(this.batteryCharge.width());
 };
 
 GraphicsController.prototype.updateBatteryDisplay = function(charge){
     this.batteryCharge.width( (charge/100) * this.batteryChargeWidth );
+    this.batteryChargeText.html(charge + '&#37;');
     if(charge < 10){
         this.batteryCharge.css('background-color', 'red');
     }

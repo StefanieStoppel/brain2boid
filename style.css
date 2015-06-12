@@ -272,6 +272,7 @@ div#control-row{
     width: 100%;
     background: linear-gradient(to top, #245580, cadetblue);
     background: rgba(0, 0, 0, 0) linear-gradient(to top, #07113B, #A4D5FF) repeat scroll 0% 100%;
+    bottom: 0;
 }
 i.fa.fa-play, i.fa.fa-forward, i.fa.fa-backward, i.fa.fa-arrows-alt{
     font-size: 2em;
@@ -329,11 +330,13 @@ p#experiment-mode-display{
     text-shadow: 1px 1px #02203c;
 }
 div#battery-display{
+    width: 6.5em;
     position: fixed;
     top: 3em;
     right: 4em;
 }
 div#battery-body{
+    float: right;
     width: 3em;
     height: 1.5em;
     background: black;
@@ -356,4 +359,11 @@ div#battery-charge{
     border-radius: 0.2em;
     margin-top: 0.2em;
     margin-left: 0.2em;
+}
+span#battery-charge-text{
+    min-width: 1em;
+    min-height: 1em;
+    color: white;
+    right: -0.5em;
+    position: relative;
 }

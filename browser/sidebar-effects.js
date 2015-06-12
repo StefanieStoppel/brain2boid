@@ -77,8 +77,6 @@ $(document).ready(function(){
                 //animation complete
             });
 
-
-
             //rotate fa arrow back
             $(arrow[btnIdx]).animateRotate(180, 0, 500, 'linear');
         }
