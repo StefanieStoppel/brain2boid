@@ -91,17 +91,6 @@ MainController.prototype.onWebSocketConnection = function(){
     });
 };
 
-MainController.prototype.updateBoids = function(socket){
-    var self = this;
-    setInterval(
-        function(){
-            if(ANIMATION_RUNNING) {
-                self.boidController.flock();
-            }
-        } , 10
-    );
-};
-
 /**
  * New experiment button clicked + Age and Gender dialog submitted.
  * @param socket
@@ -117,7 +106,7 @@ MainController.prototype.newExperimentListener = function(socket){
 };
 
 //listen for "start experiment" btn press
-MainController.prototype.experimentStartListener = function(socket){
+MainController.prototype.startExperimentListener = function(socket){
     var self = this;
     socket.on('startExperimentButton', function(data){// data.mode = experiment mode idx
         if(typeof self.experimentController !== 'undefined'){ //data.duration = duration of experiment mode in seconds
@@ -244,7 +233,7 @@ MainController.prototype.oscListener = function(socket){
             self.newExperimentListener(socket);
 
             //listen for experiment start btn click
-            self.experimentStartListener(socket);
+            self.startExperimentListener(socket);
             //listen for experiment mode change
             self.experimentModeChangeListener(socket);
             self.firstMessage = false;
@@ -287,9 +276,9 @@ MainController.prototype.oscListener = function(socket){
                                 if(SELECTED_FREQ_BANDS.length === 1)
                                     setDivisor('', [1,1,1,1]);
                                 setRatio();
-                                if(typeof self.experimentController !== 'undefined' && self.experimentController.getExperimentRunning()){
+                                if(typeof self.experimentController !== 'undefined'){
                                     self.experimentController.setRatio(RATIO[1]);
-                                    if(!self.experimentController.getExperimentRunning())
+                                    if(!self.experimentController.getExperimentRunning())//todo: is this needed?
                                         self.experimentController.stopPointsTimer();
                                 }
                                 if(RATIO[1] > RATIO_MAX){
@@ -309,7 +298,7 @@ MainController.prototype.oscListener = function(socket){
                                 //console.log(allBand.name + ': ' + msg);
                                 setDivisor(selBand.name, msg.slice(1));
                                 setRatio();
-                                if(typeof self.experimentController !== 'undefined' && self.experimentController.getExperimentRunning()){
+                                if(typeof self.experimentController !== 'undefined'){
                                     self.experimentController.setRatio(RATIO[1]);
                                     if(!self.experimentController.getExperimentRunning())
                                         self.experimentController.stopPointsTimer();
@@ -370,7 +359,7 @@ MainController.prototype.oscListener = function(socket){
         /***********************BATTERY*************************/
         else if(msg[0] === '/muse/batt'){//four integers. idx 0 is battery precentage remaining (divide by 100)
             var charge = Math.round(msg[1]/100);
-            console.log(charge);
+           // console.log(charge);
             if(REMAINING_BATTERY !== charge){
                 REMAINING_BATTERY = charge;
                 socket.emit('batteryUpdate', {charge: charge});

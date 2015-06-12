@@ -4,10 +4,12 @@
  * is converted to a csv file at the end of each experiment.
  *
  **/
+var fs = require('fs');
 //gauss for movinge percentile
 var gauss = require('gauss');
 var Collection = gauss.Collection;
 var Points = require('./Points.js');
+var json2csv = require('json2csv');
 TIMER = undefined;
 MODE_TIMER = undefined;
 
@@ -32,6 +34,7 @@ function ExperimentController(age, gender, mode, socket){ //age and gender of su
     this.gender = gender;
 
     //json array with all experiment data, will be written to csv file
+    this.csvFields = ["ratio", "trainingRatio", "quotientName", "mode"];
     this.jsonExpData = [];
     //percentiles for both frequency bands
     this.percentilesDividendIdx = 0;
@@ -42,6 +45,7 @@ function ExperimentController(age, gender, mode, socket){ //age and gender of su
     this.thresholdRatio = 0;
     this.dividend = {value: 0, percentile: 0, band: ''};//{value: x, percentile: y, band: z}
     this.divisor =  {value: 0, percentile: 0, band: ''};
+    this.trainingRatio = {value: 0, quotientName: ''};
     this.timeAboveRatio = 0;//measures time above threshold for points
     //is experiment running or not
     this.experimentRunning = false;
@@ -64,6 +68,10 @@ ExperimentController.prototype.setPercentileDividendIdx = function(idx){
 
 ExperimentController.prototype.setPercentileDivisorIdx = function(idx){
     this.percentilesDivisorIdx = idx;
+};
+
+ExperimentController.prototype.setTrainingRatio = function(trainingRatio, freqBandQuotientName){
+    this.trainingRatio = {value: trainingRatio, quotientName: freqBandQuotientName};
 };
 
 ExperimentController.prototype.startExperimentMode = function(mode, callback){
@@ -121,6 +129,10 @@ ExperimentController.prototype.getQuantileResults = function(freqBand1, freqBand
         //set divisor
         this.setDivisor(this.percentilesDivisor[this.percentilesDivisorIdx], this.percentilesDivisorIdx, freqBand2);
 
+        //set the ratio that is used for training
+        this.setTrainingRatio(this.dividend.value / this.divisor.value, freqBand1 + '/' + freqBand2);
+
+
         //Quantiles as specified
         console.log("quantiles for average of band " + freqBand1 + " over channel(s) " + channelIdx1 + ", " +channelIdx2 + ": " +  this.percentilesDividend);
         console.log("quantiles for average of band " + freqBand2 + " over channel(s) " + channelIdx1 + ", " +channelIdx2 + ": " +  this.percentilesDivisor);
@@ -171,6 +183,19 @@ ExperimentController.prototype.stopExperiment = function(){
     this.experimentPaused = false;
     this.experimentRunning = false;
     this.clearTimer(MODE_TIMER);
+    //TODO: SAVE DATA TO CSV IF MODE === 1 OR MODE === 3
+    if(this.mode === 1 || this.mode === 3){
+        var self = this;
+        json2csv({ data: self.jsonExpData, fields: self.csvFields }, function(err, csv) {
+            if (err) console.log(err);
+            fs.writeFile('test.csv', csv, function(err) {
+                if (err) throw err;
+                console.log('file saved');
+            });
+        });
+        //clear json data
+        this.jsonExpData = [];
+    }
 };
 
 ExperimentController.prototype.pauseExperiment = function(){
@@ -231,82 +256,76 @@ ExperimentController.prototype.setRatioMax = function(ratioMax){
     }
 };
 
+ExperimentController.prototype.setRatio = function(ratio){
+    if(this.experimentRunning)
+    {
+        //TODO: SAVE AS CSV AND TEST
+        //add values to jsonExpData if mode === 1 || mode === 3
+        if(this.mode === 1 || this.mode === 3){
+            this.jsonExpData.push(
+                {"ratio": ratio.toString(),
+                "trainingRatio": this.trainingRatio.value.toString(),
+                "quotientName": this.trainingRatio.quotientName,
+                "mode": this.mode.toString()}
+            );
+            console.log('added new json data entry');
+        }
+
+        console.log('ratio: ' + ratio + ', threshold: ' + this.thresholdRatio);
+        // 1) POINTS: ratio over threshold
+        if(ratio > this.thresholdRatio)
+        {
+            this.startPointsTimer();
+        }
+        if(ratio < this.thresholdRatio)
+        {
+            this.stopPointsTimer();
+        }
+    }else{//todo: test beim ende des experiments die noch ausstehenden punkte übermitteln
+        this.updatePointsByTime();
+    }
+};
+
+ExperimentController.prototype.startPointsTimer = function(){
+    if(this.timeAboveRatio === 0){
+        this.timeAboveRatio = process.hrtime();
+        TIMER = setInterval(function(){
+            console.log('over ratio');
+        }, 500);
+    }
+};
+
 ExperimentController.prototype.stopPointsTimer = function(){
     if(TIMER != undefined){
         clearInterval(TIMER);
         TIMER = undefined;
         console.log('TIMER cleared and set to undefined');
-
-        if(this.timeAboveRatio !== 0){
-            var diff = process.hrtime(this.timeAboveRatio);//idx 0: seconds, idx 1: nanoseconds
-            //change from nano- to milliseconds
-            var ms = Math.floor(diff[1] / 1000000);
-            if((diff[0] === 0 && ms >= 500) || (diff[0] > 0)){
-                //var p = Math.floor((diff[0] * 1000 + ms) / 10);
-                //Points 1): f.e. 1 s 450 ms = 1450 points
-                var p = Math.floor(diff[0] * 1000 + ms);
-                if(this.mode === 1){
-                    this.test1Points.addThreshPoints(p);
-                    this.socket.emit('updatePoints', {points: p});
-                }else if(this.mode === 3){
-                    this.test2Points.addThreshPoints(p);
-                    this.socket.emit('updatePoints', {points: p});
-                }
-            }
-            this.timeAboveRatio = 0;
-        }
+        this.updatePointsByTime();
     }
 };
 
-ExperimentController.prototype.setRatio = function(ratio){
-    var self = this;
-    //console.log('ExperimentController.setRatio()');
-    if(this.experimentRunning)
-    {
-        console.log('ratio: ' + ratio + ', threshold: ' + this.thresholdRatio);
-        // 1) POINTS: ratio over threshold
-        if(ratio > this.thresholdRatio)
-        {
-            if(self.timeAboveRatio === 0){
-                self.timeAboveRatio = process.hrtime();
-                TIMER = setInterval(function(){
-                    console.log('over ratio');
-                }, 500);
+ExperimentController.prototype.updatePointsByTime = function(){
+    if(this.timeAboveRatio !== 0){
+        var diff = process.hrtime(this.timeAboveRatio);//idx 0: seconds, idx 1: nanoseconds
+        //change from nano- to milliseconds
+        var ms = Math.floor(diff[1] / 1000000);
+        if((diff[0] === 0 && ms >= 500) || (diff[0] > 0)){
+            //var p = Math.floor((diff[0] * 1000 + ms) / 10);
+            //Points 1): f.e. 1 s 450 ms = 1450 points
+            var p = Math.floor(diff[0] * 1000 + ms);
+            if(this.mode === 1){
+                this.test1Points.addThreshPoints(p);
+                this.socket.emit('updatePoints', {points: p});
+            }else if(this.mode === 3){
+                this.test2Points.addThreshPoints(p);
+                this.socket.emit('updatePoints', {points: p});
             }
         }
-        if(ratio < this.thresholdRatio)
-        {
-            this.stopPointsTimer();
-            /*
-            if(typeof TIMER !== 'undefined'){
-                console.log('clearing timer');
-                clearInterval(TIMER);//clear interval when ratio falls below thresh
-                TIMER = undefined;
-                //TODO: write start and end of interval over threshold to json array
-                //TODO: average of all values in that interval: points = deltaRatio = (avgRatioInterval - thresh) * 1000
-                //time difference
-                if(self.timeAboveRatio !== 0){
-                    var diff = process.hrtime(self.timeAboveRatio);//idx 0: seconds, idx 1: nanoseconds
-                    //change from nano- to milliseconds
-                    var ms = Math.floor(diff[1] / 1000000);
-                    if((diff[0] === 0 && ms >= 500) || (diff[0] > 0)){
-                        //var p = Math.floor((diff[0] * 1000 + ms) / 10);
-                        //Points 1): f.e. 1 s 450 ms = 1450 points
-                        var p = Math.floor(diff[0] * 1000 + ms);
-                        if(self.mode === 1){
-                            self.test1Points.addThreshPoints(p);
-                        }else if(self.mode === 3){
-                            self.test2Points.addThreshPoints(p);
-                        }
-                        self.socket.emit('updatePoints', {points: p});
-                    }
-                    self.timeAboveRatio = 0;
-                }
-            }*/
-        }
+        this.timeAboveRatio = 0;
     }
-    //TODO: beim ende des experiments die noch ausstehenden punkte übermitteln
 };
+
+
 
 
 /***
