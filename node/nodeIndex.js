@@ -12,7 +12,8 @@ var CHANNELS = [{name: 'T9',  index: 1},
                       {name: 'Fp1', index: 2}];//default: T9 + Fp1
 
 //Frequency band name and idx mapping
-var FREQ_BANDS = [  {name: 'delta', index: 0},
+var FREQ_BANDS = [  {name: 'none', index: -1},
+                    {name: 'delta', index: 0},
                     {name: 'theta', index: 1},
                     {name: 'alpha', index: 2},
                     {name: 'beta',  index: 3},
@@ -46,7 +47,7 @@ MainController.prototype.init = function(){
     //moving average
     var MA = require('./dependencies/moving-average.js');
     var timeInterval = 60 * 1000; // 1 minute
-    MOV_AVG = [ ['delta', 0, 0, 0, 0],
+    /*MOV_AVG = [ ['delta', 0, 0, 0, 0],
         ['theta', 0, 0, 0, 0],
         ['alpha', 0, 0, 0, 0],
         ['beta',  0, 0, 0, 0],
@@ -56,7 +57,7 @@ MainController.prototype.init = function(){
         CHANNELS.forEach(function(el, idx){
             MOV_AVG[i][el.index] = MA(timeInterval);
         });
-    }
+    }*/
 
     this.experimentController = undefined;
     this.firstMessage = true;
@@ -206,11 +207,10 @@ MainController.prototype.frequencyBandSelectionListener = function(socket){
     var self = this;
     //receive frequency selection changes
     socket.on('frequencyBandSelection', function (data) {
-        console.log(data);
-        //SELECTED_FREQ_BANDS = data.selectedFrequencyBands;
         data.selectedFrequencyBands.forEach(function (band, idx) {
-            SELECTED_FREQ_BANDS[idx] = FREQ_BANDS[band];
+            SELECTED_FREQ_BANDS[idx] = FREQ_BANDS[band+1];
         });
+        console.log(SELECTED_FREQ_BANDS);
         //get quantiles from Calibration for newly selected bands and send them over websocket
         if(self.experimentController !== undefined && self.experimentController.getCalibrationCollectionLength() !== 0){
             socket.emit('percentiles', {

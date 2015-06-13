@@ -87,8 +87,16 @@ div.sidebar{
     text-shadow: 1px 1px #3f0000;
     border-left: 1px solid #3f0000;
 }
+div.sidebar h3{
+    margin-bottom: 0;
+}
 div.sidebar h4, div.sidebar h5{
     text-shadow: 1px 1px #11262B;
+    margin-bottom: 0.4em;
+    margin-top: 0.4em;
+}
+div.sidebar h5{
+    text-align: center;
 }
 .sidebar-input, .sidebar-select{
     border-radius: 0.2em;
@@ -104,8 +112,7 @@ div.sidebar h4, div.sidebar h5{
     border: 1px solid rgba(230, 230, 250, 0.8);
 }
 .sidebar-select{
-    width: 100%;
-    min-width: 4em;
+    margin-left: 1.5em;
 }
 .sidebar-button{
     background-color: lavender;
@@ -366,4 +373,25 @@ span#battery-charge-text{
     color: white;
     right: -0.5em;
     position: relative;
+}
+/******* FREQUENCY SLIDER ******/
+.fr-percentile-input{
+    margin-top: 1.1em;
+    margin-bottom: 1em;
+}
+.ui-widget-header{
+    background: #1C4048;
+}
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default{
+    background: rgba(0, 0, 0, 0) linear-gradient(to bottom, #152d3b, #A4D5FF) repeat scroll 0% 100%;
+}
+#amount-dividend, #amount-divisor{
+    float:right;
+    margin-top: 1.5em;
+    right: 1.5em;
+    position: relative;
+}
+#slider-dividend-percentile, #slider-divisor-percentile {
+    position: relative;
+    left: 50%;
 }

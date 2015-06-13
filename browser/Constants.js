@@ -112,6 +112,7 @@ Constants.prototype.setFrequencyBands = function(frequencyBands){
 //set to >30%
 Constants.prototype.setDividendThreshold = function(lowThreshold){
     DIVIDEND_THRESH = lowThreshold;
+    console.log(lowThreshold);
     this.updateTrainingRatio();
     this.updateColourScale();
     this.setColourByFreqRatio();
@@ -120,6 +121,7 @@ Constants.prototype.setDividendThreshold = function(lowThreshold){
 //set to <70%
 Constants.prototype.setDivisorThreshold = function(highThreshold){
     DIVISOR_THRESH = highThreshold;
+    console.log(highThreshold);
     this.updateTrainingRatio();
     this.updateColourScale();
     this.setColourByFreqRatio();

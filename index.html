@@ -201,34 +201,62 @@
             <div class="row">
                 <h4>Trainingsprotokoll</h4>
                 <div class="fr-band-single col-xs-6">
-                    <select id="select-fr-dividend" class="frequency-picker full-width sidebar-select sb-blue-select">
+                    <h5>Reward</h5>
+                    <select id="select-fr-dividend" class="frequency-picker sidebar-select sb-blue-select">
                         <option name="fr-picker" class="fr-dividend" id="fr-dividend-delta" value="0">&delta; (Delta) </option>
                         <option name="fr-picker" class="fr-dividend" id="fr-dividend-theta" value="1">&theta; (Theta)</option>
                         <option name="fr-picker" class="fr-dividend" id="fr-dividend-alpha" value="2" selected>&alpha; (Alpha)</option>
                         <option name="fr-picker" class="fr-dividend" id="fr-dividend-beta" value="3">&beta; (Beta)</option>
                         <option name="fr-picker" class="fr-dividend" id="fr-dividend-all" value="4">&gamma; (Gamma)</option>
-
-                        <!--
-                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-alpha-beta" value="2,3" selected>&alpha; / &beta;</option>
-                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-alpha-gamma" value="2,4">&alpha; / &gamma; </option>
-                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-alpha-theta" value="2,1">&alpha; / &theta; </option>
-                        <option name="fr-picker" class="fr-ratio" id="fr-ratio-theta-gamma" value="1,4">&theta; / &gamma;</option>-->
                     </select>
                 </div>
                 <div class="fr-band-single col-xs-6">
-                    <select id="select-fr-divisor" class="frequency-picker full-width sidebar-select sb-blue-select">
+                    <h5>Inhibit</h5>
+                    <select id="select-fr-divisor" class="frequency-picker sidebar-select sb-blue-select">
                         <option name="fr-picker" class="fr-divisor" id="fr-divisor-none" value="-1"> - </option>
                         <option name="fr-picker" class="fr-divisor" id="fr-divisor-delta" value="0">&delta; (Delta) </option>
                         <option name="fr-picker" class="fr-divisor" id="fr-divisor-theta" value="1">&theta; (Theta)</option>
-                        <option name="fr-picker" class="fr-divisor" id="fr-divisor-alpha" value="2">&alpha; (Alpha)</option>
+                        <option name="fr-picker" class="fr-divisor" id="fr-divisor-alpha" value="2" disabled>&alpha; (Alpha)</option>
                         <option name="fr-picker" class="fr-divisor" id="fr-divisor-beta" value="3" selected>&beta; (Beta)</option>
                         <option name="fr-picker" class="fr-divisor" id="fr-divisor-all" value="4">&gamma; (Gamma)</option>
                     </select>
                 </div>
-
-
             </div>
             <!-- END FREQUENCY BAND PICKER --->
+
+            <!-- PERCENTILE INPUTS -->
+            <div class="row">
+                <div class="fr-percentile-input col-xs-6 col-sm-6" style="padding-left:0;">
+                    <span id="amount-dividend">
+                        50&#37;
+                    </span>
+                    <div id="slider-dividend-percentile" style="height:4em;"></div>
+
+                <!--
+                    <div class="col-xs-12 col-sm-4" style="margin-bottom: 1em">
+                        <input type="number" name="freq-band-1-percentile" class="sidebar-input sb-blue-input" id="perc1" value="50">
+                    </div>
+                    <div class="col-xs-12 col-sm-4" style="margin-bottom: 1em;">
+                        <input type="button" name="perc1-update" class="sidebar-button sb-blue-button" value="Update">
+                    </div> -->
+                </div>
+                <div class="fr-percentile-input col-xs-6 col-sm-6" style="padding-left:0;">
+                    <span id="amount-divisor">
+                        50&#37;
+                    </span>
+                    <div id="slider-divisor-percentile" style="height:4em;"></div>
+
+<!--
+                    <div class="col-xs-12 col-sm-4"  style="margin-bottom: 1em;">
+                        <input type="number" name="freq-band-2-percentile" class="sidebar-input sb-blue-input" id="perc2" value="50" >
+                    </div>
+                    <div class="col-xs-12 col-sm-4"  style="margin-bottom: 1em;">
+                        <input type="button" name="perc2-update" class="sidebar-button sb-blue-button" value="Update">
+                    </div> -->
+                </div>
+                <br>
+            </div>
+            <!-- END PERCENTILE INPUTS -->
 
             <!--- RATIO DISPLAYS -->
             <h4>Ratio display</h4>
@@ -251,34 +279,7 @@
             </div>
             <!--- END RATIO DISPLAYS -->
 
-            <!-- PERCENTILE INPUTS -->
-            <div class="row">
-                <h4>Percentile display</h4>
-                <div class="col-xs-6 col-sm-12" style="padding-left:0;">
-                    <div class="col-xs-12 col-sm-4" style="margin-bottom: 1em; ">
-                        <label id="perc1-label" for="perc1">&#37;-ile &alpha;</label>
-                    </div>
-                    <div class="col-xs-12 col-sm-4" style="margin-bottom: 1em">
-                        <input type="number" name="freq-band-1-percentile" class="sidebar-input sb-blue-input" id="perc1" value="50">
-                    </div>
-                    <div class="col-xs-12 col-sm-4" style="margin-bottom: 1em;">
-                        <input type="button" name="perc1-update" class="sidebar-button sb-blue-button" value="Update">
-                    </div>
-                </div>
-                <div class="col-xs-6 col-sm-12" style="padding-left:0;">
-                    <div class="col-xs-12 col-sm-4"  style="margin-bottom: 1em;">
-                        <label id="perc2-label" for="perc2">&#37;-ile &beta;</label>
-                    </div>
-                    <div class="col-xs-12 col-sm-4"  style="margin-bottom: 1em;">
-                        <input type="number" name="freq-band-2-percentile" class="sidebar-input sb-blue-input" id="perc2" value="50" >
-                    </div>
-                    <div class="col-xs-12 col-sm-4"  style="margin-bottom: 1em;">
-                        <input type="button" name="perc2-update" class="sidebar-button sb-blue-button" value="Update">
-                    </div>
-                </div>
-                <br>
-            </div>
-            <!-- END PERCENTILE INPUTS -->
+
 
 
             <div class="col-xs-4">

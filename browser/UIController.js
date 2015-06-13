@@ -76,10 +76,12 @@ function UIController(){
             self.bandNames.push('none');
     });
 
-    //Frequency band ratio slider setup and listen for changes
-    this.firstFreqBandThresh = ($('input[name="freq-band-1-percentile"]').val() / 10) -1;
 
-    this.secondFreqBandThresh = ($('input[name="freq-band-2-percentile"]').val() / 10) -1;
+    /******** FREQUENCY PERCENTILE SLIDERS **********/
+
+    this.frequencyPercentileSliders();
+    this.firstFreqBandThresh = $('#slider-dividend-percentile').slider("option", "value") / 10 - 1;
+    this.secondFreqBandThresh = $('#slider-divisor-percentile').slider("option", "value") / 10 - 1;
 
     /****************************** GRAPHICS CONTROLLER, CONSTANTS *****************************/
 
@@ -102,7 +104,7 @@ function UIController(){
     this.onRatioMaxUpdate(this);
     this.onRatioMinUpdate(this);
     this.averageRatioUpdate(this);
-    this.onFrequencyTresholdUpdate();
+    //this.onFrequencyTresholdUpdate();
     //this.onRawFFTUpdate();
     this.onHorseshoeUpdate();
     this.onBatteryUpdate();
@@ -129,6 +131,9 @@ function UIController(){
     /*****FULLSCREEN MODE****/
     this.fullscreen = false;
     this.onFullscreen();
+
+
+
 
 }
 
@@ -439,12 +444,10 @@ UIController.prototype.onExperimentModeSelection = function(){
         self.socket.emit('modeDurationUpdate', {mode: self.experimentMode, duration: duration});
         //change text on startExperiment btn
         self.startExperimentBtn.val('Start ' +  $("label[for='"+ $(this).attr('id') + "']").text());
-
         //set countdown for experiment mode
         self.setCountdown(duration);
     });
 };
-
 
 UIController.prototype.setCountdown = function(duration){
     $('#timer-text').text(duration + ' s');
@@ -455,15 +458,6 @@ UIController.prototype.onTimerUpdate = function(){
     this.socket.on('timerUpdate', function(data){
         self.setCountdown(data.time);
     })
-};
-
-UIController.prototype.startCountdown = function(duration){
-    var text = $('#timer-text');
-    COUNTDOWN = setInterval(function(){
-        text.text(duration-- + ' s');
-        if(duration === 0)
-            clearInterval(COUNTDOWN);
-    }, 990);
 };
 
 /**
@@ -500,7 +494,6 @@ UIController.prototype.showExperimentModeStarted = function(expMode){
         }, 2000)
     }
 };
-
 
 /**
  * Automatically select next experiment mode and set experiment duration.
@@ -577,17 +570,44 @@ UIController.prototype.onTouchingForehead = function(){
 };
 
 /***********************************    CHANNEL AND FREQUENCY BAND SELECTION *******************/
-UIController.prototype.onFrequencyTresholdUpdate = function(){
+UIController.prototype.frequencyPercentileSliders = function(){
     var self = this;
-    //frequency band btns + inputs
-    $('input[name="perc1-update"]').click(function(){
-        self.firstFreqBandThresh = ($('input[name="freq-band-1-percentile"]').val() / 10) -1;
-        self.constants.setDividendThreshold(self.percentiles[0][self.firstFreqBandThresh]);
+    $('#slider-dividend-percentile').slider({
+        orientation: "vertical",
+        range: "min",
+        min: 0,
+        max: 100,
+        step: 10,
+        value: 50,
+        slide: function( event, ui ) {
+            $( "#amount-dividend" ).html( ui.value + '&#37;' );
+            self.onSlide(ui, true);
+        }
     });
-    $('input[name="perc2-update"]').click(function(){
-        self.secondFreqBandThresh = ($('input[name="freq-band-2-percentile"]').val() / 10) -1;
-        self.constants.setDivisorThreshold(self.percentiles[1][self.secondFreqBandThresh]);
+    $('#slider-divisor-percentile').slider({
+        orientation: "vertical",
+        range: "min",
+        min: 0,
+        max: 100,
+        step: 10,
+        value: 50,
+        slide: function( event, ui ) {
+            $( "#amount-divisor" ).html( ui.value + '&#37;' );
+            self.onSlide(ui, false);
+        }
     });
+};
+
+UIController.prototype.onSlide = function(ui, isDividend){
+    if(this.percentiles !== undefined){
+        if(isDividend){
+            this.firstFreqBandThresh = ui.value / 10 - 1;
+            this.constants.setDividendThreshold(this.percentiles[0][this.firstFreqBandThresh]);
+        }else{
+            this.secondFreqBandThresh = ui.value / 10 - 1;
+            this.constants.setDivisorThreshold(this.percentiles[1][this.secondFreqBandThresh]);
+        }
+    }
 };
 
 UIController.prototype.onChannelSelection = function(){
@@ -609,28 +629,28 @@ UIController.prototype.onChannelSelection = function(){
 
 UIController.prototype.onFrequencySelection = function(){
     var self = this;
-    $('select.frequency-picker').change(function(idx, el)
+    $('select.frequency-picker').change(function()
     {
         if($(this).attr('id') === 'select-fr-dividend')
         {
             self.selectedFrequencies[0] = parseInt($(this).val());
+            //enable old selection and disable new selection in divisor options (inhibit select field)
+            $('option[name="fr-picker"]:disabled').attr('disabled', false);
+            $('option[value=' + $(this).val() + '].fr-divisor').attr('disabled', true);
         }
         else if($(this).attr('id') === 'select-fr-divisor')
         {
             self.selectedFrequencies[1] = parseInt($(this).val());
         }
-        //always an array
-        //self.selectedFrequencies = $(this).val().split(',').map(Number);
+
         //send frequency selection to node.js over websocket
         self.socket.emit('frequencyBandSelection', { selectedFrequencyBands: self.selectedFrequencies });
 
         //if boid animation is running, uncheck
         if(running()){
             run(false);
-            //$('#running').attr('checked', false);
         }
         self.graphicsController.setSelectedFreqIndices(self.selectedFrequencies);
-        // self.graphicsController.setSelectedChannelIndices(self.selectedChannelIndices);
         self.graphicsController.resetBoids(self.graphicsController);
 
         self.bandNames = [];
