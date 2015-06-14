@@ -241,17 +241,27 @@ UIController.prototype.onStopExperiment = function(){
                     break;
                 //CALIBRATION finished
                 case 0:
-                    self.percentiles = data.percentiles;
-                    self.constants.setDividendThreshold(data.percentiles[0][self.firstFreqBandThresh]);
-                    self.constants.setDivisorThreshold(data.percentiles[1][self.secondFreqBandThresh]);
-                    self.firstFreqBandMin = data.percentiles[0][0];
-                    self.secondFreqBandMax = data.percentiles[1][data.percentiles[1].length-1];
-                    self.constants.setMinDividendDivisorRatio(self.firstFreqBandMin, self.secondFreqBandMax);
-                    self.constants.setMaxDividendDivisorRatio(data.percentiles[0][data.percentiles[0].length-1],data.percentiles[1][0]);
-                    console.log('received calibration data');
-                    self.showExperimentModeFinished('Calibration');
-                    self.calibrationFinished = true; //TODO: ADD ERROR HANDLING IN CASE OF NO RESULTS
-                    self.enableControlButtons(true); //enable next and prev buttons
+                    if(data.error){ //calibration failed
+                        alert('Calibration failed! No data received. Please check the electrode contact and recalibrate!');
+                        //todo. reset duration
+                        console.log('self.duration: ' + self.duration);
+                        self.hiddenExperimentDuration.val(self.duration);
+                        //set countdown
+                        self.setCountdown(self.duration);
+                        self.socket.emit('experimentModeChanged', {mode: self.experimentMode, duration: self.duration});
+                    }else{
+                        self.percentiles = data.percentiles;
+                        self.constants.setDividendThreshold(data.percentiles[0][self.firstFreqBandThresh]);
+                        self.constants.setDivisorThreshold(data.percentiles[1][self.secondFreqBandThresh]);
+                        self.firstFreqBandMin = data.percentiles[0][0];
+                        self.secondFreqBandMax = data.percentiles[1][data.percentiles[1].length-1];
+                        self.constants.setMinDividendDivisorRatio(self.firstFreqBandMin, self.secondFreqBandMax);
+                        self.constants.setMaxDividendDivisorRatio(data.percentiles[0][data.percentiles[0].length-1],data.percentiles[1][0]);
+                        console.log('received calibration data');
+                        self.showExperimentModeFinished('Calibration');
+                        self.calibrationFinished = true; //TODO: ADD ERROR HANDLING IN CASE OF NO RESULTS
+                        self.enableControlButtons(true); //enable next and prev buttons
+                    }
                     break;
                 //TEST 1 finished
                 case 1:
@@ -269,8 +279,11 @@ UIController.prototype.onStopExperiment = function(){
                     break;
 
             }
-            //update experiment mode selection and duration
-            self.selectNextMode();
+            console.log(data.error);
+            if(data.error === undefined || !data.error){
+                //update experiment mode selection and duration
+                self.selectNextMode();
+            }
             //stop boids
             $('#running').attr('checked', false);
         }else{ //data.percentiles === null -> no values from muse
@@ -284,7 +297,8 @@ UIController.prototype.onStopExperiment = function(){
 
 UIController.prototype.pauseExperiment = function(){ //true = pause, false = unpause
     run(false);
-
+    //change button to play
+    this.startExperimentBtn.children('i').attr('class', 'fa fa-play');
     //todo: animation with fotawesome pause icon
     //TODO: show animation when paused + stop timer
     //var icon = '';
@@ -294,6 +308,9 @@ UIController.prototype.pauseExperiment = function(){ //true = pause, false = unp
 
 UIController.prototype.resumeExperiment = function(){
     run(true);
+    //change button to pause
+    this.startExperimentBtn.children('i').attr('class', 'fa fa-pause');
+
 };
 
 /**** CONTROL PANEL BUTTON LISTENERS ***/
@@ -305,34 +322,50 @@ UIController.prototype.resumeExperiment = function(){
 UIController.prototype.onStartModeButtonClick = function(){
     var self = this;
     $('button#start-mode-btn').click(function(){
-        if(self.museConnected && self.experimentControllerSet){
-            if(self.experimentMode === 0)
-                self.showExperimentModeStarted("Calibration");
-            else if(self.experimentMode === 1)
-                self.showExperimentModeStarted("First Test");
-            else if(self.experimentMode === 2)
-                self.showExperimentModeStarted("Free Neurofeedback");
-            else if(self.experimentMode === 3)
-                self.showExperimentModeStarted("Second Test");
+        if($(this).children('i.fa.fa-play').length !== 0){ //experiment was paused or stopped
+            if(self.museConnected && self.experimentControllerSet){
+                if(self.experimentMode === 0)
+                    self.showExperimentModeStarted("Calibration");
+                else if(self.experimentMode === 1)
+                    self.showExperimentModeStarted("First Test");
+                else if(self.experimentMode === 2)
+                    self.showExperimentModeStarted("Free Neurofeedback");
+                else if(self.experimentMode === 3)
+                    self.showExperimentModeStarted("Second Test");
 
-            //get mode idx from radio btn and send info via socket
-            self.socket.emit('startExperimentButton',
-                {mode: self.experimentMode,
-                    duration: self.duration,
-                    percentiles: [ parseInt(self.firstFreqBandThresh), parseInt(self.secondFreqBandThresh) ]}
-            );
-            //set experimentRunning
-            self.experimentRunning = true;
-            //disable red sidebar inputs
-            $('.sb-red :input').prop('disabled', true);
-            //reset Points display
-            self.resetPoints();
-            //TODO: on test 1 start boids dont run, why?
-            self.resumeExperiment();//run boids
-        }else if(!self.museConnected){
-            self.displayMuseNotConnected();
-        }else if(self.museConnected && !self.experimentControllerSet){
-            self.displayExperimentNotCreated();
+                //get mode idx from radio btn and send info via socket
+                self.socket.emit('startExperimentButton',
+                    {mode: self.experimentMode,
+                        duration: self.duration,
+                        percentiles: [ parseInt(self.firstFreqBandThresh), parseInt(self.secondFreqBandThresh) ]}
+                );
+                //set experimentRunning
+                self.experimentRunning = true;
+                //disable red sidebar inputs
+                $('.sb-red :input').prop('disabled', true);
+                //reset Points display
+                self.resetPoints();
+                //TODO: on test 1 start boids dont run, why?
+                self.resumeExperiment();//run boids
+                self.enableControlButtons(false);
+            }else if(!self.museConnected){
+                self.displayMuseNotConnected();
+            }else if(self.museConnected && !self.experimentControllerSet){
+                self.displayExperimentNotCreated();
+            }
+        } else {//experiment was running and is to be paused
+            if(self.experimentMode === 0)
+                self.showExperimentModePaused("Calibration");
+            else if(self.experimentMode === 1)
+                self.showExperimentModePaused("First Test");
+            else if(self.experimentMode === 2)
+                self.showExperimentModePaused("Free Neurofeedback");
+            else if(self.experimentMode === 3)
+                self.showExperimentModePaused("Second Test");
+            $('.sb-red :input').prop('disabled', false);
+            self.experimentRunning = false;
+            self.pauseExperiment();
+            self.enableControlButtons(true);
         }
     });
 };
@@ -357,6 +390,10 @@ UIController.prototype.onPreviousModeButtonClick = function(){
                     self.experimentModeDisplay.text('Test 2');
                     break;
             }
+            self.hiddenExperimentDuration.val(self.duration);
+            //set countdown
+            self.setCountdown(self.duration);
+            self.socket.emit('experimentModeChanged', {mode: self.experimentMode, duration: self.duration});
         }else if(!self.museConnected){
             self.displayMuseNotConnected();
         }else if(self.museConnected && !self.experimentControllerSet){
@@ -387,19 +424,17 @@ UIController.prototype.onNextModeButtonClick = function(){
                 case 3:
                     self.experimentModeDisplay.text('Test 2');
                     self.duration = 60;
-
                     break;
             }
+            self.hiddenExperimentDuration.val(self.duration);
+            //set countdown
+            self.setCountdown(self.duration);
+            self.socket.emit('experimentModeChanged', {mode: self.experimentMode, duration: self.duration});
         }else if(!self.museConnected){
             self.displayMuseNotConnected();
         }else if(self.museConnected && !self.experimentControllerSet){
             self.displayExperimentNotCreated();
         }
-        self.hiddenExperimentDuration.val(self.duration);
-        //set countdown
-        self.setCountdown(self.duration);
-        //todo. socket message to node
-        self.socket.emit('experimentModeChanged', {mode: self.experimentMode, duration: self.duration});
     });
 };
 
@@ -489,6 +524,24 @@ UIController.prototype.showExperimentModeStarted = function(expMode){
                 'fill': 'cadetblue',
                 'font-size': '3em'})
             .text(expMode + ' Started');
+        setTimeout(function(){
+            text.remove();
+        }, 2000)
+    }
+};
+/**
+ * Display text when experiment mode starts.
+ * @param expMode
+ */
+UIController.prototype.showExperimentModePaused = function(expMode){
+    if(this.museConnected && this.experimentControllerSet){
+        var boidSVG = this.graphicsController.getBoidSVG();
+        var text = boidSVG.append('text')
+            .attr({ 'x': boidSVG.attr('width')/2-60,
+                'y': boidSVG.attr('height')/2-15,
+                'fill': 'cadetblue',
+                'font-size': '3em'})
+            .text(expMode + ' Paused');
         setTimeout(function(){
             text.remove();
         }, 2000)
@@ -610,23 +663,6 @@ UIController.prototype.onSlide = function(ui, isDividend){
     }
 };
 
-UIController.prototype.onChannelSelection = function(){
-    var self = this;
-    $('select.channel-picker').change(function(){
-        self.selectedChannel = $(this).val();
-        self.setSelectedChannelIndices();
-        //send channel selection to node.js over websocket
-        self.socket.emit('channelSelection', { selectedChannels: self.selectedChannelIndices });
-        //if running, uncheck
-        if(running()){
-            run(false);
-            //$('#running').attr('checked', false);
-        }
-        self.graphicsController.setSelectedChannelIndices(self.selectedChannelIndices);
-        self.graphicsController.resetBoids(self.graphicsController);
-    });
-};
-
 UIController.prototype.onFrequencySelection = function(){
     var self = this;
     $('select.frequency-picker').change(function()
@@ -664,6 +700,22 @@ UIController.prototype.onFrequencySelection = function(){
         d3.select('#perc1-label').text('%-ile ' + self.bandNames[0]);
         d3.select('#perc2-label').text('%-ile ' + self.bandNames[1]);
         //TODO: get updated calibration values
+    });
+};
+
+UIController.prototype.onChannelSelection = function(){
+    var self = this;
+    $('select.channel-picker').change(function(){
+        self.selectedChannel = $(this).val();
+        self.setSelectedChannelIndices();
+        //send channel selection to node.js over websocket
+        self.socket.emit('channelSelection', { selectedChannels: self.selectedChannelIndices });
+        //if running, uncheck
+        if(running()){
+            run(false);
+        }
+        self.graphicsController.setSelectedChannelIndices(self.selectedChannelIndices);
+        self.graphicsController.resetBoids(self.graphicsController);
     });
 };
 

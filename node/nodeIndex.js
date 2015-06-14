@@ -129,14 +129,23 @@ MainController.prototype.startExperimentListener = function(socket){
                 case 0:
                     self.experimentController.startExperimentMode(data.mode,
                         (function () {
-                        console.log('experiment mode ' + data.mode + ' stopped.');
-                        var res = self.experimentController.getQuantileResults(SELECTED_FREQ_BANDS[0].name,
-                                                                                SELECTED_FREQ_BANDS[1].name,
-                                                                                SELECTED_CHANS[0].index,
-                                                                                10,
-                                                                                SELECTED_CHANS[1].index,
-                                                                                10);
-                        socket.emit('experimentStopped', {mode: data.mode, percentiles: res});
+                            console.log('experiment mode ' + data.mode + ' stopped.');
+                            var res = self.experimentController.getQuantileResults(SELECTED_FREQ_BANDS[0].name,
+                                                                                    SELECTED_FREQ_BANDS[1].name,
+                                                                                    SELECTED_CHANS[0].index,
+                                                                                    10,
+                                                                                    SELECTED_CHANS[1].index,
+                                                                                    10);
+                            var error = true;
+                            for(var i = 0; i < res.length; ++i) {
+                                for(var j = 0; j < res[i].length; ++j) {
+                                    if (res[i][j] !== 0) {
+                                        error = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            socket.emit('experimentStopped', {mode: data.mode, percentiles: res, error: error});
                         })
                     );
                     break;
@@ -232,11 +241,9 @@ MainController.prototype.oscListener = function(socket){
             //send muse connected message
             socket.emit('museConnected',{museConnected: true});
 
-
             /****** RED SIDEBAR ****/
-                //listen for new experiment btn click
+            //listen for new experiment btn click
             self.newExperimentListener(socket);
-
             //listen for experiment start btn click
             self.startExperimentListener(socket);
             //listen for experiment mode change
@@ -276,11 +283,14 @@ MainController.prototype.oscListener = function(socket){
                         if( selBand.index === allBand.index )
                         {
                             if(selIdx === 0){
-                                //console.log(allBand.name + ': ' + msg);
                                 setDividend(selBand.name, msg.slice(1));
+                                //console.log('DIVIDEND: ' + DIVIDEND);
                                 if(SELECTED_FREQ_BANDS.length === 1)
                                     setDivisor('', [1,1,1,1]);
                                 setRatio();
+
+                                socket.emit('ratio', {ratio: RATIO});
+
                                 if(typeof self.experimentController !== 'undefined'){
                                     self.experimentController.setRatio(RATIO[1]);
                                     if(!self.experimentController.getExperimentRunning())//todo: is this needed?
@@ -298,11 +308,15 @@ MainController.prototype.oscListener = function(socket){
                                         self.experimentController.setRatioMin(RATIO[1]);
                                     socket.emit('ratio_min',{ratio_min: RATIO_MIN});
                                 }
-                                socket.emit('ratio', {ratio: RATIO});
+
                             }else if(selIdx === 1){
                                 //console.log(allBand.name + ': ' + msg);
                                 setDivisor(selBand.name, msg.slice(1));
+                                //console.log('DIVISOR: ' + DIVISOR);
                                 setRatio();
+
+                                socket.emit('ratio', {ratio: RATIO});
+
                                 if(typeof self.experimentController !== 'undefined'){
                                     self.experimentController.setRatio(RATIO[1]);
                                     if(!self.experimentController.getExperimentRunning())
@@ -320,7 +334,6 @@ MainController.prototype.oscListener = function(socket){
                                         self.experimentController.setRatioMin(RATIO[1]);
                                     socket.emit('ratio_min',{ratio_min: RATIO_MIN});
                                 }
-                                socket.emit('ratio', {ratio: RATIO});
                             }
                         }
                     });
@@ -355,7 +368,16 @@ MainController.prototype.oscListener = function(socket){
                             10,
                             SELECTED_CHANS[1].index,
                             10);
-                        socket.emit('experimentStopped', {mode: self.experimentController.getMode(), percentiles: res});
+                        var error = true;
+                        for(var i = 0; i < res.length; ++i) {
+                            for(var j = 0; j < res[i].length; ++j) {
+                                if (res[i][j] !== 0) {
+                                    error = false;
+                                    break;
+                                }
+                            }
+                        }
+                        socket.emit('experimentStopped', {mode: self.experimentController.getMode(), percentiles: res, error: error});
                     }));//TODO: CALLBACK FUNCTION TO EMIT SOCKET MESSAGE
 
                 }
@@ -364,7 +386,7 @@ MainController.prototype.oscListener = function(socket){
         /***********************BATTERY*************************/
         else if(msg[0] === '/muse/batt'){//four integers. idx 0 is battery precentage remaining (divide by 100)
             var charge = Math.round(msg[1]/100);
-            console.log(charge);
+           // console.log(charge);
             if(REMAINING_BATTERY !== charge){
                 REMAINING_BATTERY = charge;
                 socket.emit('batteryUpdate', {charge: charge});
@@ -372,49 +394,6 @@ MainController.prototype.oscListener = function(socket){
 
         }
     });
-    /*
-     switch(msg[0]) {
-     /**
-     * Delta = 0
-     * Theta = 1
-     * Alpha = 2
-     * Beta  = 3
-     * Gamma = 4
-     *//*
-     case "/muse/elements/delta_absolute":
-
-     break;
-     case "/muse/elements/theta_absolute":
-     frequencyBandsAbsolute(data, FREQ_BANDS[1]);
-     break;
-     case "/muse/elements/alpha_absolute":
-     frequencyBandsAbsolute(data, FREQ_BANDS[2]);
-     break;
-     case "/muse/elements/beta_absolute":
-     frequencyBandsAbsolute(data, FREQ_BANDS[3]);
-     break;
-     case "/muse/elements/gamma_absolute":
-     frequencyBandsAbsolute(data, FREQ_BANDS[4]);
-     break;
-     /*** Raw FFT ****/
-    /*    case "/muse/elements/raw_fft0":
-     break;
-     case "/muse/elements/raw_fft1":
-     //raw_fft(data, "Fp1", constants);
-     break;
-     case "/muse/elements/raw_fft2":
-     //raw_fft(data, "Fp2", constants);
-     break;
-     case "/muse/elements/raw_fft3":
-     // raw_fft(data, "T10", constants);
-     break;
-     /******HORSESHOE ****/
-    /*         case "/muse/elements/horseshoe":
-     self.setHorseshoe(data);
-     break;
-     }
-     });*/
-
 };
 
 function getFrequencyBandByOSCPath(oscPath){
@@ -429,7 +408,6 @@ function setDividend(freqBandName, data){
         chanCount++;
     });
     DIVIDEND = [freqBandName, medFreq/chanCount];
-    //console.log( freqBandName + ': ' + DIVIDEND[1]);
 }
 
 function setDivisor(freqBandName, data){
@@ -440,7 +418,6 @@ function setDivisor(freqBandName, data){
         chanCount++;
     });
     DIVISOR = [freqBandName, medFreq/chanCount];
-    //console.log( freqBandName + ': ' + DIVISOR[1]);
 }
 
 function setRatio(){

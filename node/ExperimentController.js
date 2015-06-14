@@ -260,12 +260,13 @@ ExperimentController.prototype.setRatioMax = function(ratioMax){
     }
 };
 
-ExperimentController.prototype.pushExperimentData = function(){
+ExperimentController.prototype.pushExperimentData = function(ratio){
+    var self = this;
     this.jsonExpData.push(
         {"ratio": ratio.toString(),
-            "trainingRatio": this.trainingRatio.value.toString(),
-            "quotientName": this.trainingRatio.quotientName,
-            "mode": this.mode.toString()}
+            "trainingRatio": self.trainingRatio.value.toString(),
+            "quotientName": self.trainingRatio.quotientName,
+            "mode": self.mode.toString()}
     );
     console.log('added new json data entry');
 };
@@ -276,7 +277,7 @@ ExperimentController.prototype.setRatio = function(ratio){
         //TODO: SAVE AS CSV AND TEST
         //add values to jsonExpData if mode === 1 || mode === 3
         if(this.mode === 1 || this.mode === 3){
-            this.pushExperimentData();
+            this.pushExperimentData(ratio);
         }
 
         console.log('ratio: ' + ratio + ', threshold: ' + this.thresholdRatio);
@@ -298,7 +299,7 @@ ExperimentController.prototype.startPointsTimer = function(){
     if(this.timeAboveRatio === 0){
         this.timeAboveRatio = process.hrtime();
         TIMER = setInterval(function(){
-            console.log('over ratio');
+            //console.log('over ratio');
         }, 500);
     }
 };
@@ -332,9 +333,6 @@ ExperimentController.prototype.updatePointsByTime = function(){
         this.timeAboveRatio = 0;
     }
 };
-
-
-
 
 /***
  * Threshold dividend band and values.

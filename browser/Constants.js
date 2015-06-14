@@ -112,7 +112,7 @@ Constants.prototype.setFrequencyBands = function(frequencyBands){
 //set to >30%
 Constants.prototype.setDividendThreshold = function(lowThreshold){
     DIVIDEND_THRESH = lowThreshold;
-    console.log(lowThreshold);
+    console.log('DIVIDEND_TRESH: ' + lowThreshold);
     this.updateTrainingRatio();
     this.updateColourScale();
     this.setColourByFreqRatio();
@@ -121,7 +121,7 @@ Constants.prototype.setDividendThreshold = function(lowThreshold){
 //set to <70%
 Constants.prototype.setDivisorThreshold = function(highThreshold){
     DIVISOR_THRESH = highThreshold;
-    console.log(highThreshold);
+    console.log('DIVISOR_TRESH: ' + highThreshold);
     this.updateTrainingRatio();
     this.updateColourScale();
     this.setColourByFreqRatio();
@@ -169,7 +169,6 @@ Constants.prototype.setRatio = function(ratio){
     ratio_display.datum(RATIO)
         .attr('value', function(d){ return d[1]; });
     this.setColourByFreqRatio();
-   // this.setBoidSizeScaleByFreqRatio();
     this.setFrequencyBands(ratio.slice(0,1).toString().split('/'));
     this.setNormalSpeed();
 };
