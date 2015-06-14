@@ -50,16 +50,14 @@ function ExperimentController(age, gender, mode, socket){ //age and gender of su
     //is experiment running or not
     this.experimentRunning = false;
     this.experimentPaused = false;
+    this.pausedByUser = false; //was the experiment paused by the user or because muse is off head?
     this.duration = 10;//experiment duration
 
     //Point scores
     this.test1Points = new Points(); // points before neurofeedback
     this.test2Points = new Points(); // points after  neurofeedback
 
-
     this.touchingForehead = 0;//false
-    //TIMER = undefined;// timer for counting points
-    //TIMEOUT = undefined;// timer for counting points
 }
 
 ExperimentController.prototype.getCalibrationCollectionLength = function(){
@@ -202,10 +200,24 @@ ExperimentController.prototype.stopExperiment = function(){
     }
 };
 
+ExperimentController.prototype.resumeExperiment = function(callback){
+    this.experimentPaused = false;
+    this.pausedByUser = false;
+    this.startExperimentMode(this.mode, callback);
+};
+
 ExperimentController.prototype.pauseExperiment = function(){
     this.experimentPaused = true;
     this.experimentRunning = false;
     this.clearTimer(MODE_TIMER);
+};
+
+ExperimentController.prototype.setPausedByUser = function(bool){
+    this.pausedByUser = bool;
+};
+
+ExperimentController.prototype.getPausedByUser = function(){
+    return this.pausedByUser;
 };
 
 ExperimentController.prototype.clearTimer = function(timer){
@@ -213,11 +225,6 @@ ExperimentController.prototype.clearTimer = function(timer){
         clearInterval(timer);
         timer = undefined;
     }
-};
-
-ExperimentController.prototype.resumeExperiment = function(callback){
-    this.experimentPaused = false;
-    this.startExperimentMode(this.mode, callback);
 };
 
 ExperimentController.prototype.setMode = function(mode){

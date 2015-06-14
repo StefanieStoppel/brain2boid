@@ -117,11 +117,14 @@ MainController.prototype.startExperimentListener = function(socket){
     var self = this;
     socket.on('startExperimentButton', function(data){// data.mode = experiment mode idx
         if(typeof self.experimentController !== 'undefined'){ //data.duration = duration of experiment mode in seconds
+            if(!data.resume) {// if experiment is started from the beginning
+                //set duration in seconds, default = 60
+                self.experimentController.setDuration(data.duration);
+            }
             console.log('startExperimentButton clicked, mode: ' + data.mode);
             //set mode
             self.experimentController.setMode(data.mode);
-            //set duration in seconds, default = 60
-            self.experimentController.setDuration(data.duration);
+
             self.experimentController.setPercentileDividendIdx(data.percentiles[0]);
             self.experimentController.setPercentileDivisorIdx(data.percentiles[1]);
             switch(data.mode){
@@ -131,11 +134,11 @@ MainController.prototype.startExperimentListener = function(socket){
                         (function () {
                             console.log('experiment mode ' + data.mode + ' stopped.');
                             var res = self.experimentController.getQuantileResults(SELECTED_FREQ_BANDS[0].name,
-                                                                                    SELECTED_FREQ_BANDS[1].name,
-                                                                                    SELECTED_CHANS[0].index,
-                                                                                    10,
-                                                                                    SELECTED_CHANS[1].index,
-                                                                                    10);
+                                SELECTED_FREQ_BANDS[1].name,
+                                SELECTED_CHANS[0].index,
+                                10,
+                                SELECTED_CHANS[1].index,
+                                10);
                             var error = true;
                             for(var i = 0; i < res.length; ++i) {
                                 for(var j = 0; j < res[i].length; ++j) {
@@ -175,6 +178,14 @@ MainController.prototype.startExperimentListener = function(socket){
                     break;
             }
         }
+    });
+};
+
+MainController.prototype.pauseExperimentListener = function(socket){
+    var self = this;
+    socket.on('pauseExperimentButton', function(data){
+        self.experimentController.setPausedByUser(true);
+        self.experimentController.pauseExperiment();
     });
 };
 
@@ -246,6 +257,8 @@ MainController.prototype.oscListener = function(socket){
             self.newExperimentListener(socket);
             //listen for experiment start btn click
             self.startExperimentListener(socket);
+            //listen for experiment pauses
+            self.pauseExperimentListener(socket);
             //listen for experiment mode change
             self.experimentModeChangeListener(socket);
             self.firstMessage = false;
@@ -358,28 +371,31 @@ MainController.prototype.oscListener = function(socket){
                     self.experimentController.pauseExperiment();//sets experimentRunning to false
                     socket.emit('notTouchingForehead', {pauseExperiment: true, remainingDuration: remainingDuration});
                 }
-                else if(msg[1] === 1 && self.experimentController.getExperimentPaused() && remainingDuration > 0){ //RESUME REXPERIMENT
+                else if(msg[1] === 1 && self.experimentController.getExperimentPaused()
+                    && !self.experimentController.getPausedByUser() && remainingDuration > 0)
+                { //RESUME REXPERIMENT
                     socket.emit('touchingForehead', {resumeExperiment: true, remainingDuration: remainingDuration});
                     console.log('INFO: Experiment resumed. Muse is placed on head.');
-                    self.experimentController.resumeExperiment((function () {
-                        var res = self.experimentController.getQuantileResults(SELECTED_FREQ_BANDS[0].name,
-                            SELECTED_FREQ_BANDS[1].name,
-                            SELECTED_CHANS[0].index,
-                            10,
-                            SELECTED_CHANS[1].index,
-                            10);
-                        var error = true;
-                        for(var i = 0; i < res.length; ++i) {
-                            for(var j = 0; j < res[i].length; ++j) {
-                                if (res[i][j] !== 0) {
-                                    error = false;
-                                    break;
+                    self.experimentController.resumeExperiment(
+                        (function () {//callback
+                            var res = self.experimentController.getQuantileResults(SELECTED_FREQ_BANDS[0].name,
+                                SELECTED_FREQ_BANDS[1].name,
+                                SELECTED_CHANS[0].index,
+                                10,
+                                SELECTED_CHANS[1].index,
+                                10);
+                            var error = true;
+                            for(var i = 0; i < res.length; ++i) {
+                                for(var j = 0; j < res[i].length; ++j) {
+                                    if (res[i][j] !== 0) {
+                                        error = false;
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                        socket.emit('experimentStopped', {mode: self.experimentController.getMode(), percentiles: res, error: error});
-                    }));//TODO: CALLBACK FUNCTION TO EMIT SOCKET MESSAGE
-
+                            socket.emit('experimentStopped', {mode: self.experimentController.getMode(), percentiles: res, error: error});
+                        })
+                    );
                 }
             }
         }

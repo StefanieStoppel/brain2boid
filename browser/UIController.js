@@ -18,10 +18,9 @@ function UIController(){
     //buttons and other inputs red sidebar
     this.newExperimentBtn =  $('button#new-experiment-btn');
     this.saveExperimentBtn = $('button#save-experiment-btn');
-    this.startExperimentBtn = $('input[name="start-experiment"]');
+    this.startExperimentBtn = $('button#start-mode-btn');
     this.experimentModeRadio = $('input[name="experiment-mode"]');
     this.selectedExperimentModeRadio = $('input[name="experiment-mode"]:checked');
-
 
     this.experimentModeDisplay = $('p#experiment-mode-display');
     this.hiddenExperimentModeInput = $('input[name="hidden-experiment-mode"]');
@@ -117,6 +116,8 @@ function UIController(){
 
     //******************* LISTENERS for ui inputs (browser)
     this.experimentRunning = false;
+    this.paused = false;
+
     this.onNewExperiment();
     this.onSaveExperiment();
     this.onStartModeButtonClick();
@@ -131,10 +132,6 @@ function UIController(){
     /*****FULLSCREEN MODE****/
     this.fullscreen = false;
     this.onFullscreen();
-
-
-
-
 }
 
 UIController.prototype.onExperimentCreated = function(){
@@ -260,7 +257,6 @@ UIController.prototype.onStopExperiment = function(){
                         console.log('received calibration data');
                         self.showExperimentModeFinished('Calibration');
                         self.calibrationFinished = true; //TODO: ADD ERROR HANDLING IN CASE OF NO RESULTS
-                        self.enableControlButtons(true); //enable next and prev buttons
                     }
                     break;
                 //TEST 1 finished
@@ -283,11 +279,13 @@ UIController.prototype.onStopExperiment = function(){
             if(data.error === undefined || !data.error){
                 //update experiment mode selection and duration
                 self.selectNextMode();
+                self.enableControlButtons(true); //enable next and prev buttons
             }
+            self.pauseExperiment();
             //stop boids
             $('#running').attr('checked', false);
         }else{ //data.percentiles === null -> no values from muse
-            alert('Calibration failed. Please check whether the Muse is connected properly.');
+            alert('Calibration failed. Please check whether Muse is connected properly.');
         }
         //enable sidebar experiment inputs
         $('.sb-red :input').prop('disabled', false);
@@ -321,7 +319,7 @@ UIController.prototype.resumeExperiment = function(){
 
 UIController.prototype.onStartModeButtonClick = function(){
     var self = this;
-    $('button#start-mode-btn').click(function(){
+    this.startExperimentBtn.click(function(){
         if($(this).children('i.fa.fa-play').length !== 0){ //experiment was paused or stopped
             if(self.museConnected && self.experimentControllerSet){
                 if(self.experimentMode === 0)
@@ -337,8 +335,11 @@ UIController.prototype.onStartModeButtonClick = function(){
                 self.socket.emit('startExperimentButton',
                     {mode: self.experimentMode,
                         duration: self.duration,
-                        percentiles: [ parseInt(self.firstFreqBandThresh), parseInt(self.secondFreqBandThresh) ]}
+                        percentiles: [ parseInt(self.firstFreqBandThresh), parseInt(self.secondFreqBandThresh) ],
+                        resume: self.paused //if true -> was paused before
+                    }
                 );
+                self.paused = false;
                 //set experimentRunning
                 self.experimentRunning = true;
                 //disable red sidebar inputs
@@ -362,6 +363,12 @@ UIController.prototype.onStartModeButtonClick = function(){
                 self.showExperimentModePaused("Free Neurofeedback");
             else if(self.experimentMode === 3)
                 self.showExperimentModePaused("Second Test");
+
+            //get mode idx from radio btn and send info via socket
+            self.socket.emit('pauseExperimentButton',
+                {mode: self.experimentMode}
+            );
+            self.paused = true;
             $('.sb-red :input').prop('disabled', false);
             self.experimentRunning = false;
             self.pauseExperiment();
@@ -379,15 +386,19 @@ UIController.prototype.onPreviousModeButtonClick = function(){
             switch(self.experimentMode){
                 case 0:
                     self.experimentModeDisplay.text('Calibration');
+                    self.duration = 10;
                     break;
                 case 1:
                     self.experimentModeDisplay.text('Test 1');
+                    self.duration = 60;
                     break;
                 case 2:
                     self.experimentModeDisplay.text('Neurofeedback');
+                    self.duration = 120;
                     break;
                 case 3:
                     self.experimentModeDisplay.text('Test 2');
+                    self.duration = 60;
                     break;
             }
             self.hiddenExperimentDuration.val(self.duration);
