@@ -111,8 +111,9 @@ Constants.prototype.setFrequencyBands = function(frequencyBands){
 //everything < TRAINING_RATIO = DIVIDEND_THRESH/DIVISOR_THRESH is yellow
 //set to >30%
 Constants.prototype.setDividendThreshold = function(lowThreshold){
+    console.log('before DIVIDEND_TRESH: ' + DIVIDEND_THRESH);
     DIVIDEND_THRESH = lowThreshold;
-    console.log('DIVIDEND_TRESH: ' + lowThreshold);
+    console.log('after DIVIDEND_TRESH: ' + lowThreshold);
     this.updateTrainingRatio();
     this.updateColourScale();
     this.setColourByFreqRatio();
@@ -120,8 +121,9 @@ Constants.prototype.setDividendThreshold = function(lowThreshold){
 
 //set to <70%
 Constants.prototype.setDivisorThreshold = function(highThreshold){
+    console.log('before DIVISOR_TRESH: ' + DIVISOR_THRESH);
     DIVISOR_THRESH = highThreshold;
-    console.log('DIVISOR_TRESH: ' + highThreshold);
+    console.log('after DIVISOR_TRESH: ' + highThreshold);
     this.updateTrainingRatio();
     this.updateColourScale();
     this.setColourByFreqRatio();
@@ -160,7 +162,7 @@ Constants.prototype.setRatioMax = function(ratioMax){
 };
 
 Constants.prototype.updateTrainingRatio = function(){
-    TRAINING_RATIO = DIVIDEND_THRESH / DIVISOR_THRESH;
+    TRAINING_RATIO = Math.pow(10, DIVIDEND_THRESH) / Math.pow(10, DIVISOR_THRESH);
     training_ratio_display.datum(TRAINING_RATIO).attr('value', function(d){ return d; });
 };
 
@@ -195,7 +197,6 @@ Constants.prototype.setDesiredSeparation = function(){
 Constants.prototype.setNormalSpeed = function(){
    if(boidSpeedScale(RATIO[1]) != NORMAL_SPEED ){
         NORMAL_SPEED = boidSpeedScale(RATIO[1]);
-        console.log(NORMAL_SPEED);
    }
 };
 

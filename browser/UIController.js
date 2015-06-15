@@ -8,7 +8,7 @@ var COUNTDOWN = undefined;
 function UIController(){
     /************************** MAIN AREA ***********************************/
     this.pointsDisplay = $('p.points-display');
-
+    this.socketConnected = false;
 
     //Frequency band name and idx mapping
     this.frequencyBandNames = ['delta','theta','alpha','beta','gamma'];
@@ -111,7 +111,8 @@ UIController.prototype.socketRatio = function(self){
         if(data.ratio[1] !== null){
             self.constants.setRatio(data.ratio);
             //todo: put ratio as data on feedback bar char
-            self.experimentUIController.updateRewardBarGraph(data.ratio);
+            if(getSidebarShowing() && self.experimentUIController.getExperimentRunning())
+                self.experimentUIController.updateRewardBarGraph(data.ratio);
         }
     });
 };
@@ -158,13 +159,13 @@ UIController.prototype.onTouchingForehead = function(){
     this.socket.on('notTouchingForehead', function(data){
         if(data.pauseExperiment){//stops boids too
             alert('WARNING: Experiment paused. Muse is not placed on the head');
-            self.pauseExperiment();
+            self.experimentUIController.pauseExperiment();
         }
     });
     this.socket.on('touchingForehead', function(data){
         if(data.resumeExperiment){
             alert('Muse is touching forehead. Resuming experiment.');
-            self.resumeExperiment();
+            self.experimentUIController.resumeExperiment();
         }
     })
 };
@@ -196,6 +197,7 @@ UIController.prototype.onHorseshoeUpdate = function(){
 UIController.prototype.updateHorseshoe = function(data){
     this.graphicsController.updateHorseshoe(data.slice(1));
 };
+
 
 
 

@@ -6,6 +6,7 @@ function ExperimentUIController(constants, graphicsController, socket, uiControl
     this.constants = constants;
     this.graphicsController = graphicsController;
     this.socket = socket;
+    this.socketConnected = false;
     this.uiController = uiController;
 
     /********************************* CONNECTION & CALIBRATION VARIABLES ********************************/
@@ -20,11 +21,8 @@ function ExperimentUIController(constants, graphicsController, socket, uiControl
     this.selectedFrequencyIndices = [];
     this.selectedChannelIndices = [];
 
-
-
     this.experimentMode = parseInt($('input[name="hidden-experiment-mode"]').val()); //0 - 3
-    this.hiddenExperimentDuration = $('input[name="experiment-duration"]');
-    this.duration = parseInt(this.hiddenExperimentDuration.val());
+    this.duration = parseInt($('input[name="experiment-duration"]').val());
 
     this.onSocketConnection();
     this.init();
@@ -56,10 +54,6 @@ ExperimentUIController.prototype.init = function(){
     this.fullscreen = false;
     this.onFullscreen();
 
-    /******** FREQUENCY PERCENTILE SLIDERS **********/
-    this.frequencyPercentileSliders();
-    this.rewardIdx  = $('#slider-dividend-percentile').slider("option", "value") / 10 - 1;
-    this.inhibitIdx = $('#slider-divisor-percentile').slider("option", "value") / 10 - 1;
 
     /******************** VARIABLES FOR EXPERIMENT STATE ***********************/
     this.experimentRunning = false;
@@ -78,13 +72,19 @@ ExperimentUIController.prototype.init = function(){
 
     //Ratio bar graph in sidebar
     this.initRewardBarGraph();
+
+
+    /******** FREQUENCY PERCENTILE SLIDERS **********/
+    this.frequencyPercentileSliders();
+    this.rewardIdx  = $('#slider-dividend-percentile').slider("option", "value") / 10 - 1;
+    this.inhibitIdx = $('#slider-divisor-percentile').slider("option", "value") / 10 - 1;
 };
 
 ExperimentUIController.prototype.onSocketConnection = function(){
     var self = this;
     this.socket.on('connect', function(){
-        //self.onTouchingForehead();
         self.onExperimentCreated();
+        self.socketConnected = true;//todo: change in case of lost connecction
     });
 };
 
@@ -129,7 +129,7 @@ ExperimentUIController.prototype.onContinueNewExperimentButtonClick = function(s
         //open dialog for new experiment inputs
         self.ageGenderDialog.dialog('open');
         //TODO: send socket message to reset all data to experimentcontroller after showing warning dialog (with save option)
-        self.onAgeGenderSubmit();
+        self.onAgeGenderSubmitButtonClick();
         //close warning dialog
         self.saveWarning.dialog('close');
 
@@ -143,19 +143,19 @@ ExperimentUIController.prototype.onContinueNewExperimentButtonClick = function(s
 /**
  * Listen for button submit in dialog box (age gender)
  */
-ExperimentUIController.prototype.onAgeGenderSubmit = function(){
+ExperimentUIController.prototype.onAgeGenderSubmitButtonClick = function(){
     var self = this;
     var warning = $('#warning');
     $('input[name="age-gender-btn"]').click(function()
     {
-        var selGender = $('input[name="gender"]:checked');
+        var gender = $('input[name="gender"]:checked');
         var age = $('input[name="age"]').val();
 
-        if( age !== '' && selGender !== [])
+        if( age !== '' && gender !== [])
         {
             self.socket.emit('newExperiment',
                 {   age: parseInt(age),
-                    gender: selGender.val(),
+                    gender: gender.val(),
                     mode: self.experimentMode
                 });
             self.ageGenderDialog.dialog('close');
@@ -205,9 +205,10 @@ ExperimentUIController.prototype.automaticallyStopExperiment = function(data){
             //CALIBRATION finished
             case 0:
                 if(data.error){ //calibration failed
+                    console.log(data.error);
                     alert('Calibration failed! No data received. Please check the electrode contact and recalibrate!');
                     console.log('self.duration: ' + self.duration);
-                    self.hiddenExperimentDuration.val(self.duration);
+                    $('input[name="experiment-duration"]').val(self.duration);
                     //set countdown
                     self.uiController.setCountdown(self.duration);
                     self.socket.emit('experimentModeChanged', {mode: self.experimentMode, duration: self.duration});
@@ -217,7 +218,7 @@ ExperimentUIController.prototype.automaticallyStopExperiment = function(data){
                     var divisor = data.percentiles[1][self.inhibitIdx];
                     self.constants.setDividendThreshold(dividend);
                     self.constants.setDivisorThreshold(divisor);
-                    self.updateTrainingRatioIndicator(dividend/divisor);
+                    self.updateTrainingRatioIndicator(Math.pow(10, dividend)/Math.pow(10, divisor));
 
                     self.firstFreqBandMin = data.percentiles[0][0];
                     self.secondFreqBandMax = data.percentiles[1][data.percentiles[1].length-1];
@@ -244,13 +245,14 @@ ExperimentUIController.prototype.automaticallyStopExperiment = function(data){
                 break;
 
         }
-        console.log(data.error);
+
         if(data.error === undefined || !data.error){
             //update experiment mode selection and duration
             self.selectNextMode();
             self.enableControlButtons(true); //enable next and prev buttons
         }
         self.pauseExperiment();
+        self.experimentRunning = false;
     }else{ //data.percentiles === null -> no values from muse
         alert('Calibration failed. Please check whether Muse is connected properly.');
     }
@@ -260,6 +262,14 @@ ExperimentUIController.prototype.automaticallyStopExperiment = function(data){
 
 ExperimentUIController.prototype.stopExperimentMode = function(){
     //TODO: fill
+};
+
+ExperimentUIController.prototype.getExperimentPaused = function(){
+    return this.paused;
+};
+
+ExperimentUIController.prototype.getExperimentRunning = function(){
+    return this.experimentRunning;
 };
 
 ExperimentUIController.prototype.pauseExperiment = function(){ //true = pause, false = unpause
@@ -345,7 +355,7 @@ ExperimentUIController.prototype.onStartModeButtonClick = function(){
 ExperimentUIController.prototype.updateExperimentModeDisplayAndDuration = function(text, duration){
     $('p#experiment-mode-display').text(text);
     this.duration = duration;
-    this.hiddenExperimentDuration.val(duration);
+    $('input[name="experiment-duration"]').val(duration);
 };
 
 ExperimentUIController.prototype.onPreviousModeButtonClick = function(){
@@ -451,47 +461,6 @@ ExperimentUIController.prototype.displayExperimentModeState = function(mode, sta
 
 /***********************************  CHANNEL AND FREQUENCY BAND SELECTION *******************/
 
-//init sliders for percentage of reward and inhibit
-ExperimentUIController.prototype.frequencyPercentileSliders = function(){
-    var self = this;
-    $('#slider-dividend-percentile').slider({
-        orientation: "vertical",
-        range: "min",
-        min: 0,
-        max: 100,
-        step: 10,
-        value: 50,
-        slide: function( event, ui ) {
-            $( "#amount-dividend" ).html( ui.value + '&#37;' );
-            self.onSlide(ui, true);
-        }
-    });
-    $('#slider-divisor-percentile').slider({
-        orientation: "vertical",
-        range: "min",
-        min: 0,
-        max: 100,
-        step: 10,
-        value: 50,
-        slide: function( event, ui ) {
-            $( "#amount-divisor" ).html( ui.value + '&#37;' );
-            self.onSlide(ui, false);
-        }
-    });
-};
-
-//Sliders for percentage of reward and inhibit have been moved
-ExperimentUIController.prototype.onSlide = function(ui, isDividend){
-    if(this.percentiles !== undefined){
-        if(isDividend){
-            this.rewardIdx = ui.value / 10 - 1;
-            this.constants.setDividendThreshold(this.percentiles[0][this.rewardIdx]);
-        }else{
-            this.inhibitIdx = ui.value / 10 - 1;
-            this.constants.setDivisorThreshold(this.percentiles[1][this.inhibitIdx]);
-        }
-    }
-};
 
 //Frequency bands for reward and inhibit have been selected
 ExperimentUIController.prototype.onFrequencySelection = function(){
@@ -565,6 +534,58 @@ ExperimentUIController.prototype.setSelectedChannelIndices = function(selectedCh
     }
 };
 
+/********************* PERCENTILE SLIDERS *************************************/
+//init sliders for percentage of reward and inhibit
+ExperimentUIController.prototype.frequencyPercentileSliders = function(){
+    var self = this;
+    $('#slider-dividend-percentile').slider({
+        orientation: "vertical",
+        range: "min",
+        min: 0,
+        max: 100,
+        step: 10,
+        value: 50,
+        slide: function( event, ui ) {
+            $( "#amount-dividend" ).html( ui.value + '&#37;' );
+            self.onSlide(ui, true);
+        }
+    });
+    $('#slider-divisor-percentile').slider({
+        orientation: "vertical",
+        range: "min",
+        min: 0,
+        max: 100,
+        step: 10,
+        value: 50,
+        slide: function( event, ui ) {
+            $( "#amount-divisor" ).html( ui.value + '&#37;' );
+            self.onSlide(ui, false);
+        }
+    });
+};
+
+//Sliders for percentage of reward and inhibit have been moved
+ExperimentUIController.prototype.onSlide = function(ui, isDividend){
+    var self = this;
+    if(this.percentiles !== undefined){
+        if(isDividend){
+            this.rewardIdx = ui.value / 10 - 1;
+            if(this.percentiles.length !== 0)
+                this.constants.setDividendThreshold(this.percentiles[0][this.rewardIdx]);
+            if(this.socketConnected)
+                this.socket.emit('dividendPercentileChanged', {percentileIdx: self.rewardIdx});
+        }else{
+            this.inhibitIdx = ui.value / 10 - 1;
+            if(this.percentiles.length !== 0)
+                this.constants.setDivisorThreshold(this.percentiles[1][this.inhibitIdx]);
+            if(this.socketConnected)//TODO: emit message that percentile has changed
+                this.socket.emit('divisorPercentileChanged', {percentileIdx: self.inhibitIdx});
+        }
+        var trainingRatio = Math.pow(10, this.percentiles[0][this.rewardIdx]) / Math.pow(10, this.percentiles[1][this.inhibitIdx]);
+        this.updateTrainingRatioIndicator(trainingRatio);
+    }
+};
+
 /******************** FULLSCREEN ******************/
 ExperimentUIController.prototype.onFullscreen = function(){
     var self = this;
@@ -588,7 +609,6 @@ ExperimentUIController.prototype.displayExperimentNotCreated = function(){
     alert('WARNING: No experiment was created! Create one and retry.');
 };
 
-
 /******************************** BLUE SIDEBAR ****************************************************/
 
 ExperimentUIController.prototype.initRewardBarGraph = function(){
@@ -596,7 +616,7 @@ ExperimentUIController.prototype.initRewardBarGraph = function(){
     this.barWidth = 100;
     this.barHeight = 150;
     this.rewardYscale = d3.scale.linear()
-        .domain([0, 3])//TODO: update when ratio_max is updated
+        .domain([0, 1])//TODO: update when ratio_max is updated
         .range([self.barHeight, 0]);
     this.feedbackYaxis = d3.svg.axis()
         .scale(this.rewardYscale)
@@ -660,4 +680,4 @@ ExperimentUIController.prototype.setMuseConnected = function(bool){
 
 ExperimentUIController.prototype.setExperimentControllerExists = function(bool){
     this.experimentControllerExists = bool;
-}
+};

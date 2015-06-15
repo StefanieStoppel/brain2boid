@@ -1,6 +1,7 @@
 /**
  * Created by Stefanie on 14.05.2015.
  */
+var SIDEBAR_SHOWING = false;
 
 $(document).ready(function(){
     //hide sidebar
@@ -32,7 +33,7 @@ $(document).ready(function(){
         var sb = $(sidebar[btnIdx]); //corresponding sidebar
         //hidden sidebar
         if(sb.css('display') === "none"){
-
+            SIDEBAR_SHOWING = true;
             //bring sidebar to front
             sb.css('z-index', 10);
             //unhide sidebar
@@ -58,7 +59,7 @@ $(document).ready(function(){
             $(arrow[btnIdx]).animateRotate(0, 180, 500, 'linear');
         }//showing sidebar
         else {
-
+            SIDEBAR_SHOWING = false;
             //animate sidebar
             outerWidth = sb.outerWidth();
             sb.animate({
@@ -122,3 +123,7 @@ $.fn.animateRotate = function(startAngle, endAngle, duration, easing, complete){
         });
     });
 };
+
+function getSidebarShowing(){
+    return SIDEBAR_SHOWING;
+}
