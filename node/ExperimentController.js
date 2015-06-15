@@ -58,7 +58,10 @@ function ExperimentController(age, gender, mode, socket){ //age and gender of su
     this.test2Points = new Points(); // points after  neurofeedback
 
     this.touchingForehead = 0;//false
+   // this.horseshoe = [4,4,4,4];//none touching forehead
 }
+
+
 
 ExperimentController.prototype.getCalibrationCollectionLength = function(){
     return this.calibrationCollection.length;
@@ -378,7 +381,6 @@ ExperimentController.prototype.setThresholdRatio = function(dividendMed, divisor
         this.thresholdRatio = dividendMed / divisorMed;
 };
 
-
 ExperimentController.prototype.setTouchingForehead = function(msg){
     this.touchingForehead = msg[1];
 };
@@ -386,5 +388,18 @@ ExperimentController.prototype.setTouchingForehead = function(msg){
 ExperimentController.prototype.getTouchingForehead = function(){
     return this.touchingForehead;
 };
+
+/**** not used ****/
+ExperimentController.prototype.getHorseshoeOK = function(){
+    var ok = true;
+    for(var i = 0; i < this.horseshoe.length; i++){
+        if(this.horseshoe[i] === 3 || this.horseshoe[i] === 4){
+            ok = false;
+            break;
+        }
+    }
+    return ok;
+};
+
 
 module.exports = ExperimentController;

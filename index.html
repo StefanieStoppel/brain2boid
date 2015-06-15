@@ -93,86 +93,6 @@
 <!-- running and restart-->
         </div>
 
-        <!-- SIDEBAR 1 - EXPERIMENT MODE SELECTION -->
-
-        <div class="sidebar sb-red col-xs-6 col-sm-4 full-height">
-            <h4>Experiment</h4>
-
-            <div class="row">
-
-                <div class="col-xs-6">
-                    <!-- new experiment btn-->
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <input type="button" name="new-experiment" class="sidebar-button sb-red-button" id="new-experiment-btn1" value="New">
-                        </div>
-                    </div>
-
-                </div>
-                <!-- save experiment btn, gender-->
-                <div class="col-xs-6">
-                    <div class="col-xs-12 col-sm-5">
-                        <input type="button" name="save-experiment" class="sidebar-button sb-red-button" id="save-experiment-csv" value="Save as .csv">
-                    </div>
-
-                </div>
-            </div>
-
-                <div class="row">
-
-
-                </div>
-
-
-            <h4>Mode</h4>
-            <div class="row">
-                <div class="col-xs-2">
-                    <input type="radio" name="experiment-mode" class="sidebar-input sb-red-input" id="mode-calibration" data-duration="10" value="0" checked>
-                </div>
-                <div class="col-xs-10">
-                    <label for="mode-calibration">Calibration</label>
-                </div>
-                <div class="col-xs-2">
-                    <input type="radio" name="experiment-mode" class="sidebar-input sb-red-input" id="mode-first-test" data-duration="60" value="1">
-                </div>
-                <div class="col-xs-10">
-                    <label for="mode-first-test">First Test</label>
-                </div>
-                <div class="col-xs-2">
-                    <input type="radio" name="experiment-mode" class="sidebar-input sb-red-input" id="mode-free-nf" data-duration="120" value="2">
-                </div>
-                <div class="col-xs-10">
-                    <label for="mode-free-nf">Free Mode</label>
-                </div>
-                <div class="col-xs-2">
-                    <input type="radio" name="experiment-mode" class="sidebar-input sb-red-input" id="mode-second-test" data-duration="60" value="3">
-                </div>
-                <div class="col-xs-10">
-                    <label for="mode-second-test">Second Test</label>
-                </div>
-            </div>
-            <div class="col-xs-6 col-sm-12" style="padding-left:0;">
-                <h4>Experiment Duration</h4>
-
-                <div class="col-xs-12" style="margin-bottom: 1em">
-                    <input type="number" name="experiment-duration1" class="sidebar-input sb-red-input" id="experiment-duration" value="10">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12" style="margin-bottom: 1em;">
-                    <input type="button" name="start-experiment" class="sidebar-button sb-red-button" id="start-experiment-btn" value="Start Experiment">
-                </div>
-            </div>
-
-        </div>
-        <div id="sb-red-show" class="sidebar-show">
-            <button id="sb-red-effect" class="sidebar-effect">
-                <i class="fa fa-angle-left"></i>
-            </button>
-        </div>
-        <!-- END SIDEBAR RED --->
-
-
         <!-- SIDEBAR BLUE - Frequency Band, Channel and Ratio settings --->
 
         <div class="sidebar sb-blue col-xs-6 col-sm-4 full-height">
@@ -251,8 +171,13 @@
             <!-- END PERCENTILE INPUTS -->
 
             <!--- RATIO DISPLAYS -->
-            <h4>Ratio display</h4>
-            <div class="row" style="margin-top: 2em;">
+            <h4>Feedback</h4>
+            <div class="row">
+                <div class="col-xs-6">
+                    <svg id="reward-feedback"></svg>
+                </div>
+            </div>
+            <div class="row">
 
                 <div class="col-xs-4">
                     <label for="training-ratio">Training<br>ratio</label>
@@ -363,6 +288,7 @@
 <!--<script src="code.js"></script>-->
 <script src="browser/GraphicsController.js"></script>
 <script src="browser/sidebar-effects.js"></script>
+<script src="browser/ExperimentUIController.js"></script>
 <script src="browser/UIController.js"></script>
 
 </body>

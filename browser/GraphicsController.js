@@ -39,15 +39,10 @@ var HORSESHOE_DATA = [  {horseshoe: 3, cx: 40,  cy: 50, r:20, colour: "green"},
                         {horseshoe: 3, cx: 120, cy: 50, r:20, colour: "yellow"},
                         {horseshoe: 3, cx: 160, cy: 50, r:20, colour: "magenta"}];
 
-function GraphicsController(selectedChannelIndices, selectedFreqIndices){
+function GraphicsController(){
     /** BOIDS & CONSTANTS**/
     this.boids = [];
     this.constants = new Constants();
-
-    //get selected channel(s) from radio buttons
-    this.selectedChannelIndices = selectedChannelIndices;//array of numbers
-
-    this.selectedFreqIndices = selectedFreqIndices;
 
     //append boidSvg field
     this.body = d3.select('body');
@@ -57,7 +52,7 @@ function GraphicsController(selectedChannelIndices, selectedFreqIndices){
         .style("background", "black");
 
     //init new boids
-    this.newBoids(this.selectedChannelIndices);
+    this.newBoids();
 
     //add boids to svg
     this.allBoids = this.boidSvg.selectAll("polygon")
@@ -81,10 +76,6 @@ function GraphicsController(selectedChannelIndices, selectedFreqIndices){
 
     //draw boids on svg every 5 ms
     this.updateBoidSvg();
-
-    //initialize bar graph
-    //this.initBarGraph();
-
 }
 
 /**
@@ -104,17 +95,17 @@ GraphicsController.prototype.getConstants = function(){
     return this.constants;
 };
 
-GraphicsController.prototype.newBoids = function(channelSelection, freqBandSelection){
+GraphicsController.prototype.newBoids = function(){
     //the number of boidGroups depends on selectedChannel
     //single ch: t9,t10,fp1,fp2; channel pairs: t9-fp1,fp1-fp2,t9-t10,t10-fp2
     //other: left-vs-right, all
     this.boids = [];
-    this.addBoids(channelSelection, freqBandSelection);
+    this.addBoids();
     this.mainBoid = this.boids[75];
 };
 
 //adds 50 boids with the specified channel and frequency band attribute
-GraphicsController.prototype.addBoids = function(channelSelection, freqBandSelection){
+GraphicsController.prototype.addBoids = function(){
     for(var j = 0; j < 150; j++){
         //random position within a certain area
         var x = Math.floor( Math.random()*150 + AREA_WIDTH/2);
@@ -122,7 +113,7 @@ GraphicsController.prototype.addBoids = function(channelSelection, freqBandSelec
         //let boids face in random directions
         var x_face = Math.floor( (Math.random()*3) - 1.5) * 100;
         var y_face = Math.floor( (Math.random()*2) - 1) * 100;
-        this.boids.push(new Boid(new Vector(x, y), new Vector( x_face, y_face ), this.constants, channelSelection, freqBandSelection ) );
+        this.boids.push(new Boid(new Vector(x, y), new Vector( x_face, y_face ), this.constants ) );
     }
 };
 
@@ -151,7 +142,7 @@ GraphicsController.prototype.onResetBoids = function(self){
  * @param self
  */
 GraphicsController.prototype.resetBoids = function(self){
-    self.newBoids(self.selectedChannelIndices, self.selectedFreqIndices);
+    self.newBoids();
     self.allBoids = d3.selectAll("polygon").data(this.boids)
         .attr( { points: function(boid){ return boid.getPoints();},
                  fill: function(boid){ return boid.getColour();} } );
@@ -159,7 +150,7 @@ GraphicsController.prototype.resetBoids = function(self){
 };
 
 GraphicsController.prototype.resetBoids2 = function(self){
-    self.newBoids(self.selectedChannelIndices, self.selectedFreqIndices);
+    self.newBoids();
     self.allBoids = d3.selectAll("polygon").data(this.boids)
         .attr( { points: function(boid){ return boid.getPoints();},
             fill: function(boid){ return boid.getColour();} } );
@@ -169,6 +160,7 @@ GraphicsController.prototype.resetBoids2 = function(self){
 /**
  * Calculate flocking and draw it on svg every 5 ms.
  */
+    //TODO REFACTOR TO MAKE MORE EFIICIENT
 GraphicsController.prototype.updateBoidSvg = function(){
     var self = this;
     setInterval(
@@ -266,27 +258,6 @@ GraphicsController.prototype.updateBatteryDisplay = function(charge){
     }
 };
 
-GraphicsController.prototype.getSelectedChannelIndices = function(){
-    return this.selectedChannelIndices;
-};
-
-GraphicsController.prototype.setSelectedChannelIndices = function(selectedChannelIndices){
-    this.selectedChannelIndices = selectedChannelIndices;
-};
-
-GraphicsController.prototype.getSelectedFreqIndices = function(){
-    return this.selectedFreqIndices;
-};
-
-GraphicsController.prototype.setSelectedFreqIndices = function(selectedFreqIndices){
-    this.selectedFreqIndices = selectedFreqIndices;
-};
-
-
-GraphicsController.prototype.getBoidController = function(){
-    return this.boidController;
-};
-
 GraphicsController.prototype.getBoidSVG = function(){
     return this.boidSvg;
 };
@@ -298,73 +269,3 @@ function running() {
 function run(bool){
     $('#running').prop('checked', bool);
 }
-
-/*
- GraphicsController.prototype.initBarGraph = function(){
- var xAxis = d3.svg.axis()
- .scale(x_scale)
- .orient("bottom")
- .ticks(15, "Hz");
-
- var yAxis = d3.svg.axis()
- .scale(y_scale)
- .orient("left")
- .ticks(10, "dB");
-
- this.chart = d3.select(".chart-svg")
- .append("g")
- .attr("class", "chart-group")
- .attr("transform","translate(40,20)");
-
- var barWidth = 9.6;
- this.rect = this.chart.selectAll("rect")
- .data(fft_Fp1)
- .enter().append("rect")
- .attr("transform", function(d,i){ return "translate(" + i * barWidth + ", " + chartHeight + ") rotate(180)";})
- .attr("height", function(d) { return y_scale(d.value) + "px"; })
- .attr("width", barWidth - 1)
- .attr("class", function(d){ return d.class; });
-
- this.chart.append("g")
- .attr("class", "x axis")
- .attr("transform", "translate(0," + chartHeight + ")")
- .call(xAxis);
-
- this.chart.append("g")
- .attr("class", "y axis")
- .attr("transform", "translate(-10,0)")
- .call(yAxis);
-
- };
- */
-
-/*
- GraphicsController.prototype.update_bargraph = function(){
- this.rect.data(fft_Fp1);
- this.rect.attr("height", function(d,i){
- if(typeof d.value === "number"){
- return chartHeight - y_scale(d.value) + "px";
- }
- });
- };
-
- GraphicsController.prototype.update_fft_data = function(data){
- var d = data.osc.slice(1,81);
- for(var j = 0; j < fft_Fp1.length; j++){
- fft_Fp1[j].value = d[j];
- }
- };
-
-
- GraphicsController.prototype.onWindowResize = function(){
- var self = this;
- $( window ).resize(function() {
- run(false);
- //change boid svg width
- AREA_WIDTH = $('html').outerWidth();
- self.boidSvg.attr({ width: AREA_WIDTH, height: AREA_HEIGHT })
- run(true);
- });
-
- };
- */
