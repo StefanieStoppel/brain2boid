@@ -73,6 +73,8 @@ ExperimentUIController.prototype.init = function(){
 
     //Ratio bar graph in sidebar
     this.initRewardBarGraph();
+    //artfact bar graphs in sidebar
+    this.initArtifactBarGraphs();
 
 
     /******** FREQUENCY PERCENTILE SLIDERS **********/
@@ -89,6 +91,10 @@ ExperimentUIController.prototype.onSocketConnection = function(){
         self.onExperimentCreated();
         self.socketConnected = true;//todo: change in case of lost connecction
         self.enableSidebarSettings(true);
+
+        //artifact listeners
+        self.onJawClenchUpdate();
+        self.onBlinkUpdate();
     });
 };
 
@@ -584,7 +590,7 @@ ExperimentUIController.prototype.onSlide = function(ui, isDividend){
             this.inhibitIdx = ui.value / 10 - 1;
             if(this.percentiles.length !== 0)
                 this.constants.setDivisorThreshold(this.percentiles[1][this.inhibitIdx]);
-            if(this.socketConnected)//TODO: emit message that percentile has changed
+            if(this.socketConnected)
                 this.socket.emit('divisorPercentileChanged', {percentileIdx: self.inhibitIdx});
         }
         this.trainingRatio = Math.pow(10, this.percentiles[0][this.rewardIdx]) / Math.pow(10, this.percentiles[1][this.inhibitIdx]);
@@ -626,7 +632,7 @@ ExperimentUIController.prototype.displayExperimentNotCreated = function(){
 
 ExperimentUIController.prototype.initRewardBarGraph = function(){
     var self = this;
-    this.barWidth = 100;
+    this.barWidth = 60;
     this.barHeight = 150;
     this.rewardYscale = d3.scale.linear()
         .domain([0, 1])//TODO: update when ratio_max is updated
@@ -659,6 +665,58 @@ ExperimentUIController.prototype.initRewardBarGraph = function(){
     this.initTrainingRatioIndicator();
 };
 
+ExperimentUIController.prototype.initArtifactBarGraphs = function(){
+    var self = this;
+    this.artifactYScale = d3.scale.linear()
+        .domain([0, 1])
+        .range([self.barHeight, 0]);
+    this.artifactYaxis = d3.svg.axis()
+        .scale(this.artifactYScale)
+        .orient('left')
+        .ticks(2);
+
+    /***** BLINK ******/
+    this.blinkChart = d3.select('#blink-feedback')
+        .attr('width', self.barWidth+35)
+        .attr('height', self.barHeight+25)
+        .append('g')
+        .attr('class', 'artifact-group')
+        .attr('transform','translate(10,0)');
+    this.blinkRect = this.blinkChart.selectAll('rect')
+        .data([{blink: 0}])//TODO: data is training ratio
+        .enter().append('rect')
+        .attr('transform', function(){ return 'translate(' + (self.barWidth+20) + ', ' + (self.barHeight+10) + ') rotate(180)';})
+        .attr('height', function(d) { return self.barHeight - self.artifactYScale(d.blink) + 'px'; })
+        .attr('width', self.barWidth - 1)
+        .attr('fill','#033a6e');
+    this.blinkChart.append('g')
+        .attr('class', 'artifact-y-axis')
+        .attr('transform', 'translate(20,10)')
+        .attr('fill', 'lavender')
+        .call(this.artifactYaxis);
+
+    /***** JAW CLENCH ******/
+    this.jcChart = d3.select('#jaw-clench-feedback')
+        .attr('width', self.barWidth+35)
+        .attr('height', self.barHeight+25)
+        .append('g')
+        .attr('class', 'artifact-group')
+        .attr('transform','translate(10,0)');
+    this.jcRect = this.jcChart.selectAll('rect')
+        .data([{jc: 0}])//TODO: data is training ratio
+        .enter().append('rect')
+        .attr('transform', function(){ return 'translate(' + (self.barWidth+20) + ', ' + (self.barHeight+10) + ') rotate(180)';})
+        .attr('height', function(d) { return self.barHeight - self.artifactYScale(d.jc) + 'px'; })
+        .attr('width', self.barWidth - 1)
+        .attr('fill','#033a6e');
+    this.jcChart.append('g')
+        .attr('class', 'artifact-y-axis')
+        .attr('transform', 'translate(20,10)')
+        .attr('fill', 'lavender')
+        .call(this.artifactYaxis);
+
+};
+
 ExperimentUIController.prototype.initTrainingRatioIndicator = function(){
     var self = this;
     this.trainingRatioLine = this.rewardChart.append('rect')
@@ -671,6 +729,32 @@ ExperimentUIController.prototype.initTrainingRatioIndicator = function(){
 
 ExperimentUIController.prototype.updateTrainingRatioIndicator = function(trainingRatio){
     this.trainingRatioLine.attr('transform', 'translate(5, ' + this.rewardYscale(trainingRatio) + ' )' )
+};
+
+ExperimentUIController.prototype.onBlinkUpdate = function(){
+    var self = this;
+    this.socket.on('blink', function(data){
+        self.updateBlinkBarGraph(data.blink);
+    })
+};
+
+ExperimentUIController.prototype.updateBlinkBarGraph = function(blink){
+    var self = this;
+    this.blinkRect.data([{blink: blink}])
+        .attr('height', function(d) { return self.barHeight - self.artifactYScale(d.blink) + 'px'; });
+};
+
+ExperimentUIController.prototype.onJawClenchUpdate = function(){
+    var self = this;
+    this.socket.on('jawClench', function(data){
+        self.updateJawClenchBarGraph(data.jawClench);
+    })
+};
+
+ExperimentUIController.prototype.updateJawClenchBarGraph = function(jawClench){
+    var self = this;
+    this.jcRect.data([{jc: jawClench}])
+        .attr('height', function(d) { return self.barHeight - self.artifactYScale(d.jc) + 'px'; });
 };
 
 ExperimentUIController.prototype.updateRewardBarGraph = function(ratio){

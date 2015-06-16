@@ -27,6 +27,9 @@ body{
 .full-height{
     height: 100%;
 }
+.no-padding{
+    padding: 0;
+}
 .main-content{
     width: 100%;
     height: inherit;
@@ -130,12 +133,11 @@ div.sidebar-show{
     right: -10px;
 }
 div#sb-blue-show{
-    bottom: 16em;
+    bottom: 9em;
     z-index: 10;
     right: -10px;
     opacity: 0.5;
 }
-
 div#sb-red-show{
     bottom: 8em;
     z-index: 10;

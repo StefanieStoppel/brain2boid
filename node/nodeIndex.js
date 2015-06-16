@@ -409,6 +409,13 @@ MainController.prototype.oscListener = function(socket){
             }
 
         }
+        /*********************** BLINK AND JAW CLENCH ************************/
+        else if(msg[0] === '/muse/elements/blink'){
+            socket.emit('blink', {blink: msg[1]});
+        }
+        else if(msg[0] === '/muse/elements/jaw_clench'){
+            socket.emit('jawClench', {jawClench: msg[1]});
+        }
     });
 };
 
