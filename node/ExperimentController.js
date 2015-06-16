@@ -99,6 +99,7 @@ ExperimentController.prototype.setPercentileDivisorIdx = function(idx){
     this.percentilesDivisorIdx = idx;
 };
 
+
 ExperimentController.prototype.setTrainingRatio = function(trainingRatio, freqBandQuotientName){
     this.trainingRatio = {value: trainingRatio, quotientName: freqBandQuotientName};
     console.log('Training ratio update: ' +  this.trainingRatio.value);
@@ -217,8 +218,14 @@ ExperimentController.prototype.stopExperiment = function(){
     if(this.mode === 1 || this.mode === 3){
         var self = this;
         json2csv({ data: self.jsonExpData, fields: self.csvFields }, function(err, csv) {
-            if (err) console.log(err);
-            fs.writeFile('test.csv', csv, function(err) {
+            if (err)
+                console.log(err);
+            var filename = '';
+            if(self.mode === 1)
+                filename = 'test1_' + self.age + '_' + self.gender + '.csv';//TODO: ADD NAME INITIALS
+            else if(self.mode === 3)
+                filename = 'test2_' + self.age + '_' + self.gender + '.csv';
+            fs.writeFile(filename, csv, function(err) {
                 if (err) throw err;
                 console.log('file saved');
             });
@@ -238,6 +245,9 @@ ExperimentController.prototype.pauseExperiment = function(){
     this.experimentPaused = true;
     this.experimentRunning = false;
     this.clearTimer(MODE_TIMER);
+    //if test1 or test2 were running, it could be that the experiment is paused while
+    //we're over the training ratio -> TIMER is running, an points are counted.
+    this.stopPointsTimer();
 };
 
 ExperimentController.prototype.setPausedByUser = function(bool){
@@ -315,7 +325,7 @@ ExperimentController.prototype.setRatio = function(ratio){
             this.pushExperimentData(ratio);
         }
 
-        //console.log('ratio: ' + ratio + ', threshold: ' + this.thresholdRatio);
+        console.log('ratio: ' + ratio + ', threshold: ' + this.thresholdRatio);
         // 1) POINTS: ratio over threshold
         if(ratio > this.thresholdRatio)
         {
@@ -358,9 +368,11 @@ ExperimentController.prototype.updatePointsByTime = function(){
             //Points 1): f.e. 1 s 450 ms = 1450 points
             var p = Math.floor(diff[0] * 1000 + ms);
             if(this.mode === 1){
+                console.log('emitting points: ' + p);
                 this.test1Points.addThreshPoints(p);
                 this.socket.emit('updatePoints', {points: p});
             }else if(this.mode === 3){
+                console.log('emitting points: ' + p);
                 this.test2Points.addThreshPoints(p);
                 this.socket.emit('updatePoints', {points: p});
             }

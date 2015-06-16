@@ -23,6 +23,7 @@ function ExperimentUIController(constants, graphicsController, socket, uiControl
 
     this.experimentMode = parseInt($('input[name="hidden-experiment-mode"]').val()); //0 - 3
     this.duration = parseInt($('input[name="experiment-duration"]').val());
+    this.trainingRatio = 0.5;
 
     this.onSocketConnection();
     this.init();
@@ -218,7 +219,9 @@ ExperimentUIController.prototype.automaticallyStopExperiment = function(data){
                     var divisor = data.percentiles[1][self.inhibitIdx];
                     self.constants.setDividendThreshold(dividend);
                     self.constants.setDivisorThreshold(divisor);
-                    self.updateTrainingRatioIndicator(Math.pow(10, dividend)/Math.pow(10, divisor));
+                    //set training ratio
+                    self.trainingRatio = Math.pow(10, dividend) / Math.pow(10, divisor);
+                    self.updateTrainingRatioIndicator(self.trainingRatio);
 
                     self.firstFreqBandMin = data.percentiles[0][0];
                     self.secondFreqBandMax = data.percentiles[1][data.percentiles[1].length-1];
@@ -296,7 +299,6 @@ ExperimentUIController.prototype.onStartModeButtonClick = function(){
         if($(this).children('i.fa.fa-play').length !== 0){ //experiment was paused or stopped
             if(self.museConnected && self.experimentControllerExists){
                 if(self.experimentMode === 0){
-
                     self.displayExperimentModeState('Calibration','Started');
                 }
                 else if(self.experimentMode === 1)
@@ -314,13 +316,15 @@ ExperimentUIController.prototype.onStartModeButtonClick = function(){
                         resume: self.paused //if true -> was paused before
                     }
                 );
+                if(!self.paused){//delete points if experiment mode was not paused
+                    //reset Points display
+                    self.uiController.resetPoints();
+                }
                 self.paused = false;
                 //set experimentRunning
                 self.experimentRunning = true;
                 //disable red sidebar inputs
                 $('.sb-red :input').prop('disabled', true);
-                //reset Points display
-                self.uiController.resetPoints();
                 //TODO: on test 1 start boids dont run, why?
                 self.resumeExperiment();//run boids
                 self.enableControlButtons(false);
@@ -581,8 +585,8 @@ ExperimentUIController.prototype.onSlide = function(ui, isDividend){
             if(this.socketConnected)//TODO: emit message that percentile has changed
                 this.socket.emit('divisorPercentileChanged', {percentileIdx: self.inhibitIdx});
         }
-        var trainingRatio = Math.pow(10, this.percentiles[0][this.rewardIdx]) / Math.pow(10, this.percentiles[1][this.inhibitIdx]);
-        this.updateTrainingRatioIndicator(trainingRatio);
+        this.trainingRatio = Math.pow(10, this.percentiles[0][this.rewardIdx]) / Math.pow(10, this.percentiles[1][this.inhibitIdx]);
+        this.updateTrainingRatioIndicator(this.trainingRatio);
     }
 };
 
@@ -671,6 +675,7 @@ ExperimentUIController.prototype.updateRewardScaleMax = function(maxRatio){
         this.rewardYscale.domain([0, maxRatio]);
         this.rewardChart.select('.feedback-y-axis')
             .call(this.feedbackYaxis);
+        this.updateTrainingRatioIndicator(this.trainingRatio);
     }
 };
 

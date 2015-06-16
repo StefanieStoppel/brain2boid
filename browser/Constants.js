@@ -108,6 +108,8 @@ Constants.prototype.setFrequencyBands = function(frequencyBands){
     FREQUENCY_BANDS = frequencyBands;
 };
 
+
+
 //everything < TRAINING_RATIO = DIVIDEND_THRESH/DIVISOR_THRESH is yellow
 //set to >30%
 Constants.prototype.setDividendThreshold = function(lowThreshold){
