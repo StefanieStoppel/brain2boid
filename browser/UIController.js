@@ -49,7 +49,7 @@ function UIController(){
         self.onTimerUpdate();
         self.onTouchingForehead();
     });
-    //todo. error handling??
+    //todo. error handling +  connection schlieﬂen
 
     /******************************* OTHER UI CONTROLLERS ***************************************/
     this.experimentUIController = new ExperimentUIController(this.constants, this.graphicsController, this.socket, this);
@@ -197,7 +197,6 @@ UIController.prototype.onHorseshoeUpdate = function(){
 UIController.prototype.updateHorseshoe = function(data){
     this.graphicsController.updateHorseshoe(data.slice(1));
 };
-
 
 
 

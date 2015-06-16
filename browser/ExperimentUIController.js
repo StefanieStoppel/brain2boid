@@ -42,7 +42,7 @@ ExperimentUIController.prototype.init = function(){
     });
 
     /************************ BLUE SIDEBAR **************************************/
-        //Frequency band name and idx mapping
+    //Frequency band name and idx mapping
     this.frequencyBandNames = ['delta','theta','alpha','beta','gamma'];
     //get selected channel(s) from select options
     this.setSelectedChannelIndices($('option[name="ch-picker"]:selected').val());
@@ -77,6 +77,8 @@ ExperimentUIController.prototype.init = function(){
 
     /******** FREQUENCY PERCENTILE SLIDERS **********/
     this.frequencyPercentileSliders();
+    //disable sidebar settings and sliders until socket connected
+    this.enableSidebarSettings(false);
     this.rewardIdx  = $('#slider-dividend-percentile').slider("option", "value") / 10 - 1;
     this.inhibitIdx = $('#slider-divisor-percentile').slider("option", "value") / 10 - 1;
 };
@@ -86,6 +88,7 @@ ExperimentUIController.prototype.onSocketConnection = function(){
     this.socket.on('connect', function(){
         self.onExperimentCreated();
         self.socketConnected = true;//todo: change in case of lost connecction
+        self.enableSidebarSettings(true);
     });
 };
 
@@ -248,11 +251,11 @@ ExperimentUIController.prototype.automaticallyStopExperiment = function(data){
                 break;
 
         }
-
         if(data.error === undefined || !data.error){
             //update experiment mode selection and duration
             self.selectNextMode();
             self.enableControlButtons(true); //enable next and prev buttons
+            self.enableSidebarSettings(true);
         }
         self.pauseExperiment();
         self.experimentRunning = false;
@@ -288,19 +291,14 @@ ExperimentUIController.prototype.resumeExperiment = function(){
 };
 
 /**** CONTROL PANEL BUTTON LISTENERS ***/
-/**
- * Muse is not connected. Show warning.
- */
-
 
 ExperimentUIController.prototype.onStartModeButtonClick = function(){
     var self = this;
     $('button#start-mode-btn').click(function(){
         if($(this).children('i.fa.fa-play').length !== 0){ //experiment was paused or stopped
             if(self.museConnected && self.experimentControllerExists){
-                if(self.experimentMode === 0){
+                if(self.experimentMode === 0)
                     self.displayExperimentModeState('Calibration','Started');
-                }
                 else if(self.experimentMode === 1)
                     self.displayExperimentModeState('First Test','Started');
                 else if(self.experimentMode === 2)
@@ -325,9 +323,11 @@ ExperimentUIController.prototype.onStartModeButtonClick = function(){
                 self.experimentRunning = true;
                 //disable red sidebar inputs
                 $('.sb-red :input').prop('disabled', true);
-                //TODO: on test 1 start boids dont run, why?
+                //TODO: hier mehr sachen reinpacken, die immer ausgeführt werden sollen, wenn experiment resumed wird
                 self.resumeExperiment();//run boids
+                //disable controls and sidebar settings
                 self.enableControlButtons(false);
+                self.enableSidebarSettings(false);
             }else if(!self.museConnected){
                 self.displayMuseNotConnected();
             }else if(self.museConnected && !self.experimentControllerExists){
@@ -351,7 +351,7 @@ ExperimentUIController.prototype.onStartModeButtonClick = function(){
             $('.sb-red :input').prop('disabled', false);
             self.experimentRunning = false;
             self.pauseExperiment();
-            self.enableControlButtons(true);
+            //self.enableControlButtons(true);
         }
     });
 };
@@ -549,6 +549,7 @@ ExperimentUIController.prototype.frequencyPercentileSliders = function(){
         max: 100,
         step: 10,
         value: 50,
+        disabled: true,
         slide: function( event, ui ) {
             $( "#amount-dividend" ).html( ui.value + '&#37;' );
             self.onSlide(ui, true);
@@ -561,6 +562,7 @@ ExperimentUIController.prototype.frequencyPercentileSliders = function(){
         max: 100,
         step: 10,
         value: 50,
+        disabled: true,
         slide: function( event, ui ) {
             $( "#amount-divisor" ).html( ui.value + '&#37;' );
             self.onSlide(ui, false);
@@ -588,6 +590,13 @@ ExperimentUIController.prototype.onSlide = function(ui, isDividend){
         this.trainingRatio = Math.pow(10, this.percentiles[0][this.rewardIdx]) / Math.pow(10, this.percentiles[1][this.inhibitIdx]);
         this.updateTrainingRatioIndicator(this.trainingRatio);
     }
+};
+
+/*********************************** Enable or disable sidebar controls **********************************/
+ExperimentUIController.prototype.enableSidebarSettings = function(bool){
+    $('#slider-dividend-percentile').slider( "option", "disabled", !bool );
+    $('#slider-divisor-percentile').slider( "option", "disabled", !bool );
+    $('.sb-blue select, .sb-blue input').attr('disabled', !bool);
 };
 
 /******************** FULLSCREEN ******************/
