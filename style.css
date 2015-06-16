@@ -202,8 +202,8 @@ input[type=number]#perc1, input[type=number]#perc2 {
     min-width: 3em;
 }
 input[type=number]#ratio, input[type=number]#training-ratio{
-    width: 100%;
-    min-width: 4em;
+    width: 6em;
+    margin-left: 1em;
 }
 /* Frequency Bar chart colours */
 .fft_0hz{

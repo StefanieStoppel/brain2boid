@@ -523,7 +523,8 @@ ExperimentUIController.prototype.onChannelSelection = function(){
         if(running()){
             run(false);
         }
-        self.graphicsController.setSelectedChannelIndices(self.selectedChannelIndices);
+        //TODO: ERROR SOLVE
+        //self.graphicsController.setSelectedChannelIndices(self.selectedChannelIndices);
         self.graphicsController.resetBoids(self.graphicsController);
     });
 };

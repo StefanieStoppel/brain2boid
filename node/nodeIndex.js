@@ -212,10 +212,12 @@ MainController.prototype.channelSelectionListener = function(socket){
         });
         console.log("amount channels: " + SELECTED_CHANS.length);
         // get quantiles from Calibration for newly selected channels and send them via websocket
-        socket.emit('percentiles', {
-            percentiles: self.experimentController.getQuantileResults(SELECTED_FREQ_BANDS[0].name, SELECTED_FREQ_BANDS[1].name,
-                SELECTED_CHANS[0].index, 10, SELECTED_CHANS[1].index, 10)
-        });
+        if(typeof self.experimentController !== 'undefined'){
+            socket.emit('percentiles', {
+                percentiles: self.experimentController.getQuantileResults(SELECTED_FREQ_BANDS[0].name, SELECTED_FREQ_BANDS[1].name,
+                    SELECTED_CHANS[0].index, 10, SELECTED_CHANS[1].index, 10)
+            });
+        }
 
         //set RATIOS back to default
         RATIO_MAX = 0;

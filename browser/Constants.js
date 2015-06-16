@@ -165,13 +165,14 @@ Constants.prototype.setRatioMax = function(ratioMax){
 
 Constants.prototype.updateTrainingRatio = function(){
     TRAINING_RATIO = Math.pow(10, DIVIDEND_THRESH) / Math.pow(10, DIVISOR_THRESH);
-    training_ratio_display.datum(TRAINING_RATIO).attr('value', function(d){ return d; });
+    training_ratio_display.datum(TRAINING_RATIO)
+        .attr('value', function(d){ return d; });
 };
 
 Constants.prototype.setRatio = function(ratio){
     RATIO = ratio;
     ratio_display.datum(RATIO)
-        .attr('value', function(d){ return d[1]; });
+        .attr('value', function(d){ return d[1].toFixed(5); });
     this.setColourByFreqRatio();
     this.setFrequencyBands(ratio.slice(0,1).toString().split('/'));
     this.setNormalSpeed();
