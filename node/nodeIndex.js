@@ -139,14 +139,18 @@ MainController.prototype.startExperimentListener = function(socket){
                                 10,
                                 SELECTED_CHANS[1].index,
                                 10);
-                            var error = true;
+                            var error = false;
+                            var zeroCount = 0;
                             for(var i = 0; i < res.length; ++i) {
                                 for(var j = 0; j < res[i].length; ++j) {
-                                    if (res[i][j] !== 0) {
-                                        error = false;
+                                    if (res[i][j] === 0) {
+                                        zeroCount++;
+                                        if(zeroCount === 2)
+                                            error = true;
                                         break;
                                     }
                                 }
+                                zeroCount = 0;
                             }
                             socket.emit('experimentStopped', {mode: data.mode, percentiles: res, error: error});
                         })
@@ -208,8 +212,12 @@ MainController.prototype.channelSelectionListener = function(socket){
     socket.on('channelSelection', function (data) {
         console.log(data);
         data.selectedChannels.forEach(function (channel, idx) {
-            SELECTED_CHANS[idx] = CHANNELS[channel];
+            console.log('idx: '+ idx);
+            SELECTED_CHANS[idx] = CHANNELS[channel-1];
         });
+        for(var i = 0; i < SELECTED_CHANS.length; i++){
+            console.log(SELECTED_CHANS[i]);
+        }
         console.log("amount channels: " + SELECTED_CHANS.length);
         // get quantiles from Calibration for newly selected channels and send them via websocket
         if(typeof self.experimentController !== 'undefined'){
@@ -231,8 +239,8 @@ MainController.prototype.frequencyBandSelectionListener = function(socket){
     socket.on('frequencyBandSelection', function (data) {
         data.selectedFrequencyBands.forEach(function (band, idx) {
             SELECTED_FREQ_BANDS[idx] = FREQ_BANDS[band+1];
+            console.log('SEL_FREQ_BANDS: ' + SELECTED_FREQ_BANDS[idx]);
         });
-        console.log(SELECTED_FREQ_BANDS);
         //get quantiles from Calibration for newly selected bands and send them over websocket
         if(self.experimentController !== undefined && self.experimentController.getCalibrationCollectionLength() !== 0){
             socket.emit('percentiles', {
@@ -290,7 +298,7 @@ MainController.prototype.oscListener = function(socket){
                     //console.log('moving average of ' + MOV_AVG[selBand.index][0] + ' now is', MOV_AVG[selBand.index][el.index].movingAverage());
                     // console.log('moving variance now is', MOV_AVG[selBand.index][el.index].variance());
                 });*/
-
+                console.log('selIdx: ' + selIdx)
                 if(msg[0].indexOf(selBand.name) !== -1)
                 {
                     FREQ_BANDS.forEach(function(allBand, allIdx)
@@ -353,6 +361,12 @@ MainController.prototype.oscListener = function(socket){
                         }
                     });
                 }
+                else if(selBand.name === 'none'){//second frequency band selection is '-' -> none
+                    DIVISOR = [selBand.name, 0];
+                    console.log('DIVISOR: ' + DIVISOR);
+                    setRatio();
+                    socket.emit('ratio', {ratio: RATIO});
+                }
             });
         /*****************HORSESHOE*******************/
         }else if(msg[0] === '/muse/elements/horseshoe')//four integers (for each channel)
@@ -386,14 +400,18 @@ MainController.prototype.oscListener = function(socket){
                                 10,
                                 SELECTED_CHANS[1].index,
                                 10);
-                            var error = true;
+                            var error = false;
+                            var zeroCount = 0;
                             for(var i = 0; i < res.length; ++i) {
                                 for(var j = 0; j < res[i].length; ++j) {
-                                    if (res[i][j] !== 0) {
-                                        error = false;
+                                    if (res[i][j] === 0) {
+                                        zeroCount++;
+                                        if(zeroCount === 2)
+                                            error = true;
                                         break;
                                     }
                                 }
+                                zeroCount = 0;
                             }
                             socket.emit('experimentStopped', {mode: self.experimentController.getMode(), percentiles: res, error: error});
                         })
@@ -433,6 +451,7 @@ function setDividend(freqBandName, data){
         chanCount++;
     });
     DIVIDEND = [freqBandName, medFreq/chanCount];
+    console.log('DIVIDEND: ' + DIVIDEND);
 }
 
 function setDivisor(freqBandName, data){
@@ -443,10 +462,12 @@ function setDivisor(freqBandName, data){
         chanCount++;
     });
     DIVISOR = [freqBandName, medFreq/chanCount];
+    console.log('DIVISOR: ' + DIVISOR);
 }
 
 function setRatio(){
     RATIO = [DIVIDEND[0] + '/' + DIVISOR[0], (Math.pow(10, DIVIDEND[1])/Math.pow(10, DIVISOR[1]))];
+    console.log('RATIO: ' +RATIO);
 }
 
 new MainController();

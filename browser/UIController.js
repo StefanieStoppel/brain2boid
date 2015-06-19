@@ -54,7 +54,6 @@ function UIController(){
     /******************************* OTHER UI CONTROLLERS ***************************************/
     this.experimentUIController = new ExperimentUIController(this.constants, this.graphicsController, this.socket, this);
 
-
     //*********************** LISTENERS for messages from node (nodeIndex or experimentController)
     this.onMuseConnected();
     this.socketRatio(this);
@@ -69,10 +68,7 @@ function UIController(){
     /**** POINTS RECEIVE & DISPLAY ***/
     this.onPointsUpdate();
     this.points = 0;
-
-
 }
-
 
 /**
  * Update points display in main area (left corner of svg field with boids)
@@ -92,7 +88,6 @@ UIController.prototype.resetPoints = function(){
     this.pointsDisplay.text(this.points);
 };
 
-
 UIController.prototype.setCountdown = function(duration){
     $('#timer-text').text(duration + ' s');
 };
@@ -110,7 +105,7 @@ UIController.prototype.socketRatio = function(self){
     this.socket.on('ratio', function(data){
         if(data.ratio[1] !== null){
             self.constants.setRatio(data.ratio);
-            //todo: put ratio as data on feedback bar char
+            //update bar chart in sidebar if sidebar is showing
             if(getSidebarShowing() && self.experimentUIController.getExperimentRunning())
                 self.experimentUIController.updateRewardBarGraph(data.ratio);
         }
@@ -140,7 +135,6 @@ UIController.prototype.onRatioMinUpdate = function(self){
     })
 };
 
-
 /********************* MUSE CONNECTION & ON FOREHEAD *******************/
 UIController.prototype.onMuseConnected = function(){
     var self = this;
@@ -148,7 +142,6 @@ UIController.prototype.onMuseConnected = function(){
         self.experimentUIController.setMuseConnected(data.museConnected);
     });
 };
-
 
 /**
  * Experiment is paused when muse is not touching the head and resumed if muse is on the head,
@@ -170,35 +163,22 @@ UIController.prototype.onTouchingForehead = function(){
     })
 };
 
-
-
-
 /***************** BATTERY ***********************/
 UIController.prototype.onBatteryUpdate = function(){
     var self = this;
     this.socket.on('batteryUpdate', function(data){
-        self.updateBatteryDisplay(data.charge);
+        self.graphicsController.updateBatteryDisplay(data.charge);
     });
-};
-
-UIController.prototype.updateBatteryDisplay = function(charge){
-    this.graphicsController.updateBatteryDisplay(charge);
 };
 
 /***************** HORSESHOE **********************/
+//1 = good; 2 = ok; 3 = bad
 UIController.prototype.onHorseshoeUpdate = function(){
     var self = this;
     this.socket.on('horseshoe', function(data){
-        self.updateHorseshoe(data.horseshoe);
+        self.graphicsController.updateHorseshoe(data.horseshoe.slice(1));
     });
 };
-
-//1 = good; 2 = ok; 3 = bad
-UIController.prototype.updateHorseshoe = function(data){
-    this.graphicsController.updateHorseshoe(data.slice(1));
-};
-
-
 
 /***************************** BODY ONLOAD ***************************/
 

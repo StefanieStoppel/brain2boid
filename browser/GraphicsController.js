@@ -34,10 +34,10 @@ for(var i = 0; i < 81; i++){
 var AREA_WIDTH = $('html').outerWidth(),
     AREA_HEIGHT = 500;
 
-var HORSESHOE_DATA = [  {horseshoe: 3, cx: 40,  cy: 50, r:20, colour: "green"},
-                        {horseshoe: 3, cx: 80,  cy: 50, r:20, colour: "blue"},
-                        {horseshoe: 3, cx: 120, cy: 50, r:20, colour: "yellow"},
-                        {horseshoe: 3, cx: 160, cy: 50, r:20, colour: "magenta"}];
+var HORSESHOE_DATA = [  {horseshoe: 3, cx: 40,  cy: 50, r:20, colour: "green",   opaque: false},
+                        {horseshoe: 3, cx: 80,  cy: 50, r:20, colour: "blue",    opaque: false},
+                        {horseshoe: 3, cx: 120, cy: 50, r:20, colour: "yellow",  opaque: false},
+                        {horseshoe: 3, cx: 160, cy: 50, r:20, colour: "magenta", opaque: false}];
 
 function GraphicsController(){
     /** BOIDS & CONSTANTS**/
@@ -68,7 +68,6 @@ function GraphicsController(){
     this.horseshoe = this.setupHorseshoe();
     //battery display
     this.setupBatteryDisplay();
-
 
     //init restartButton and listen for clicks
     this.restartButton = this.body.select('#restart-btn');
@@ -149,14 +148,6 @@ GraphicsController.prototype.resetBoids = function(self){
     self.draw();
 };
 
-GraphicsController.prototype.resetBoids2 = function(self){
-    self.newBoids();
-    self.allBoids = d3.selectAll("polygon").data(this.boids)
-        .attr( { points: function(boid){ return boid.getPoints();},
-            fill: function(boid){ return boid.getColour();} } );
-    self.draw();
-};
-
 /**
  * Calculate flocking and draw it on svg every 5 ms.
  */
@@ -180,8 +171,6 @@ GraphicsController.prototype.flock = function(scale){//scale == array with two v
         this.boids[i].flock(this.boids);
         this.boids[i].changeColour();
         this.boids[i].move();
-        if(typeof scale !== 'undefined')
-            this.boids[i].scale(scale);
     }
 };
 
@@ -226,22 +215,37 @@ GraphicsController.prototype.updateHorseshoe = function(horseshoeValues){
     }
     this.horseshoe.data(HORSESHOE_DATA);
     this.horseshoe.attr("fill" ,
-        function(d){
-            if(d.horseshoe === 3 || d.horseshoe === 2 || d.horseshoe === 4){
-                return "white";
-            }else{
-                return d.colour;
-            }
-        })
+            function(d){
+                if(d.horseshoe === 3 || d.horseshoe === 2 || d.horseshoe === 4){
+                    return "white";
+                }else{
+                    return d.colour;
+                }
+            })
         .attr("stroke-width", 2)
         .attr("stroke",
+            function(d){
+                if(d.horseshoe === 2 || d.horseshoe == 1){
+                    return d.colour;
+                }else if(d.horseshoe === 3  || d.horseshoe === 4){
+                    return "none";
+                }
+            });
+};
+
+GraphicsController.prototype.setHorseshoeChannelOpaque = function(opaqueArray){
+    for(var i = 0; i < opaqueArray.length; i++){
+        HORSESHOE_DATA[i].opaque = opaqueArray[i].opaque;
+    }
+    this.horseshoe.data(HORSESHOE_DATA);
+    this.horseshoe.style('opacity',
         function(d){
-            if(d.horseshoe === 2 || d.horseshoe == 1){
-                return d.colour;
-            }else if(d.horseshoe === 3  || d.horseshoe === 4){
-                return "none";
-            }
-        });
+            if(d.opaque)
+                return '0.5';
+            else
+                return '1';
+        }
+    );
 };
 
 GraphicsController.prototype.setupBatteryDisplay = function(){

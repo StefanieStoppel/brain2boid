@@ -131,6 +131,7 @@ ExperimentController.prototype.startExperimentMode = function(mode, callback){
 };
 
 ExperimentController.prototype.getQuantileResults = function(freqBand1, freqBand2, channelIdx1, quantile1, channelIdx2, quantile2){
+    //TODO: WHAT HAPPENS TO NEGATIVE VALUES?
     if(this.calibrationCollection.length !== 0){
         //freqBand2, channelName2 and percentile2 can be undefined
         var firstBandSelChans = this.calibrationCollection.find(function(e) { return e.freqBandName === freqBand1; })
@@ -140,25 +141,48 @@ ExperimentController.prototype.getQuantileResults = function(freqBand1, freqBand
         var vecFirstBandSecondChan = firstBandSelChans.find(function(e) {return e.chan === channelIdx2})
             .map(function(el){ return el.val; }).toVector();
         var firstBandRes = vecFirstBandFirstChan.add(vecFirstBandSecondChan).divide(2);
-        //TODO: solve error RangeError: Subset quantity is greater than the Vector length
 
-        this.percentilesDividend = firstBandRes.quantile(quantile1);
-        //TODO: set dividend
+
+        this.percentilesDividend = firstBandRes.quantile(quantile1).pow(2);
+        this.percentilesDividendPow = this.percentilesDividend.clone(
+            function(el){//el === Array
+                for(var i = 0; i < el.length; i++){
+                    el[i] = Math.pow(10, el[i]);
+                }
+                return el;
+            }
+        );
+
         this.setDividend(this.percentilesDividend[this.percentilesDividendIdx], this.percentilesDividendIdx, freqBand1);
 
+        if(freqBand2 !== 'none' && channelIdx2 !== -1){//divisor selected ( != 'none' or - )
+            var secondBandSelChans = this.calibrationCollection.find(function(e) { return e.freqBandName === freqBand2; })
+                .find(function(e) { return e.chan === channelIdx1 || e.chan === channelIdx2; });
+            var vecSecondBandFirstChan = secondBandSelChans.find(function(e) {return e.chan === channelIdx1})
+                .map(function(el){ return el.val; }).toVector();
+            var vecSecondBandSecondChan = secondBandSelChans.find(function(e) {return e.chan === channelIdx2})
+                .map(function(el){ return el.val; }).toVector();
+            var secondBandRes = vecSecondBandFirstChan.add(vecSecondBandSecondChan).divide(2);
 
-        //TODO: testen was raus kommen wenn nur ein Frequenzband ausgew?hlt wurde
-        var secondBandSelChans = this.calibrationCollection.find(function(e) { return e.freqBandName === freqBand2; })
-            .find(function(e) { return e.chan === channelIdx1 || e.chan === channelIdx2; });
-        var vecSecondBandFirstChan = secondBandSelChans.find(function(e) {return e.chan === channelIdx1})
-            .map(function(el){ return el.val; }).toVector();
-        var vecSecondBandSecondChan = secondBandSelChans.find(function(e) {return e.chan === channelIdx2})
-            .map(function(el){ return el.val; }).toVector();
-        var secondBandRes = vecSecondBandFirstChan.add(vecSecondBandSecondChan).divide(2);
-
-        this.percentilesDivisor = secondBandRes.quantile(quantile2);
-        //set divisor
-        this.setDivisor(this.percentilesDivisor[this.percentilesDivisorIdx], this.percentilesDivisorIdx, freqBand2);
+            this.percentilesDivisor = secondBandRes.quantile(quantile2).pow(2);
+            this.percentilesDivisorPow = this.percentilesDivisor.clone(
+                function(el){//el === Array
+                    for(var i = 0; i < el.length; i++){
+                        el[i] = Math.pow(10, el[i]);
+                    }
+                    return el;
+                }
+            );
+            //set divisor
+            this.setDivisor(this.percentilesDivisor[this.percentilesDivisorIdx], this.percentilesDivisorIdx, freqBand2);
+        }else{
+            this.percentilesDivisor = [];
+            for(var i = 0; i < quantile2; i++){
+                this.percentilesDivisor.push(undefined);
+            }
+            this.setDivisor(0, this.percentilesDivisorIdx, freqBand2);
+        }
+        //TODO: testen was raus kommen wenn nur ein Frequenzband ausgew?hlt wurde -> range error
 
         //set the ratio that is used for training
         this.setTrainingRatio(Math.pow(10, this.dividend.value) / Math.pow(10, this.divisor.value), freqBand1 + '/' + freqBand2);
@@ -167,6 +191,9 @@ ExperimentController.prototype.getQuantileResults = function(freqBand1, freqBand
         //Quantiles as specified
         console.log("quantiles for average of band " + freqBand1 + " over channel(s) " + channelIdx1 + ", " +channelIdx2 + ": " +  this.percentilesDividend);
         console.log("quantiles for average of band " + freqBand2 + " over channel(s) " + channelIdx1 + ", " +channelIdx2 + ": " +  this.percentilesDivisor);
+        //pow quantiles
+        console.log("pow quantiles: " +  this.percentilesDividendPow);
+        console.log("pow quantiles: " +  this.percentilesDivisorPow);
 
         return [this.percentilesDividend, this.percentilesDivisor];
     }else{

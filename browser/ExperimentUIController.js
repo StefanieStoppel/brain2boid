@@ -19,6 +19,9 @@ function ExperimentUIController(constants, graphicsController, socket, uiControl
     this.percentiles = [];
     //TODO: IST DAS ÜBERHAUPT SINNVOLLL????????
     this.selectedFrequencyIndices = [];
+    this.selectedFrequencyIndices[0] = parseInt($('select.frequency-picker').children('option.fr-dividend:selected').val());
+    this.selectedFrequencyIndices[1] = parseInt($('select.frequency-picker').children('option.fr-divisor:selected').val());
+    //TODO: FIX
     this.selectedChannelIndices = [];
 
     this.experimentMode = parseInt($('input[name="hidden-experiment-mode"]').val()); //0 - 3
@@ -46,6 +49,8 @@ ExperimentUIController.prototype.init = function(){
     this.frequencyBandNames = ['delta','theta','alpha','beta','gamma'];
     //get selected channel(s) from select options
     this.setSelectedChannelIndices($('option[name="ch-picker"]:selected').val());
+    //make channels that are not selected opaque
+    this.setHorseshoeChannelOpaque();
     //listen for channel selection changes in UI
     this.onChannelSelection();
     //listen for frequency selection changes in UI
@@ -95,6 +100,8 @@ ExperimentUIController.prototype.onSocketConnection = function(){
         //artifact listeners
         self.onJawClenchUpdate();
         self.onBlinkUpdate();
+        //get updates of band power percentiles (when frequency or channel selection changes)
+        self.onPercentileUpdate();
     });
 };
 
@@ -223,19 +230,8 @@ ExperimentUIController.prototype.automaticallyStopExperiment = function(data){
                     self.uiController.setCountdown(self.duration);
                     self.socket.emit('experimentModeChanged', {mode: self.experimentMode, duration: self.duration});
                 }else{
-                    self.percentiles = data.percentiles;
-                    var dividend = data.percentiles[0][self.rewardIdx];
-                    var divisor = data.percentiles[1][self.inhibitIdx];
-                    self.constants.setDividendThreshold(dividend);
-                    self.constants.setDivisorThreshold(divisor);
-                    //set training ratio
-                    self.trainingRatio = Math.pow(10, dividend) / Math.pow(10, divisor);
-                    self.updateTrainingRatioIndicator(self.trainingRatio);
+                    self.updatePercentiles(data.percentiles);
 
-                    self.firstFreqBandMin = data.percentiles[0][0];
-                    self.secondFreqBandMax = data.percentiles[1][data.percentiles[1].length-1];
-                    self.constants.setMinDividendDivisorRatio(self.firstFreqBandMin, self.secondFreqBandMax);
-                    self.constants.setMaxDividendDivisorRatio(data.percentiles[0][data.percentiles[0].length-1],data.percentiles[1][0]);
                     console.log('received calibration data');
                     self.displayExperimentModeState('Calibration', 'Finished');
                     self.calibrationFinished = true; //TODO: ADD ERROR HANDLING IN CASE OF NO RESULTS
@@ -270,10 +266,6 @@ ExperimentUIController.prototype.automaticallyStopExperiment = function(data){
     }
     //enable sidebar experiment inputs
     $('.sb-red :input').prop('disabled', false);
-};
-
-ExperimentUIController.prototype.stopExperimentMode = function(){
-    //TODO: fill
 };
 
 ExperimentUIController.prototype.getExperimentPaused = function(){
@@ -523,25 +515,30 @@ ExperimentUIController.prototype.onChannelSelection = function(){
         if(running()){
             run(false);
         }
-        //TODO: ERROR SOLVE
-        //self.graphicsController.setSelectedChannelIndices(self.selectedChannelIndices);
         self.graphicsController.resetBoids(self.graphicsController);
+        //check which channels haven't been selected and make them opaque
+        self.setHorseshoeChannelOpaque();
     });
+};
+
+ExperimentUIController.prototype.setHorseshoeChannelOpaque = function(){
+    var opaque = [];
+    for(var i = 1; i < 5; i++){
+        if(this.selectedChannelIndices.indexOf(i) === -1)
+            opaque.push({channel: i, opaque: true});
+        else
+            opaque.push({channel: i, opaque: false});
+    }
+    this.graphicsController.setHorseshoeChannelOpaque(opaque);
 };
 
 ExperimentUIController.prototype.setSelectedChannelIndices = function(selectedChannels){
     //one channel => return array with one number
     if(selectedChannels.length === 1){
         this.selectedChannelIndices = [parseInt(selectedChannels)];
-    }//two channels => return array of numbers
+    }//two or more channels => return array of numbers
     else{
-        if(selectedChannels === 'all'){
-            this.selectedChannelIndices = selectedChannels.split(',').map(Number);
-        }else{
-            if(selectedChannels.indexOf('vs') !== -1)
-                selectedChannels = selectedChannels.split('-vs').join('');
-            this.selectedChannelIndices = selectedChannels.split('-').map(Number);
-        }
+       this.selectedChannelIndices = selectedChannels.split('-').map(Number);
     }
 };
 
@@ -730,6 +727,33 @@ ExperimentUIController.prototype.initTrainingRatioIndicator = function(){
 
 ExperimentUIController.prototype.updateTrainingRatioIndicator = function(trainingRatio){
     this.trainingRatioLine.attr('transform', 'translate(5, ' + this.rewardYscale(trainingRatio) + ' )' )
+};
+
+/**
+ * Percentile update. Received when channel or frequency band selection changes.
+ */
+ExperimentUIController.prototype.onPercentileUpdate = function(){
+    var self = this;
+    this.socket.on('percentiles', function(data){
+        //update Percentiles and training ratio (+ in constants), also update max and min ratio
+        self.updatePercentiles(data.percentiles);
+    })
+};
+//todo: split into more functions
+ExperimentUIController.prototype.updatePercentiles = function(percentiles){
+    this.percentiles = percentiles;
+    var dividend = percentiles[0][this.rewardIdx];
+    var divisor = percentiles[1][this.inhibitIdx];
+    this.constants.setDividendThreshold(dividend);
+    this.constants.setDivisorThreshold(divisor);
+    //set training ratio
+    this.trainingRatio = Math.pow(10, dividend) / Math.pow(10, divisor);
+    this.updateTrainingRatioIndicator(this.trainingRatio);
+
+    this.firstFreqBandMin = percentiles[0][0];
+    this.secondFreqBandMax = percentiles[1][percentiles[1].length-1];
+    this.constants.setMinDividendDivisorRatio(this.firstFreqBandMin, this.secondFreqBandMax);
+    this.constants.setMaxDividendDivisorRatio(percentiles[0][percentiles[0].length-1],percentiles[1][0]);
 };
 
 ExperimentUIController.prototype.onBlinkUpdate = function(){
