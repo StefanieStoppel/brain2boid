@@ -32,7 +32,7 @@ for(var i = 0; i < 81; i++){
 }
 
 var AREA_WIDTH = $('html').outerWidth(),
-    AREA_HEIGHT = 500;
+    AREA_HEIGHT = $('html').outerHeight() + 5;
 
 var HORSESHOE_DATA = [  {horseshoe: 3, cx: 40,  cy: 50, r:20, colour: "green",   opaque: false},
                         {horseshoe: 3, cx: 80,  cy: 50, r:20, colour: "blue",    opaque: false},

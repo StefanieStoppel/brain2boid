@@ -43,51 +43,51 @@
                     <div style="max-height: 5em; max-width: 5em;"><i class="fa fa-pause" style="font-size: 5em; color: cadetblue; display: none"></i></div>
                 </div>
             </div>
-            <div class="row" id="control-row">
-                <div class="col-xs-4" id="experiment-options">
-                    <div class="col-xs-4">
-                        <button type="button" name="experiment-control" id="new-experiment-btn">
-                            <i class="fa fa-plus-square"></i>
-                        </button>
+            <div class="row" id="controls">
+                <div id="control-row">
+                    <div class="col-xs-4 full-height" id="experiment-options">
+                        <div class="col-xs-4 full-height">
+                            <button type="button" name="experiment-control" id="new-experiment-btn" style="top: 14%; position: relative;">
+                                <i class="fa fa-plus-square"></i>
+                            </button>
+                        </div>
+                        <div class="col-xs-4 full-height">
+                            <button type="button" name="experiment-control" id="save-experiment-btn" style="top: 14%; position: relative;">
+                                <i class="fa fa-floppy-o"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="col-xs-4">
-                        <button type="button" name="experiment-control" id="save-experiment-btn">
-                            <i class="fa fa-floppy-o"></i>
-                        </button>
+                    <div class="col-xs-4 full-height" id="experiment-control">
+                        <div class="col-xs-4 full-height">
+                            <button type="button" name="mode-control" id="prev-mode-btn" style="top: 14%; position: relative;">
+                                <i class="fa fa-backward"></i>
+                            </button>
+                        </div>
+                        <div class="col-xs-4 full-height">
+                            <button type="button" name="mode-control" id="start-mode-btn" style="top: 14%; position: relative;">
+                                <i class="fa fa-play"></i>
+                            </button>
+                        </div>
+                        <div class="col-xs-4 full-height">
+                            <button type="button" name="mode-control" id="next-mode-btn" style="top: 14%; position: relative;">
+                                <i class="fa fa-forward"></i>
+                            </button>
+                        </div>
+
+                     </div>
+                    <div class="col-xs-4 full-height">
+                        <div class="col-xs-8 full-height">
+                            <input type="hidden" name="hidden-experiment-mode" value="0">
+                            <input type="hidden" name="experiment-duration" id="hidden-experiment-duration" value="10">
+                            <p id="experiment-mode-display">Calibration</p>
+                        </div>
+                        <div class="col-xs-4 full-height">
+                            <button type="button" name="expand-control" id="expand-btn" style="top: 14%; position: relative;">
+                                <i class="fa fa-arrows-alt"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div class="col-xs-4" id="experiment-control">
-
-                    <div class="col-xs-4">
-                        <button type="button" name="mode-control" id="prev-mode-btn">
-                            <i class="fa fa-backward"></i>
-                        </button>
-                    </div>
-                    <div class="col-xs-4">
-                        <button type="button" name="mode-control" id="start-mode-btn">
-                            <i class="fa fa-play"></i>
-                        </button>
-                    </div>
-                    <div class="col-xs-4">
-                        <button type="button" name="mode-control" id="next-mode-btn">
-                            <i class="fa fa-forward"></i>
-                        </button>
-                    </div>
-
-                 </div>
-                <div class="col-xs-4">
-                    <div class="col-xs-8">
-                        <input type="hidden" name="hidden-experiment-mode" value="0">
-                        <input type="hidden" name="experiment-duration" id="hidden-experiment-duration" value="10">
-                        <p id="experiment-mode-display">Calibration</p>
-                    </div>
-                    <div class="col-xs-4">
-                        <button type="button" name="expand-control" id="expand-btn">
-                            <i class="fa fa-arrows-alt"></i>
-                        </button>
-                    </div>
-                </div>
-
             </div>
 
 <!-- running and restart-->
@@ -101,7 +101,7 @@
             <div class="row">
                 <h4>Kan&auml;le</h4>
                 <div class="ch-single col-xs-6">
-                    <select class="channel-picker full-width sidebar-select sb-blue-select">
+                    <select class="channel-picker sidebar-select sb-blue-select">
                         <option name="ch-picker" id="ch-t9" value="1">T9</option>
                         <option name="ch-picker" id="ch-fp1" value="2">Fp1</option>
                         <option name="ch-picker" id="ch-fp2" value="3">Fp2</option>
@@ -120,7 +120,7 @@
             <!-- FREQUENCY BAND PICKER -->
             <div class="row">
                 <h4>Trainingsprotokoll</h4>
-                <div class="fr-band-single col-xs-6">
+                <div class="fr-band-single no-padding col-xs-6">
                     <h5>Reward</h5>
                     <select id="select-fr-dividend" class="frequency-picker sidebar-select sb-blue-select">
                         <option name="fr-picker" class="fr-dividend" id="fr-dividend-delta" value="0">&delta; (Delta) </option>
@@ -130,7 +130,7 @@
                         <option name="fr-picker" class="fr-dividend" id="fr-dividend-all" value="4">&gamma; (Gamma)</option>
                     </select>
                 </div>
-                <div class="fr-band-single col-xs-6">
+                <div class="fr-band-single no-padding col-xs-6">
                     <h5>Inhibit</h5>
                     <select id="select-fr-divisor" class="frequency-picker sidebar-select sb-blue-select">
                         <option name="fr-picker" class="fr-divisor" id="fr-divisor-none" value="-1"> - </option>
@@ -146,25 +146,21 @@
 
             <!-- PERCENTILE INPUTS -->
             <div class="row">
-                <div class="fr-percentile-input col-xs-6 col-sm-6" style="padding-left:0;">
-                    <span id="amount-dividend">
-                        50&#37;
-                    </span>
+                <div class="fr-percentile-input col-xs-3 col-sm-3" style="padding-left:0;">
                     <div id="slider-dividend-percentile" style="height:4em;"></div>
-
-                <!--
-                    <div class="col-xs-12 col-sm-4" style="margin-bottom: 1em">
-                        <input type="number" name="freq-band-1-percentile" class="sidebar-input sb-blue-input" id="perc1" value="50">
-                    </div>
-                    <div class="col-xs-12 col-sm-4" style="margin-bottom: 1em;">
-                        <input type="button" name="perc1-update" class="sidebar-button sb-blue-button" value="Update">
-                    </div> -->
                 </div>
-                <div class="fr-percentile-input col-xs-6 col-sm-6" style="padding-left:0;">
-                    <span id="amount-divisor">
+                <div class=" col-xs-3 col-sm-3" style="padding-left:0; height: 70px;">
+                     <span id="amount-dividend">
                         50&#37;
                     </span>
+                </div>
+                <div class="fr-percentile-input col-xs-3 col-sm-3" style="padding-left:0;">
                     <div id="slider-divisor-percentile" style="height:4em;"></div>
+                </div>
+                <div class=" col-xs-3 col-sm-3" style="padding-left:0;  height: 70px;">
+                     <span id="amount-divisor">
+                        50&#37;
+                    </span>
                 </div>
                 <br>
             </div>

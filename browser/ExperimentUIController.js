@@ -259,6 +259,9 @@ ExperimentUIController.prototype.automaticallyStopExperiment = function(data){
             self.enableControlButtons(true); //enable next and prev buttons
             self.enableSidebarSettings(true);
         }
+        //show control bar
+        $('div#controls').opacityControlBar(200, 1);
+
         self.pauseExperiment();
         self.experimentRunning = false;
     }else{ //data.percentiles === null -> no values from muse
