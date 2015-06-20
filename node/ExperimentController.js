@@ -13,7 +13,7 @@ var json2csv = require('json2csv');
 TIMER = undefined;
 MODE_TIMER = undefined;
 
-function ExperimentController(age, gender, mode, socket){ //age and gender of subject, passed from browser input field on experiment start
+function ExperimentController(initials, age, gender, mode, socket){ //age and gender of subject, passed from browser input field on experiment start
     //collections for all experiment modes
     this.calibrationCollection = new Collection();
     this.test1Collection = new Collection();
@@ -29,7 +29,8 @@ function ExperimentController(age, gender, mode, socket){ //age and gender of su
     this.mode = mode;//default: calibration
     //WebSocket
     this.socket = socket;
-    //Age and gender of experiment subject
+    //Initials, age and gender of experiment subject
+    this.initials = initials;
     this.age = age;
     this.gender = gender;
 
@@ -237,6 +238,10 @@ ExperimentController.prototype.getExperimentPaused = function(){
     return this.experimentPaused;
 };
 
+ExperimentController.prototype.setExperimentPaused = function(bool){
+    this.experimentPaused = bool;
+}
+
 ExperimentController.prototype.stopExperiment = function(){
     this.experimentPaused = false;
     this.experimentRunning = false;
@@ -249,10 +254,10 @@ ExperimentController.prototype.stopExperiment = function(){
                 console.log(err);
             var filename = '';
             if(self.mode === 1)
-                filename = 'test1_' + self.age + '_' + self.gender + '.csv';//TODO: ADD NAME INITIALS
+                filename = 'test1_' + self.initials + '_' + self.age + '_' + self.gender + '.csv';//TODO: ADD NAME INITIALS
             else if(self.mode === 3)
-                filename = 'test2_' + self.age + '_' + self.gender + '.csv';
-            fs.writeFile(filename, csv, function(err) {
+                filename = 'test2_'  + self.initials + '_' + self.age + '_' + self.gender + '.csv';
+            fs.writeFile('csv/' + filename, csv, function(err) {
                 if (err) throw err;
                 console.log('file saved');
             });

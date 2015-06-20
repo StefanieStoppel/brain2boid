@@ -107,7 +107,7 @@ MainController.prototype.newExperimentListener = function(socket){
     socket.on('newExperiment', function(data){//no data
         console.log('new experiment set up for ' + data.age + ', '+ data.gender + ', ' + 'mode: ' + data.mode);
         //init experiment with mode, gender  and age
-        self.experimentController = new ExperimentController(data.age, data.gender, data.mode, socket);
+        self.experimentController = new ExperimentController(data.initials, data.age, data.gender, data.mode, socket);
         socket.emit('experimentCreated', { experimentCreated: true});
     });
 };
@@ -139,15 +139,17 @@ MainController.prototype.startExperimentListener = function(socket){
                                 10,
                                 SELECTED_CHANS[1].index,
                                 10);
+                            //TODO: who knows...
                             var error = false;
                             var zeroCount = 0;
                             for(var i = 0; i < res.length; ++i) {
                                 for(var j = 0; j < res[i].length; ++j) {
                                     if (res[i][j] === 0) {
                                         zeroCount++;
-                                        if(zeroCount === 2)
+                                        if(zeroCount === 2){
                                             error = true;
-                                        break;
+                                            break;
+                                        }
                                     }
                                 }
                                 zeroCount = 0;
@@ -298,7 +300,7 @@ MainController.prototype.oscListener = function(socket){
                     //console.log('moving average of ' + MOV_AVG[selBand.index][0] + ' now is', MOV_AVG[selBand.index][el.index].movingAverage());
                     // console.log('moving variance now is', MOV_AVG[selBand.index][el.index].variance());
                 });*/
-                console.log('selIdx: ' + selIdx)
+               // console.log('selIdx: ' + selIdx)
                 if(msg[0].indexOf(selBand.name) !== -1)
                 {
                     FREQ_BANDS.forEach(function(allBand, allIdx)
@@ -363,7 +365,7 @@ MainController.prototype.oscListener = function(socket){
                 }
                 else if(selBand.name === 'none'){//second frequency band selection is '-' -> none
                     DIVISOR = [selBand.name, 0];
-                    console.log('DIVISOR: ' + DIVISOR);
+                    //console.log('DIVISOR: ' + DIVISOR);
                     setRatio();
                     socket.emit('ratio', {ratio: RATIO});
                 }
@@ -378,44 +380,22 @@ MainController.prototype.oscListener = function(socket){
         {
             if(self.experimentController !== undefined){
                 var remainingDuration = self.experimentController.getDuration();
-                if(self.experimentController.getTouchingForehead() !== msg[1])
+                if(self.experimentController.getTouchingForehead() !== msg[1] && self.experimentController.getTouchingForehead() !== -1)
                     self.experimentController.setTouchingForehead(msg);
-                if(msg[1] !== 1 && self.experimentController.getExperimentRunning()) // PAUSE EXPERIMENT
+                if( msg[1] !== 1  && !self.experimentController.getTouchingForehead()) // PAUSE EXPERIMENT
                 {
                     //pause experiment
                     console.log('WARNING: Experiment paused. Muse is not touching forehead. ');
                     self.experimentController.pauseExperiment();//sets experimentRunning to false
+                    self.experimentController.setTouchingForehead([0, -1]);
                     socket.emit('notTouchingForehead', {pauseExperiment: true, remainingDuration: remainingDuration});
                 }
                 else if(msg[1] === 1 && self.experimentController.getExperimentPaused()
                     && !self.experimentController.getPausedByUser() && remainingDuration > 0)
                 { //RESUME REXPERIMENT
+                    self.experimentController.setExperimentPaused(false);
                     socket.emit('touchingForehead', {resumeExperiment: true, remainingDuration: remainingDuration});
-                    console.log('INFO: Experiment resumed. Muse is placed on head.');
-                    self.experimentController.resumeExperiment(
-                        (function () {//callback
-                            var res = self.experimentController.getQuantileResults(SELECTED_FREQ_BANDS[0].name,
-                                SELECTED_FREQ_BANDS[1].name,
-                                SELECTED_CHANS[0].index,
-                                10,
-                                SELECTED_CHANS[1].index,
-                                10);
-                            var error = false;
-                            var zeroCount = 0;
-                            for(var i = 0; i < res.length; ++i) {
-                                for(var j = 0; j < res[i].length; ++j) {
-                                    if (res[i][j] === 0) {
-                                        zeroCount++;
-                                        if(zeroCount === 2)
-                                            error = true;
-                                        break;
-                                    }
-                                }
-                                zeroCount = 0;
-                            }
-                            socket.emit('experimentStopped', {mode: self.experimentController.getMode(), percentiles: res, error: error});
-                        })
-                    );
+
                 }
             }
         }
@@ -439,6 +419,40 @@ MainController.prototype.oscListener = function(socket){
     });
 };
 
+MainController.prototype.resumeExperimentListener = function(socket){
+    var self = this;
+    if(typeof this.experimentController !== 'undefined'){
+        socket.on('resumeExperiment', function(data){
+            console.log('INFO: Experiment resumed. Muse is placed on head.');
+            self.experimentController.resumeExperiment(
+                (function () {//callback
+                    var res = self.experimentController.getQuantileResults(SELECTED_FREQ_BANDS[0].name,
+                        SELECTED_FREQ_BANDS[1].name,
+                        SELECTED_CHANS[0].index,
+                        10,
+                        SELECTED_CHANS[1].index,
+                        10);
+                    var error = false;
+                    var zeroCount = 0;
+                    for(var i = 0; i < res.length; ++i) {
+                        for(var j = 0; j < res[i].length; ++j) {
+                            if (res[i][j] === 0) {
+                                zeroCount++;
+                                if(zeroCount === 2) {
+                                    error = true;
+                                    break;
+                                }
+                            }
+                        }
+                        zeroCount = 0;
+                    }
+                    socket.emit('experimentStopped', {mode: self.experimentController.getMode(), percentiles: res, error: error});
+                })
+            );
+        })
+    }
+};
+
 function getFrequencyBandByOSCPath(oscPath){
     return bandName = oscPathFreqBandMap[oscPathFreqBandMap.indexOf(oscPath)+1];
 }
@@ -451,7 +465,7 @@ function setDividend(freqBandName, data){
         chanCount++;
     });
     DIVIDEND = [freqBandName, medFreq/chanCount];
-    console.log('DIVIDEND: ' + DIVIDEND);
+    //console.log('DIVIDEND: ' + DIVIDEND);
 }
 
 function setDivisor(freqBandName, data){
@@ -462,12 +476,12 @@ function setDivisor(freqBandName, data){
         chanCount++;
     });
     DIVISOR = [freqBandName, medFreq/chanCount];
-    console.log('DIVISOR: ' + DIVISOR);
+    //console.log('DIVISOR: ' + DIVISOR);
 }
 
 function setRatio(){
     RATIO = [DIVIDEND[0] + '/' + DIVISOR[0], (Math.pow(10, DIVIDEND[1])/Math.pow(10, DIVISOR[1]))];
-    console.log('RATIO: ' +RATIO);
+    //console.log('RATIO: ' +RATIO);
 }
 
 new MainController();

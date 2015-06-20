@@ -157,8 +157,10 @@ UIController.prototype.onTouchingForehead = function(){
     });
     this.socket.on('touchingForehead', function(data){
         if(data.resumeExperiment){
-            alert('Muse is touching forehead. Resuming experiment.');
-            self.experimentUIController.resumeExperiment();
+            if(window.confirm('Muse is touching forehead. You may resume the experiment by clicking the play button.')){
+               //self.experimentUIController.resumeExperiment();
+                self.experimentUIController.setDuration(data.remainingDuration);
+            }
         }
     })
 };

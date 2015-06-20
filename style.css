@@ -226,6 +226,9 @@ input[type=number]#ratio, input[type=number]#training-ratio{
 }
 
 /*** Dialog on new experiment ***/
+.ui-dialog{
+    min-width: 22em;
+}
 .ui-dialog > .ui-widget-header {
     background: #630022;
     border: 1px solid #3f0000;
@@ -245,6 +248,9 @@ input#submit-age-gender{
     height: 3em;
 }
 input#age-select{
+    max-width: 8em;
+}
+input#initials{
     max-width: 8em;
 }
 

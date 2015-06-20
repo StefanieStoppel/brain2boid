@@ -167,11 +167,13 @@ ExperimentUIController.prototype.onAgeGenderSubmitButtonClick = function(){
     {
         var gender = $('input[name="gender"]:checked');
         var age = $('input[name="age"]').val();
+        var initials = $('input#initials').val();
 
-        if( age !== '' && gender !== [])
+        if( age !== '' && gender.length !== 0 && initials !== '')
         {
             self.socket.emit('newExperiment',
-                {   age: parseInt(age),
+                {   initials: initials,
+                    age: parseInt(age),
                     gender: gender.val(),
                     mode: self.experimentMode
                 });
@@ -200,6 +202,9 @@ ExperimentUIController.prototype.onSaveExperimentButtonClick = function(){
     //TODO: save experiment data from json array (node -> experimentController) to csv file with date, time and subject number in name
 };
 
+ExperimentUIController.prototype.setDuration = function(duration){
+    this.duration = duration;
+};
 
 /***
  * Message from node that part of an experiment has finished.
@@ -286,6 +291,7 @@ ExperimentUIController.prototype.pauseExperiment = function(){ //true = pause, f
 };
 
 ExperimentUIController.prototype.resumeExperiment = function(){
+   // this.socket.emit('resumeExperiment', {bla: 'bla'});
     run(true);
     //change button to pause
     $('button#start-mode-btn').children('i').attr('class', 'fa fa-pause');
