@@ -395,7 +395,7 @@ ExperimentController.prototype.updatePointsByTime = function(){
         var diff = process.hrtime(this.timeAboveRatio);//idx 0: seconds, idx 1: nanoseconds
         //change from nano- to milliseconds
         var ms = Math.floor(diff[1] / 1000000);
-        if((diff[0] === 0 && ms >= 500) || (diff[0] > 0)){
+       // if((diff[0] === 0 && ms >= 500) || (diff[0] > 0)){
             //var p = Math.floor((diff[0] * 1000 + ms) / 10);
             //Points 1): f.e. 1 s 450 ms = 1450 points
             var p = Math.floor(diff[0] * 1000 + ms);
@@ -408,7 +408,7 @@ ExperimentController.prototype.updatePointsByTime = function(){
                 this.test2Points.addThreshPoints(p);
                 this.socket.emit('updatePoints', {points: p});
             }
-        }
+       // }
         this.timeAboveRatio = 0;
     }
 };
@@ -430,14 +430,9 @@ ExperimentController.prototype.updateDividendValueAndPercentile = function(val, 
     this.dividend.value = val;
     this.dividend.percentile = perc;
     console.log('this.dividend.value: ' + val + ', and percentile: ' + perc + ' changed');
+    //TODO: FIX SO THIS ISNT DOUBLE
     this.setTrainingRatio(Math.pow(10, this.dividend.value) / Math.pow(10, this.divisor.value), this.dividend.band + '/' + this.divisor.band);
-};
-
-ExperimentController.prototype.updateDivisorValueAndPercentile = function(val, perc){
-    this.divisor.value = val;
-    this.divisor.percentile = perc;
-    console.log('this.divisor.value: ' + val + ', and percentile: ' + perc + ' changed');
-    this.setTrainingRatio(Math.pow(10, this.dividend.value) / Math.pow(10, this.divisor.value), this.dividend.band + '/' + this.divisor.band);
+    this.setThresholdRatio(val, this.divisor.value);
 };
 
 /**
@@ -452,6 +447,16 @@ ExperimentController.prototype.setDivisor = function(divisorVal, divisorPercenti
     console.log('#####divisor.value ' + this.divisor.value);
     this.setThresholdRatio(this.dividend.value, divisorVal);
 };
+
+ExperimentController.prototype.updateDivisorValueAndPercentile = function(val, perc){
+    this.divisor.value = val;
+    this.divisor.percentile = perc;
+    console.log('this.divisor.value: ' + val + ', and percentile: ' + perc + ' changed');
+    //TODO: FIX SO THIS ISNT DOUBLE
+    this.setTrainingRatio(Math.pow(10, this.dividend.value) / Math.pow(10, this.divisor.value), this.dividend.band + '/' + this.divisor.band);
+    this.setThresholdRatio(this.dividend.val, val);
+};
+
 
 /***
  * Threshold ratio is set.
