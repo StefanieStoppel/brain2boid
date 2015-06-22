@@ -106,8 +106,12 @@ UIController.prototype.socketRatio = function(self){
         if(data.ratio[1] !== null){
             self.constants.setRatio(data.ratio);
             //update bar chart in sidebar if sidebar is showing
-            if(getSidebarShowing() && self.experimentUIController.getExperimentRunning())
-                self.experimentUIController.updateRewardBarGraph(data.ratio);
+            if(self.experimentUIController.getExperimentRunning()){
+                self.graphicsController.updateRatio(data.ratio);
+                if(getSidebarShowing())
+                    self.experimentUIController.updateRewardBarGraph(data.ratio);
+
+            }
         }
     });
 };

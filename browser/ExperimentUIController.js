@@ -9,6 +9,11 @@ function ExperimentUIController(constants, graphicsController, socket, uiControl
     this.socketConnected = false;
     this.uiController = uiController;
 
+    //participant information (for reading csv file contents)
+    this.age = 0;
+    this.gender = '';
+    this.initials = '';
+
     /********************************* CONNECTION & CALIBRATION VARIABLES ********************************/
     this.museConnected = false;
     this.experimentControllerExists = false;
@@ -102,6 +107,9 @@ ExperimentUIController.prototype.onSocketConnection = function(){
         self.onBlinkUpdate();
         //get updates of band power percentiles (when frequency or channel selection changes)
         self.onPercentileUpdate();
+
+        // display experiment results when receiving data
+        self.onJsonExperimentData();
     });
 };
 
@@ -165,16 +173,16 @@ ExperimentUIController.prototype.onAgeGenderSubmitButtonClick = function(){
     var warning = $('#warning');
     $('input[name="age-gender-btn"]').click(function()
     {
-        var gender = $('input[name="gender"]:checked');
-        var age = $('input[name="age"]').val();
-        var initials = $('input#initials').val();
+        self.gender = $('input[name="gender"]:checked').val();
+        self.age = $('input[name="age"]').val();
+        self.initials = $('input#initials').val();
 
-        if( age !== '' && gender.length !== 0 && initials !== '')
+        if( self.age !== '' && self.gender.length !== 0 && self.initials !== '')
         {
             self.socket.emit('newExperiment',
-                {   initials: initials,
-                    age: parseInt(age),
-                    gender: gender.val(),
+                {   initials: self.initials,
+                    age: parseInt(self.age),
+                    gender: self.gender,
                     mode: self.experimentMode
                 });
             self.ageGenderDialog.dialog('close');
@@ -192,14 +200,12 @@ ExperimentUIController.prototype.onSaveExperimentButtonClick = function(){
     var self = this;
     $('button#save-experiment-btn').click(function(){
         if(self.museConnected && self.experimentControllerExists)
-        //TODO: SAVE CSV FILE -> socket message to node
             console.log('SAVE CSV DATA HERE');
         else if(!self.museConnected)
             self.displayMuseNotConnected();
         else if(self.museConnected  && !self.experimentControllerExists)
             self.displayExperimentNotCreated();
     });
-    //TODO: save experiment data from json array (node -> experimentController) to csv file with date, time and subject number in name
 };
 
 ExperimentUIController.prototype.setDuration = function(duration){
@@ -439,6 +445,112 @@ ExperimentUIController.prototype.onNextModeButtonClick = function(){
     });
 };
 
+/********* EXPERIMENT RESULTS AS CSV FILES *******************/
+ExperimentUIController.prototype.onJsonExperimentData = function(){
+    var self = this;
+    var jsonCallback =
+    this.socket.on('jsonTest',
+        function(data){
+            if(data.mode === 1)
+                self.test1Json = data.jsonTest;
+            else if(data.mode === 3)
+                self.test2Json = data.jsonTest;
+
+            if(typeof self.test1Json !== 'undefined' && typeof self.test2Json !== 'undefined')
+                self.displayJsonExperimentData(self.test1Json, self.test2Json);
+        }
+    );
+};
+
+ExperimentUIController.prototype.displayJsonExperimentData = function(dataTest1, dataTest2){
+    var overlay = $('div#experiment-data-overlay');
+    overlay.css('display', 'inherit');
+    var width  = overlay.width() - 30,
+        height = overlay.height() - 20;
+
+    var x = d3.scale.linear()
+        .range([0, width])
+        .domain([0, dataTest1.length]);
+    var max = 3.5, min = 0;
+    /*dataTest1.forEach(function(d, i) {
+        max= d3.max(parseFloat(d.ratio));
+        min=d3.min(parseFloat(d.ratio));
+    });*/
+
+    var y = d3.scale.linear()
+        .range([height, 0])
+        .domain([0, max]);
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
+
+    //TODO . in , bei ratio
+    var lineTest1 = d3.svg.line()
+        .x(function(d, i) { return x(i); })
+        .y(function(d) { return y(parseFloat(d.ratio)); });
+
+    var lineTest2 = d3.svg.line()
+        .x(function(d, i) { return x(i); })
+        .y(
+        function(d) {
+            return y(parseFloat(d.ratio));
+        });
+
+    var svg = d3.select("#experiment-data")
+        .attr("width", width - 10)
+        .attr("height", height - 10 )
+        .style("background", 'white')
+        .attr("transform", "translate(20, 10)")
+      .append("g")
+        .attr("transform", "translate(" + 10 + "," + 10 + ")");
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height - 30 + ")")
+        .call(xAxis);
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Price ($)");
+
+    svg.append("path")
+        .datum(dataTest1)
+        .attr("id", "lineTest1")
+        .attr("d", lineTest1);
+
+    svg.append("path")
+        .datum(dataTest2)
+        .attr("id", "lineTest2")
+        .attr("d", lineTest2);
+};
+
+/******************** FULLSCREEN ******************/
+ExperimentUIController.prototype.onFullscreen = function(){
+    var self = this;
+    $('button#expand-btn').click(function(){
+        /*if(!self.fullscreen){
+            window.open("", "_self", "");
+            // window.close();
+            window.open("file:///E:/Programmieren/Node.js/node_modules/test-module/index.html", "page", "toolbars=no,location=no,resizable=no");
+            //TODO: anstatt selbes fenster nochmal öffnen -> neues fenster mit index_trainer.html -> enthält Einstellungen für Freuenzbänder, Kanalauswahl
+            // , Artefaktanzeige, EEG-Anzeige pro Kanal
+        }*/
+        //TODO: UNDO THIS
+        self.importCSVData();
+    });
+};
+
 /**
  * Enable or disable next and previous mdoe buttons.
  * @param enable
@@ -601,6 +713,7 @@ ExperimentUIController.prototype.onSlide = function(ui, isDividend){
                 this.socket.emit('divisorPercentileChanged', {percentileIdx: self.inhibitIdx});
         }
         this.trainingRatio = Math.pow(10, this.percentiles[0][this.rewardIdx]) / Math.pow(10, this.percentiles[1][this.inhibitIdx]);
+        this.graphicsController.setTrainingRatio(this.trainingRatio);
         this.updateTrainingRatioIndicator(this.trainingRatio);
     }
 };
@@ -612,19 +725,7 @@ ExperimentUIController.prototype.enableSidebarSettings = function(bool){
     $('.sb-blue select, .sb-blue input').attr('disabled', !bool);
 };
 
-/******************** FULLSCREEN ******************/
-ExperimentUIController.prototype.onFullscreen = function(){
-    var self = this;
-    $('button#expand-btn').click(function(){
-        if(!self.fullscreen){
-            window.open("", "_self", "");
-            // window.close();
-            window.open("file:///E:/Programmieren/Node.js/node_modules/test-module/index.html", "page", "toolbars=no,location=no,resizable=no");
-            //TODO: anstatt selbes fenster nochmal öffnen -> neues fenster mit index_trainer.html -> enthält Einstellungen für Freuenzbänder, Kanalauswahl
-            // , Artefaktanzeige, EEG-Anzeige pro Kanal
-        }
-    });
-};
+
 
 /****************** WARNING ALERTS ******************/
 ExperimentUIController.prototype.displayMuseNotConnected = function(){
@@ -656,7 +757,7 @@ ExperimentUIController.prototype.initRewardBarGraph = function(){
         .attr('transform','translate(10,0)');
 
     this.rewardRect = this.rewardChart.selectAll('rect')
-        .data([{ratio: 0.5}])//TODO: data is training ratio
+        .data([{ratio: 0.5}])
         .enter().append('rect')
         .attr('transform', function(){ return 'translate(' + (self.barWidth+20) + ', ' + (self.barHeight+10) + ') rotate(180)';})
         .attr('height', function(d) { return self.rewardYscale(d.ratio) + 'px'; })
@@ -690,7 +791,7 @@ ExperimentUIController.prototype.initArtifactBarGraphs = function(){
         .attr('class', 'artifact-group')
         .attr('transform','translate(10,0)');
     this.blinkRect = this.blinkChart.selectAll('rect')
-        .data([{blink: 0}])//TODO: data is training ratio
+        .data([{blink: 0}])
         .enter().append('rect')
         .attr('transform', function(){ return 'translate(' + (self.barWidth+20) + ', ' + (self.barHeight+10) + ') rotate(180)';})
         .attr('height', function(d) { return self.barHeight - self.artifactYScale(d.blink) + 'px'; })
@@ -710,7 +811,7 @@ ExperimentUIController.prototype.initArtifactBarGraphs = function(){
         .attr('class', 'artifact-group')
         .attr('transform','translate(10,0)');
     this.jcRect = this.jcChart.selectAll('rect')
-        .data([{jc: 0}])//TODO: data is training ratio
+        .data([{jc: 0}])
         .enter().append('rect')
         .attr('transform', function(){ return 'translate(' + (self.barWidth+20) + ', ' + (self.barHeight+10) + ') rotate(180)';})
         .attr('height', function(d) { return self.barHeight - self.artifactYScale(d.jc) + 'px'; })
@@ -725,7 +826,6 @@ ExperimentUIController.prototype.initArtifactBarGraphs = function(){
 };
 
 ExperimentUIController.prototype.initTrainingRatioIndicator = function(){
-    var self = this;
     this.trainingRatioLine = this.rewardChart.append('rect')
         .attr('class', 'training-ratio-line')
         .attr('fill', 'black')
@@ -758,6 +858,8 @@ ExperimentUIController.prototype.updatePercentiles = function(percentiles){
     //set training ratio
     this.trainingRatio = Math.pow(10, dividend) / Math.pow(10, divisor);
     this.updateTrainingRatioIndicator(this.trainingRatio);
+    //set training ratio in graphicscontroller
+    this.graphicsController.setTrainingRatio(this.trainingRatio);
 
     this.firstFreqBandMin = percentiles[0][0];
     this.secondFreqBandMax = percentiles[1][percentiles[1].length-1];

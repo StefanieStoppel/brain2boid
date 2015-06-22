@@ -17,6 +17,10 @@
 
 </head>
 <body onload="init()">
+<!-- this will display the user's experiment data in both tests -->
+<div id="experiment-data-overlay">
+    <svg id="experiment-data"></svg>
+</div>
 
 <div class="container">
 
@@ -167,8 +171,6 @@
             <!-- END PERCENTILE INPUTS -->
 
             <!--- RATIO DISPLAYS -->
-
-
             <div class="row">
                 <div class="col-xs-4 no-padding">
                     <h4>Feedback</h4>
@@ -205,9 +207,6 @@
             </div>
             <!--- END RATIO DISPLAYS -->
 
-
-
-
             <div class="col-xs-4">
                 <div class="row" id="boids-control-row">
                     <div class="col-xs-6">
@@ -219,8 +218,6 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
         <!-- END OF SIDEBAR 2 --->
 

@@ -246,25 +246,33 @@ ExperimentController.prototype.stopExperiment = function(){
     this.experimentPaused = false;
     this.experimentRunning = false;
     this.clearTimer(MODE_TIMER);
-    //TODO: SAVE DATA TO CSV IF MODE === 1 OR MODE === 3
+
     if(this.mode === 1 || this.mode === 3){
-        var self = this;
-        json2csv({ data: self.jsonExpData, fields: self.csvFields }, function(err, csv) {
-            if (err)
-                console.log(err);
-            var filename = '';
-            if(self.mode === 1)
-                filename = 'test1_' + self.initials + '_' + self.age + '_' + self.gender + '.csv';//TODO: ADD NAME INITIALS
-            else if(self.mode === 3)
-                filename = 'test2_'  + self.initials + '_' + self.age + '_' + self.gender + '.csv';
-            fs.writeFile('csv/' + filename, csv, function(err) {
-                if (err) throw err;
-                console.log('file saved');
-            });
-        });
-        //clear json data
-        this.jsonExpData = [];
+        this.saveAsCSV();
     }
+};
+
+ExperimentController.prototype.saveAsCSV = function(){
+    var self = this;
+    json2csv({ data: self.jsonExpData, fields: self.csvFields }, function(err, csv) {
+        if (err)
+            console.log(err);
+        var filename = '';
+        if(self.mode === 1)
+            filename = 'test1_' + self.initials + '_' + self.age + '_' + self.gender + '.csv';
+        else if(self.mode === 3)
+            filename = 'test2_'  + self.initials + '_' + self.age + '_' + self.gender + '.csv';
+        fs.writeFile('csv/' + filename, csv, function(err) {
+            if (err) throw err;
+            console.log('file saved');
+        });
+    });
+    //todo: send data to browser
+    //var socketMessage = '';
+    //this.mode === 1 ? socketMessage = 'jsonTest1' : socketMessage = 'jsonTest2';
+    this.socket.emit('jsonTest', {jsonTest: this.jsonExpData, mode: this.mode});
+    //clear json data
+    this.jsonExpData = [];
 };
 
 ExperimentController.prototype.resumeExperiment = function(callback){

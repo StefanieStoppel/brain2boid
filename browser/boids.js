@@ -46,6 +46,10 @@ Boid.prototype.getColour = function(){
 Boid.prototype.getPosition = function(){
     return this.position;
 };
+//get position as array for drawing path
+Boid.prototype.getPositionArray = function(){
+    return [this.position.x, this.position.y];
+};
 
 Boid.prototype.transform = function(){
     return "translate(" + this.position.x +", " + this.position.y + ")"

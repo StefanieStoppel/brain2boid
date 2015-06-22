@@ -64,6 +64,25 @@ function GraphicsController(){
     //draw boids
     this.draw();
 
+    //lines following boids when ratio > trainingratio
+    //TODO: THIS MAKES TEH ANIMATION STOP COMPLETELY
+    /*this.initLineData();
+    this.line = d3.svg.line()
+        .interpolate("basis")
+        .x(function(d) { return d[0]; })
+        .y(function(d) { return d[1]; });
+    this.linePath = this.boidSvg.append("g")
+        .selectAll("path")
+        .data(this.lineData)
+        .enter().append("path")
+        .attr("class", "line")
+        .attr("d", this.line);
+    */
+
+    //ratios
+    this.ratio = 0.5;
+    this.trainingRatio = 0.5;
+
     //horseshoe display
     this.horseshoe = this.setupHorseshoe();
     //battery display
@@ -77,18 +96,48 @@ function GraphicsController(){
     this.updateBoidSvg();
 }
 
-/**
- * Receive updated transform string for each boid and colour.
- * Called in UIController.onBoidUpdate()
- */
-GraphicsController.prototype.drawBoids = function(data){
-    //data.transforms = all transform strings as objects,
-    //data.colour = boid colour
-    this.boids = data.transforms;
-    this.allBoids.data(this.boids);
-    this.allBoids.attr('transform', function(d){ return d.transform })
-        .attr('fill', data.colour);
-} ;
+GraphicsController.prototype.initLineData = function(){
+    this.lineData = [];
+    for(var j = 0; j < this.boids.length; j++){
+        this.lineData[j] = [];
+    }
+};
+
+GraphicsController.prototype.setTrainingRatio = function(trainingRatio){
+    this.trainingRatio = trainingRatio;
+};
+
+GraphicsController.prototype.updateRatio = function(ratio){
+    this.ratio = ratio[1];
+   /* if(ratio[1] > this.trainingRatio){
+        for(var i = 0; i < this.boids.length; i++){
+            this.lineTick(i, this.boids[i].getPositionArray());
+        }
+    }
+    else if(this.lineDrawn && ratio[1] < this.trainingRatio){
+        this.deleteLines();
+    }*/
+};
+
+GraphicsController.prototype.lineTick = function(boidIdx, point){
+    var self = this;
+    // push a new data point onto the back
+    this.lineData[boidIdx].push(point);
+    // Redraw the path
+    this.linePath
+        .attr("d", function(d) { return self.line(d);})
+        .attr("stroke", function(){ return self.boids[0].getColour(); });
+    this.lineDrawn = true;
+};
+
+GraphicsController.prototype.deleteLines = function(){
+    var self = this;
+    this.initLineData();
+    this.linePath
+        .data(this.lineData)
+        .attr("d", function(d) { return self.line(d);});
+    this.lineDrawn = false;
+};
 
 GraphicsController.prototype.getConstants = function(){
     return this.constants;

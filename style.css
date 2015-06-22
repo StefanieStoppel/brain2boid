@@ -415,3 +415,33 @@ span#battery-charge-text{
 .fr-band-single{
     text-align: center;
 }
+/********* LINE EFFECTS ***********/
+.line{
+    fill: none;
+   /* stroke: cadetblue;*/
+    stroke-width: 2px;
+}
+/****** EXPERIMENT RESULTS DISPLAY IN OVERLAY *********/
+div#experiment-data-overlay{
+    position: absolute;
+    background-color: cadetblue;
+    vertical-align: middle;
+    z-index: 1;
+    width: 40em;
+    height: 30em;
+    left: 50%;
+    top: 50%;
+    margin-left: -20em;
+    margin-top: -18em;
+    display: none;
+}
+#lineTest1, #lineTest2 {
+    fill: none;
+    stroke-width: 2px;
+}
+#lineTest1{
+    stroke: steelblue;
+}
+#lineTest2{
+    stroke: darkred;
+}
