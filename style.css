@@ -99,9 +99,6 @@ div.sidebar h4, div.sidebar h5{
     margin-bottom: 0.4em;
     margin-top: 0.4em;
 }
-div.sidebar h5{
-    text-align: center;
-}
 .sidebar-input, .sidebar-select{
     border-radius: 0.2em;
     padding-left: 0.5em;
@@ -211,17 +208,24 @@ input[type=number]#ratio, input[type=number]#training-ratio{
     min-width: 22em;
 }
 .ui-dialog > .ui-widget-header {
-    background: #630022;
-    border: 1px solid #3f0000;
+    background: cadetblue;
+    border: 1px solid #032c52;
 }
-div#dialog-age-gender, div#dialog-save-warning{
+.ui-widget-content a{
+    color: #100F3C;
+}
+.ui-widget-header .ui-icon {
+    background-image: url("browser/dependencies/jquery-ui-1.11.4.custom/images/ui-icons_ffffff_256x240.png");
+}
+div.blue-dialog{
     background: -webkit-linear-gradient(right, #245580, cadetblue); /* For Safari 5.1 to 6.0 */
     background: -o-linear-gradient(left,#245580, cadetblue); /* For Opera 11.1 to 12.0 */
     background: -moz-linear-gradient(left, #245580, cadetblue); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to left, #245580, cadetblue) !important; /* Standard syntax */
     color: lavender;
     text-shadow: 1px 1px #032c52;
     border-radius: 0.2em;
-    background: linear-gradient(to left, #245580, cadetblue); /* Standard syntax */
+
     border: 1px solid #1C4048;
     border-right: none;
 }
@@ -302,16 +306,7 @@ i.fa.fa-user-plus{
     right: -0.1em;
     position: relative;
 }
-button[name="mode-control"], button[name="experiment-control"], button[name="expand-control"]{
-    margin: 0.5em;
-    text-shadow: 1px 1px #000000;
-    box-shadow: 1px 2px 4px #070D2C;
-    border-radius: 2em;
-    border: #245580;
-    color: #FFFFFF;
-    outline: none;
-    width: 4em;
-    height: 4em;
+button.blue-btn-gradient{
     background: rgb(232,238,244); /* Old browsers */
     background: -moz-linear-gradient(top, rgba(232,238,244,1) 1%, rgba(115,177,231,1) 24%, rgba(7,32,142,1) 50%, rgba(32,89,204,1) 79%, rgba(135,188,234,1) 100%); /* FF3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,rgba(232,238,244,1)), color-stop(24%,rgba(115,177,231,1)), color-stop(50%,rgba(7,32,142,1)), color-stop(79%,rgba(32,89,204,1)), color-stop(100%,rgba(135,188,234,1))); /* Chrome,Safari4+ */
@@ -320,13 +315,24 @@ button[name="mode-control"], button[name="experiment-control"], button[name="exp
     background: -ms-linear-gradient(top, rgba(232,238,244,1) 1%,rgba(115,177,231,1) 24%,rgba(7,32,142,1) 50%,rgba(32,89,204,1) 79%,rgba(135,188,234,1) 100%); /* IE10+ */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e8eef4', endColorstr='#87bcea',GradientType=0 ); /* IE6-9 */
     background: transparent linear-gradient(to bottom, #E8EEF4 1%, #5D9BD1 24%, #033a6e 50%, #395792 79%, #5E98CB 100%) repeat scroll 0% 0%;
+    border: #245580;
+    color: #FFFFFF;
+    text-shadow: 1px 1px #000000;
+    box-shadow: 1px 2px 4px #070D2C;
 }
-button[name="mode-control"]:active,  button[name="experiment-control"]:active, button[name="expand-control"]:active{
+button.blue-btn-gradient:active{
     top: 2px;
     border: none;
     position: relative;
     box-shadow: none;
     background: transparent linear-gradient(to bottom, #395792 1%, #5D9BD1 24%, #E8EEF4 50%, #5E98CB 79%, #1A2865 100%) repeat scroll 0% 0%;
+}
+button[name="mode-control"], button[name="experiment-control"], button[name="expand-control"]{
+    margin: 0.5em;
+    border-radius: 2em;
+    outline: none;
+    width: 4em;
+    height: 4em;
 }
 button[name="mode-control"]:disabled, button[name="experiment-control"]:disabled, button[name="expand-control"]:disabled{
     background: transparent linear-gradient(to bottom, #cfcfcf 1%, #8c8c8c 24%, #434547 50%, #676767 79%, #b8b8b8 100%) repeat scroll 0% 0%;
@@ -396,7 +402,7 @@ span#battery-charge-text{
 }
 #slider-dividend-percentile, #slider-divisor-percentile {
     position: relative;
-    left: 50%;
+    left: 1.5em;
 }
 #slider-dividend-percentile{
     background: #1C4048;
@@ -408,7 +414,7 @@ span#battery-charge-text{
     background: #1C4048;
 }
 .fr-band-single{
-    text-align: center;
+
 }
 /********* LINE EFFECTS ***********/
 .line{
@@ -439,4 +445,47 @@ div#experiment-data-overlay{
 }
 #lineTest2{
     stroke: darkred;
+}
+
+/***************INFO BUTTONS ****************/
+div#info-channels{
+    position: absolute;
+    top: 34px;
+    left: 200px;
+}
+button#info-btn-channels {
+    border-radius: 1em;
+    box-shadow: 1px 2px 4px #C9E0F5;
+}
+
+/*************** INFO DIALOGS *****************/
+img.channel-contact{
+    width: 4em;
+}
+.top-margin-05{
+    margin-top: 0.5em;
+}
+.top-margin-1{
+    margin-top: 1em;
+}
+div.btns-row{
+    width: 100%;
+}
+button.next-info-btn, button.prev-info-btn{
+    float: right;
+    background-color: transparent;
+    border-radius: 1em;
+    right: 1em;
+    position: relative;
+    font-size: 1.8em;
+    width: 1.5em;
+}
+button.prev-info-btn{
+    float: left;
+    left: 1em;
+    right: 0;
+    display: none;
+}
+div#channel-info-2{
+    display:none;
 }

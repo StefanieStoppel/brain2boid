@@ -8,6 +8,8 @@ function ExperimentUIController(constants, graphicsController, socket, uiControl
     this.socket = socket;
     this.socketConnected = false;
     this.uiController = uiController;
+    //Info instance
+    this.info = new Info();
 
     //participant information (for reading csv file contents)
     this.age = 0;
@@ -905,8 +907,4 @@ ExperimentUIController.prototype.updateRewardScaleMax = function(maxRatio){
 
 ExperimentUIController.prototype.setMuseConnected = function(bool){
     this.museConnected = bool;
-};
-
-ExperimentUIController.prototype.setExperimentControllerExists = function(bool){
-    this.experimentControllerExists = bool;
 };

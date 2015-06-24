@@ -30,6 +30,9 @@
             <div class="row" id="boids-row">
                 <div class="boid-container col-xs-12"><!-- container for boids -->
                     <svg id="boid-svg" width="300" height="500"></svg>
+                    <div id="info-channels">
+                        <button id="info-btn-channels" class="blue-btn-gradient"><i class="fa fa-info-circle"></i></button>
+                    </div>
                     <div id="battery-display">
                         <span id="battery-charge-text">100&#37;</span>
                         <div id="battery-body">
@@ -51,7 +54,7 @@
                 <div id="control-row">
                     <div class="col-xs-4 full-height" id="experiment-options">
                         <div class="col-xs-4 full-height">
-                            <button type="button" name="experiment-control" id="new-experiment-btn" style="top: 14%; position: relative;">
+                            <button type="button" name="experiment-control" class="blue-btn-gradient" id="new-experiment-btn" style="top: 14%; position: relative;">
                                 <i class="fa fa-user-plus"></i>
                             </button>
                         </div>
@@ -70,17 +73,17 @@
                     </div>
                     <div class="col-xs-4 full-height" id="experiment-control">
                         <div class="col-xs-4 full-height">
-                            <button type="button" name="mode-control" id="prev-mode-btn" style="top: 14%; position: relative;">
+                            <button type="button" name="mode-control" class="blue-btn-gradient" id="prev-mode-btn" style="top: 14%; position: relative;">
                                 <i class="fa fa-backward"></i>
                             </button>
                         </div>
                         <div class="col-xs-4 full-height">
-                            <button type="button" name="mode-control" id="start-mode-btn" style="top: 14%; position: relative;">
+                            <button type="button" name="mode-control" class="blue-btn-gradient" id="start-mode-btn" style="top: 14%; position: relative;">
                                 <i class="fa fa-play"></i>
                             </button>
                         </div>
                         <div class="col-xs-4 full-height">
-                            <button type="button" name="mode-control" id="next-mode-btn" style="top: 14%; position: relative;">
+                            <button type="button" name="mode-control" class="blue-btn-gradient" id="next-mode-btn" style="top: 14%; position: relative;">
                                 <i class="fa fa-forward"></i>
                             </button>
                         </div>
@@ -93,7 +96,7 @@
                             <p id="experiment-mode-display">Calibration</p>
                         </div>
                         <div class="col-xs-4 full-height">
-                            <button type="button" name="expand-control" id="expand-btn" style="top: 14%; position: relative;">
+                            <button type="button" name="expand-control" class="blue-btn-gradient" id="expand-btn" style="top: 14%; position: relative;">
                                 <i class="fa fa-arrows-alt"></i>
                             </button>
                         </div>
@@ -157,18 +160,18 @@
 
             <!-- PERCENTILE INPUTS -->
             <div class="row">
-                <div class="fr-percentile-input col-xs-3 col-sm-3" style="padding-left:0;">
+                <div class="fr-percentile-input col-xs-3 col-sm-2" style="padding-left:0;">
                     <div id="slider-dividend-percentile" style="height:4em;"></div>
                 </div>
-                <div class=" col-xs-3 col-sm-3" style="padding-left:0; height: 70px;">
+                <div class=" col-xs-3 col-sm-4" style="padding-left:0; height: 70px;">
                      <span id="amount-dividend">
                         50&#37;
                     </span>
                 </div>
-                <div class="fr-percentile-input col-xs-3 col-sm-3" style="padding-left:0;">
+                <div class="fr-percentile-input col-xs-3 col-sm-2" style="padding-left:0;">
                     <div id="slider-divisor-percentile" style="height:4em;"></div>
                 </div>
-                <div class=" col-xs-3 col-sm-3" style="padding-left:0;  height: 70px;">
+                <div class=" col-xs-3 col-sm-4" style="padding-left:0;  height: 70px;">
                      <span id="amount-divisor">
                         50&#37;
                     </span>
@@ -236,7 +239,7 @@
 
     </div><!-- div.row --->
 
-    <div id="dialog-age-gender" title="Subject Information">
+    <div id="dialog-age-gender" class="blue-dialog" title="Subject Information">
         <form action="" method="post">
             <div class="row">
                 <div class="col-xs-4">
@@ -281,7 +284,7 @@
         </form>
     </div>
 
-    <div id="dialog-save-warning" title="Warning">
+    <div id="dialog-save-warning" class="blue-dialog" title="Warning">
         <form action="" method="post">
             <p style="text-align: center">You are about to start a new experiment session.<br>
             Press SAVE to save your previous data to a .csv file. <br>
@@ -297,6 +300,53 @@
         </form>
     </div>
 
+    <div id="dialog-info-channels" class="blue-dialog" title="Info">
+        <div id="channel-info-1">
+            <p>Ein guter Kontakt zwischen EEG-Sensoren und Kopfhaut ist wichtig f&uuml;r eine qualitativ hochwertige Messung.
+                Die Kreise in der linken oberen Ecke zeigen die Kontaktqualit&auml;t an:
+            </p>
+            <div class="row">
+                <div class="col-xs-3">
+                    <img src="browser/img/FP1_no_contact.jpg" class="channel-contact">
+                </div>
+                <div class="col-xs-9">
+                    <p class="top-margin-1">Kein Kontakt.</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-3">
+                    <img src="browser/img/FP1_bad_contact.jpg" class="channel-contact">
+                </div>
+                <div class="col-xs-9">
+                    <p class="top-margin-1">Schlechter Kontakt.</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-3">
+                    <img src="browser/img/FP1_good_contact.JPG" class="channel-contact">
+                </div>
+                <div class="col-xs-9">
+                    <p class="top-margin-1">Guter Kontakt.</p>
+                </div>
+            </div>
+        </div>
+        <div id="channel-info-2">
+            <p>Die Namen der EEG-Kan&auml;le werden innerhalb der Kreise angezeigt.
+                Sie werden anhand des internationalen <a target="_blank" href="https://de.wikipedia.org/wiki/10-20-System">10-20-Systems</a> festgelegt. <br>
+                Dieses System wurde entwickelt,
+                da sich Sch&auml;delform und -gr&ouml;&szlig;e bei jedem Menschen unterscheiden und eine standardisierte
+                Platzierung der Elektroden n&ouml;tig ist, um Messergebnisse vergleichen zu k&ouml;nnen.
+            </p>
+        </div>
+
+        <div class="btns-row row top-margin-1">
+            <button id="show-channel-colour-info" class="prev-info-btn blue-btn-gradient"><i class="fa fa-arrow-left"></i></button>
+            <button id="show-channel-names-info" class="next-info-btn blue-btn-gradient"><i class="fa fa-arrow-right"></i></button>
+        </div>
+
+
+    </div>
+
 </div><!-- div.container --->
 
 <!-- load js dependencies -->
@@ -306,9 +356,9 @@
 <script src="browser/vector.js"></script>
 <script src="browser/Container.js"></script>
 <script src="browser/boids.js"></script>
-<!--<script src="code.js"></script>-->
 <script src="browser/GraphicsController.js"></script>
 <script src="browser/sidebar-effects.js"></script>
+<script src="browser/Info.js"></script>
 <script src="browser/ExperimentUIController.js"></script>
 <script src="browser/UIController.js"></script>
 
