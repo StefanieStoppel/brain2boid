@@ -613,11 +613,16 @@ ExperimentUIController.prototype.onFrequencySelection = function(){
             else
                 bandNames.push('none');
         });
-        d3.select('#perc1-label').text('%-ile ' + bandNames[0]);
-        d3.select('#perc2-label').text('%-ile ' + bandNames[1]);
-
+        self.updateQuotientName(bandNames);
         //TODO: get updated calibration values
     });
+};
+
+ExperimentUIController.prototype.updateQuotientName = function(bandNames){
+    if(bandNames[1] !== undefined)
+        $('label[for="ratio"]').html('Quotient &' + bandNames[0] + ';/&' + bandNames[1] + ';:');
+    else
+        $('label[for="ratio"]').html('Einzelband &' + bandNames[0] + ';:');
 };
 
 ExperimentUIController.prototype.onChannelSelection = function(){
@@ -735,10 +740,10 @@ ExperimentUIController.prototype.displayExperimentNotCreated = function(){
 
 ExperimentUIController.prototype.initRewardBarGraph = function(){
     var self = this;
-    this.barWidth = 60;
-    this.barHeight = 150;
+    this.barWidth = 100;
+    this.barHeight = 80;
     this.rewardYscale = d3.scale.linear()
-        .domain([0, 1])//TODO: update when ratio_max is updated
+        .domain([0, 1])
         .range([self.barHeight, 0]);
     this.feedbackYaxis = d3.svg.axis()
         .scale(this.rewardYscale)
@@ -749,7 +754,7 @@ ExperimentUIController.prototype.initRewardBarGraph = function(){
         .attr('height', self.barHeight+25)
         .append('g')
         .attr('class', 'reward-group')
-        .attr('transform','translate(10,0)');
+        .attr('transform','translate(10,-2)');
 
     this.rewardRect = this.rewardChart.selectAll('rect')
         .data([{ratio: 0.5}])
@@ -757,7 +762,7 @@ ExperimentUIController.prototype.initRewardBarGraph = function(){
         .attr('transform', function(){ return 'translate(' + (self.barWidth+20) + ', ' + (self.barHeight+10) + ') rotate(180)';})
         .attr('height', function(d) { return self.rewardYscale(d.ratio) + 'px'; })
         .attr('width', self.barWidth - 1)
-        .attr('fill','#033a6e');
+        .attr('fill','#02396E');
 
     this.rewardChart.append('g')
         .attr('class', 'feedback-y-axis')
@@ -770,6 +775,7 @@ ExperimentUIController.prototype.initRewardBarGraph = function(){
 
 ExperimentUIController.prototype.initArtifactBarGraphs = function(){
     var self = this;
+    var artifactBarWidth = 40;
     this.artifactYScale = d3.scale.linear()
         .domain([0, 1])
         .range([self.barHeight, 0]);
@@ -780,7 +786,7 @@ ExperimentUIController.prototype.initArtifactBarGraphs = function(){
 
     /***** BLINK ******/
     this.blinkChart = d3.select('#blink-feedback')
-        .attr('width', self.barWidth+35)
+        .attr('width', artifactBarWidth+35)
         .attr('height', self.barHeight+25)
         .append('g')
         .attr('class', 'artifact-group')
@@ -788,10 +794,10 @@ ExperimentUIController.prototype.initArtifactBarGraphs = function(){
     this.blinkRect = this.blinkChart.selectAll('rect')
         .data([{blink: 0}])
         .enter().append('rect')
-        .attr('transform', function(){ return 'translate(' + (self.barWidth+20) + ', ' + (self.barHeight+10) + ') rotate(180)';})
+        .attr('transform', function(){ return 'translate(' + (artifactBarWidth+20) + ', ' + (self.barHeight+10) + ') rotate(180)';})
         .attr('height', function(d) { return self.barHeight - self.artifactYScale(d.blink) + 'px'; })
-        .attr('width', self.barWidth - 1)
-        .attr('fill','#033a6e');
+        .attr('width', artifactBarWidth - 1)
+        .attr('fill','#434547');
     this.blinkChart.append('g')
         .attr('class', 'artifact-y-axis')
         .attr('transform', 'translate(20,10)')
@@ -800,7 +806,7 @@ ExperimentUIController.prototype.initArtifactBarGraphs = function(){
 
     /***** JAW CLENCH ******/
     this.jcChart = d3.select('#jaw-clench-feedback')
-        .attr('width', self.barWidth+35)
+        .attr('width', artifactBarWidth+35)
         .attr('height', self.barHeight+25)
         .append('g')
         .attr('class', 'artifact-group')
@@ -808,10 +814,10 @@ ExperimentUIController.prototype.initArtifactBarGraphs = function(){
     this.jcRect = this.jcChart.selectAll('rect')
         .data([{jc: 0}])
         .enter().append('rect')
-        .attr('transform', function(){ return 'translate(' + (self.barWidth+20) + ', ' + (self.barHeight+10) + ') rotate(180)';})
+        .attr('transform', function(){ return 'translate(' + (artifactBarWidth+20) + ', ' + (self.barHeight+10) + ') rotate(180)';})
         .attr('height', function(d) { return self.barHeight - self.artifactYScale(d.jc) + 'px'; })
-        .attr('width', self.barWidth - 1)
-        .attr('fill','#033a6e');
+        .attr('width', artifactBarWidth - 1)
+        .attr('fill','#434547');
     this.jcChart.append('g')
         .attr('class', 'artifact-y-axis')
         .attr('transform', 'translate(20,10)')
@@ -824,9 +830,9 @@ ExperimentUIController.prototype.initTrainingRatioIndicator = function(){
     this.trainingRatioLine = this.rewardChart.append('rect')
         .attr('class', 'training-ratio-line')
         .attr('fill', 'black')
-        .attr('width', this.barWidth+20)
+        .attr('width', this.barWidth+10)
         .attr('height', '5')
-        .attr('transform', 'translate(5, ' + this.rewardYscale(0.5) + ' )');
+        .attr('transform', 'translate(10, ' + (this.rewardYscale(0.5)+10)  + ' )');
 };
 
 ExperimentUIController.prototype.updateTrainingRatioIndicator = function(trainingRatio){

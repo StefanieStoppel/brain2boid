@@ -1,10 +1,10 @@
 function Info(){
-    this.onInfoBtnChannelsClick();
-    this.onShowInfoChannelNamesBtnClick();
-    this.onShowInfoChannelColoursBtnClick();
+    this.onChannelInfoBtnClick();
+    this.onNextChannelInfoBtnClick();
+    this.onPrevChannelInfoBtnClick();
 }
 
-Info.prototype.onInfoBtnChannelsClick = function(){
+Info.prototype.onChannelInfoBtnClick = function(){
     $('button#info-btn-channels').click(function(){
         $('div#dialog-info-channels').dialog({
             autoOpen: true
@@ -12,7 +12,7 @@ Info.prototype.onInfoBtnChannelsClick = function(){
     });
 };
 
-Info.prototype.onShowInfoChannelNamesBtnClick = function(){
+Info.prototype.onNextChannelInfoBtnClick = function(){
     $('button#show-channel-names-info').click(function(){
         $('div#channel-info-1').hide();
         $('div#channel-info-2').show();
@@ -21,15 +21,11 @@ Info.prototype.onShowInfoChannelNamesBtnClick = function(){
     });
 };
 
-Info.prototype.onShowInfoChannelColoursBtnClick = function(){
+Info.prototype.onPrevChannelInfoBtnClick = function(){
     $('button#show-channel-colour-info').click(function(){
         $('div#channel-info-1').show();
         $('div#channel-info-2').hide();
         $('button#show-channel-colour-info').hide();
         $('button#show-channel-names-info').show();
     });
-};
-
-Info.prototype.openInfoDialog = function(dialog){
-    //var infoDialog =
 };
