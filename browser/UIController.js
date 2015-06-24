@@ -75,17 +75,16 @@ function UIController(){
  */
 UIController.prototype.onPointsUpdate = function(){
     var self = this;
-    //TODO: display points as they are earned near the boids
     this.socket.on('updatePoints', function(data){
         console.log('Points update received:' + data.points);
         self.points += data.points;
-        self.pointsDisplay.text(self.points);
+        self.pointsDisplay.html('<i class="fa fa-star"></i>' + self.points);
     });
 };
 
 UIController.prototype.resetPoints = function(){
     this.points = 0;
-    this.pointsDisplay.text(this.points);
+    this.pointsDisplay.html('<i class="fa fa-star"></i>' +this.points);
 };
 
 UIController.prototype.setCountdown = function(duration){
@@ -106,12 +105,9 @@ UIController.prototype.socketRatio = function(self){
         if(data.ratio[1] !== null){
             self.constants.setRatio(data.ratio);
             //update bar chart in sidebar if sidebar is showing
-            if(self.experimentUIController.getExperimentRunning()){
-                self.graphicsController.updateRatio(data.ratio);
-                if(getSidebarShowing())
-                    self.experimentUIController.updateRewardBarGraph(data.ratio);
+            if(self.experimentUIController.getExperimentRunning() && getSidebarShowing())
+                self.experimentUIController.updateRewardBarGraph(data.ratio);
 
-            }
         }
     });
 };

@@ -34,10 +34,10 @@ for(var i = 0; i < 81; i++){
 var AREA_WIDTH = $('html').outerWidth(),
     AREA_HEIGHT = $('html').outerHeight() + 5;
 
-var HORSESHOE_DATA = [  {horseshoe: 3, cx: 40,  cy: 50, r:20, colour: "green",   opaque: false},
-                        {horseshoe: 3, cx: 80,  cy: 50, r:20, colour: "blue",    opaque: false},
-                        {horseshoe: 3, cx: 120, cy: 50, r:20, colour: "yellow",  opaque: false},
-                        {horseshoe: 3, cx: 160, cy: 50, r:20, colour: "magenta", opaque: false}];
+var HORSESHOE_DATA = [  {horseshoe: 3, cx: 40,  cy: 50, r:20, colour: "orange",   opaque: false, channel: "T9"},
+                        {horseshoe: 3, cx: 84,  cy: 50, r:20, colour: "green",    opaque: false, channel: "Fp1"},
+                        {horseshoe: 3, cx: 128, cy: 50, r:20, colour: "#A4D5FF",  opaque: false, channel: "Fp2"},
+                        {horseshoe: 3, cx: 172, cy: 50, r:20, colour: "magenta", opaque: false, channel: "T10"}];
 
 function GraphicsController(){
     /** BOIDS & CONSTANTS**/
@@ -47,7 +47,7 @@ function GraphicsController(){
     //append boidSvg field
     this.body = d3.select('body');
     this.boidSvg = this.body.select('#boid-svg');
-    //this.boidSvg = this.body.select('.boid-container').append('svg');
+
     this.boidSvg.attr({ width: AREA_WIDTH, height: AREA_HEIGHT })
         .style("background", "black");
 
@@ -63,21 +63,6 @@ function GraphicsController(){
             fill: function(boid){ return boid.getColour();} } );
     //draw boids
     this.draw();
-
-    //lines following boids when ratio > trainingratio
-    //TODO: THIS MAKES TEH ANIMATION STOP COMPLETELY
-    /*this.initLineData();
-    this.line = d3.svg.line()
-        .interpolate("basis")
-        .x(function(d) { return d[0]; })
-        .y(function(d) { return d[1]; });
-    this.linePath = this.boidSvg.append("g")
-        .selectAll("path")
-        .data(this.lineData)
-        .enter().append("path")
-        .attr("class", "line")
-        .attr("d", this.line);
-    */
 
     //ratios
     this.ratio = 0.5;
@@ -95,49 +80,6 @@ function GraphicsController(){
     //draw boids on svg every 5 ms
     this.updateBoidSvg();
 }
-
-GraphicsController.prototype.initLineData = function(){
-    this.lineData = [];
-    for(var j = 0; j < this.boids.length; j++){
-        this.lineData[j] = [];
-    }
-};
-
-GraphicsController.prototype.setTrainingRatio = function(trainingRatio){
-    this.trainingRatio = trainingRatio;
-};
-
-GraphicsController.prototype.updateRatio = function(ratio){
-    this.ratio = ratio[1];
-   /* if(ratio[1] > this.trainingRatio){
-        for(var i = 0; i < this.boids.length; i++){
-            this.lineTick(i, this.boids[i].getPositionArray());
-        }
-    }
-    else if(this.lineDrawn && ratio[1] < this.trainingRatio){
-        this.deleteLines();
-    }*/
-};
-
-GraphicsController.prototype.lineTick = function(boidIdx, point){
-    var self = this;
-    // push a new data point onto the back
-    this.lineData[boidIdx].push(point);
-    // Redraw the path
-    this.linePath
-        .attr("d", function(d) { return self.line(d);})
-        .attr("stroke", function(){ return self.boids[0].getColour(); });
-    this.lineDrawn = true;
-};
-
-GraphicsController.prototype.deleteLines = function(){
-    var self = this;
-    this.initLineData();
-    this.linePath
-        .data(this.lineData)
-        .attr("d", function(d) { return self.line(d);});
-    this.lineDrawn = false;
-};
 
 GraphicsController.prototype.getConstants = function(){
     return this.constants;
@@ -167,10 +109,6 @@ GraphicsController.prototype.addBoids = function(){
 
 GraphicsController.prototype.getBoids = function(){
     return this.boids;
-};
-
-GraphicsController.prototype.getMainBoidPosition = function(){
-    return this.mainBoid.getPosition();
 };
 
 /**
@@ -209,13 +147,12 @@ GraphicsController.prototype.updateBoidSvg = function(){
                 self.flock();
                 self.draw();
             }
-        }, 5);
+        }, 30);
 };
 /**
  * Flocking and changing colour.
- * @param scale
  */
-GraphicsController.prototype.flock = function(scale){//scale == array with two values
+GraphicsController.prototype.flock = function(){
     for(var i = 0; i < this.boids.length; i++){
         this.boids[i].flock(this.boids);
         this.boids[i].changeColour();
@@ -235,15 +172,17 @@ GraphicsController.prototype.draw = function(){
 //horseshoe
 // 3 || 4 = white circle; 2 = coloured outline; 1 = coloured circle
 GraphicsController.prototype.setupHorseshoe = function(){
-    return this.boidSvg.selectAll("circle")
+
+    var circleGroup = this.boidSvg.selectAll("g")
         .data(HORSESHOE_DATA)
-        .enter().append("circle")
-        .attr("cx", function(d){ return d.cx; })
-        .attr("cy", function(d){ return d.cy; })
+        .enter().append("g")
+        .attr("transform", function(d){return "translate("+d.cx+"," + d.cy +")"});
+
+    circleGroup.append("circle")
         .attr("r", function(d){ return d.r; })
         .attr("fill" ,function(d){
             if(d.horseshoe === 3 || d.horseshoe === 2){
-                return "white";
+                return "lavender";
             }else{
                 return d.colour;
             }
@@ -256,6 +195,23 @@ GraphicsController.prototype.setupHorseshoe = function(){
                 return "none";
             }
         });
+
+    circleGroup.append("text")
+        .attr("id", function(d){ return d.channel; })
+        .attr("dx",
+        function(d) {
+            if(d.channel === "T9")
+                return -10 ;
+            else
+                return -12;
+        })
+        .attr("dy", function(d){return 5})
+        .text(function(d){return d.channel})
+        .style("font-weight", "bold")
+        .style("fill", "black")
+        .style("stroke", "black");
+
+    return circleGroup;
 };
 
 GraphicsController.prototype.updateHorseshoe = function(horseshoeValues){
@@ -263,10 +219,10 @@ GraphicsController.prototype.updateHorseshoe = function(horseshoeValues){
         HORSESHOE_DATA[i].horseshoe = horseshoeValues[i];
     }
     this.horseshoe.data(HORSESHOE_DATA);
-    this.horseshoe.attr("fill" ,
+    this.horseshoe.selectAll("circle").attr("fill" ,
             function(d){
                 if(d.horseshoe === 3 || d.horseshoe === 2 || d.horseshoe === 4){
-                    return "white";
+                    return "lavender";
                 }else{
                     return d.colour;
                 }
@@ -287,10 +243,10 @@ GraphicsController.prototype.setHorseshoeChannelOpaque = function(opaqueArray){
         HORSESHOE_DATA[i].opaque = opaqueArray[i].opaque;
     }
     this.horseshoe.data(HORSESHOE_DATA);
-    this.horseshoe.style('opacity',
+    this.horseshoe.selectAll("circle").style('opacity',
         function(d){
             if(d.opaque)
-                return '0.5';
+                return '0.3';
             else
                 return '1';
         }

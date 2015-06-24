@@ -156,7 +156,7 @@ $.fn.opacityControlBar = function(animationLength, opacity){
 };
 //Move the points display depending on whether the control bar is showing or not
 function movePointsDisplay(opacity){
-    var pointsDisplay = $('p.points-display');
+    var pointsDisplay = $('div.points');
     opacity === 1 ? pointsDisplay.css('bottom', '5em') : pointsDisplay.css('bottom', '1em');
 }
 

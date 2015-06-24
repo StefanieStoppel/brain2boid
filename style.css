@@ -39,6 +39,7 @@ body{
     padding: 0;
     height: 100%;
 }
+
 #restart-btn{
     width: 8em;
     height: 3em;
@@ -205,26 +206,6 @@ input[type=number]#ratio, input[type=number]#training-ratio{
     width: 6em;
     margin-left: 1em;
 }
-/* Frequency Bar chart colours */
-.fft_0hz{
-    fill: navy;
-}
-.fft_delta{
-    fill: royalblue;
-}
-.fft_theta{
-    fill: teal;
-}
-.fft_alpha{
-    fill: cyan;
-}
-.fft_beta{
-    fill: coral;
-}
-.fft_gamma{
-    fill: darkmagenta;
-}
-
 /*** Dialog on new experiment ***/
 .ui-dialog{
     min-width: 22em;
@@ -234,14 +215,15 @@ input[type=number]#ratio, input[type=number]#training-ratio{
     border: 1px solid #3f0000;
 }
 div#dialog-age-gender, div#dialog-save-warning{
-    background: -webkit-linear-gradient(right,  #630022, #ac5455 ); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(left, #630022, #ac5455 ); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(left, #630022, #ac5455 ); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(to left, #630022, #ac5455); /* Standard syntax */
-    border: 1px solid #4f001e;
+    background: -webkit-linear-gradient(right, #245580, cadetblue); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(left,#245580, cadetblue); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(left, #245580, cadetblue); /* For Firefox 3.6 to 15 */
     color: lavender;
-    text-shadow: 1px 1px #3f0000;
+    text-shadow: 1px 1px #032c52;
     border-radius: 0.2em;
+    background: linear-gradient(to left, #245580, cadetblue); /* Standard syntax */
+    border: 1px solid #1C4048;
+    border-right: none;
 }
 input#submit-age-gender{
     width: 100%;
@@ -253,7 +235,10 @@ input#age-select{
 input#initials{
     max-width: 8em;
 }
+/************* HORSESHOE ****************/
+text#Fp1, text#Fp2, text#T10{
 
+}
 /***** TIMER ****/
 div#timer{
     position: absolute;
@@ -270,21 +255,27 @@ img#timer-icon{
     float: left;
 }
 /****POINTS DISPLAY****/
-p.points-display{
-    font-size: 1.5em;
-    color: yellow;
+div.points{
     bottom: 5em;
     position: absolute;
     width: 100%;
     text-align: center;
+    font-size: 1.5em;
+    color: yellow;
 }
+i.fa.fa-star{
+    margin-right: 0.5em;
+
+}
+p.points-display{
+}
+
 /*****CONTROL ROW*****/
 div#control-row{
     position: fixed;
     height: 16.4%;
     width: 100%;
-    background: linear-gradient(to top, #245580, cadetblue);
-    background: rgba(0, 0, 0, 0) linear-gradient(to top, #07113B, #A4D5FF) repeat scroll 0% 100%;
+    background: rgba(0, 0, 0, 0) linear-gradient(to top,  #033a6e, #b7e0ff) repeat scroll 0% 100%;
     bottom: 0;
 }
 div#controls{
@@ -304,8 +295,12 @@ i.fa.fa-backward{
     left: -0.1em;
     position: relative;
 }
-i.fa.fa-floppy-o, i.fa.fa-plus-square{
+i.fa.fa-floppy-o, i.fa.fa-user-plus{
     font-size: 2em;
+}
+i.fa.fa-user-plus{
+    right: -0.1em;
+    position: relative;
 }
 button[name="mode-control"], button[name="experiment-control"], button[name="expand-control"]{
     margin: 0.5em;
@@ -344,7 +339,7 @@ p#experiment-mode-display{
     text-align: center;
     font-size: 1.6em;
     color: lavender;
-    top: 0.76em;
+    top: 1.4em;
     position: relative;
     text-shadow: 1px 1px #02203c;
 }
@@ -360,19 +355,19 @@ div#battery-body{
     height: 1.5em;
     background: black;
     border-radius: 0.3em;
-    border: 2px solid white;
+    border: 2px solid lavender;
 }
 div#battery-pole{
     width: 0.5em;
     height: 0.8em;
     border-radius: 0.2em;
-    border: 2px solid white;
+    border: 2px solid lavender;
     position: fixed;
     top: 47px;
     right: 3.6em;
 }
 div#battery-charge{
-    background-color: white;
+    background-color: lavender;
     width: 2.3em;
     height: 0.8em;
     border-radius: 0.2em;
@@ -382,7 +377,7 @@ div#battery-charge{
 span#battery-charge-text{
     min-width: 1em;
     min-height: 1em;
-    color: white;
+    color: lavender;
     right: -0.5em;
     position: relative;
 }

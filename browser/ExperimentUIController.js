@@ -448,7 +448,6 @@ ExperimentUIController.prototype.onNextModeButtonClick = function(){
 /********* EXPERIMENT RESULTS AS CSV FILES *******************/
 ExperimentUIController.prototype.onJsonExperimentData = function(){
     var self = this;
-    var jsonCallback =
     this.socket.on('jsonTest',
         function(data){
             if(data.mode === 1)
@@ -472,10 +471,6 @@ ExperimentUIController.prototype.displayJsonExperimentData = function(dataTest1,
         .range([0, width])
         .domain([0, dataTest1.length]);
     var max = 3.5, min = 0;
-    /*dataTest1.forEach(function(d, i) {
-        max= d3.max(parseFloat(d.ratio));
-        min=d3.min(parseFloat(d.ratio));
-    });*/
 
     var y = d3.scale.linear()
         .range([height, 0])
@@ -489,7 +484,6 @@ ExperimentUIController.prototype.displayJsonExperimentData = function(dataTest1,
         .scale(y)
         .orient("left");
 
-    //TODO . in , bei ratio
     var lineTest1 = d3.svg.line()
         .x(function(d, i) { return x(i); })
         .y(function(d) { return y(parseFloat(d.ratio)); });
@@ -546,8 +540,6 @@ ExperimentUIController.prototype.onFullscreen = function(){
             //TODO: anstatt selbes fenster nochmal öffnen -> neues fenster mit index_trainer.html -> enthält Einstellungen für Freuenzbänder, Kanalauswahl
             // , Artefaktanzeige, EEG-Anzeige pro Kanal
         }*/
-        //TODO: UNDO THIS
-        self.importCSVData();
     });
 };
 
@@ -621,6 +613,7 @@ ExperimentUIController.prototype.onFrequencySelection = function(){
         });
         d3.select('#perc1-label').text('%-ile ' + bandNames[0]);
         d3.select('#perc2-label').text('%-ile ' + bandNames[1]);
+
         //TODO: get updated calibration values
     });
 };
@@ -713,7 +706,7 @@ ExperimentUIController.prototype.onSlide = function(ui, isDividend){
                 this.socket.emit('divisorPercentileChanged', {percentileIdx: self.inhibitIdx});
         }
         this.trainingRatio = Math.pow(10, this.percentiles[0][this.rewardIdx]) / Math.pow(10, this.percentiles[1][this.inhibitIdx]);
-        this.graphicsController.setTrainingRatio(this.trainingRatio);
+       // this.graphicsController.setTrainingRatio(this.trainingRatio);
         this.updateTrainingRatioIndicator(this.trainingRatio);
     }
 };
@@ -859,7 +852,7 @@ ExperimentUIController.prototype.updatePercentiles = function(percentiles){
     this.trainingRatio = Math.pow(10, dividend) / Math.pow(10, divisor);
     this.updateTrainingRatioIndicator(this.trainingRatio);
     //set training ratio in graphicscontroller
-    this.graphicsController.setTrainingRatio(this.trainingRatio);
+    //this.graphicsController.setTrainingRatio(this.trainingRatio);
 
     this.firstFreqBandMin = percentiles[0][0];
     this.secondFreqBandMax = percentiles[1][percentiles[1].length-1];
@@ -870,7 +863,8 @@ ExperimentUIController.prototype.updatePercentiles = function(percentiles){
 ExperimentUIController.prototype.onBlinkUpdate = function(){
     var self = this;
     this.socket.on('blink', function(data){
-        self.updateBlinkBarGraph(data.blink);
+        if(self.getExperimentRunning() && getSidebarShowing())
+            self.updateBlinkBarGraph(data.blink);
     })
 };
 
@@ -883,7 +877,8 @@ ExperimentUIController.prototype.updateBlinkBarGraph = function(blink){
 ExperimentUIController.prototype.onJawClenchUpdate = function(){
     var self = this;
     this.socket.on('jawClench', function(data){
-        self.updateJawClenchBarGraph(data.jawClench);
+        if(self.getExperimentRunning() && getSidebarShowing())
+            self.updateJawClenchBarGraph(data.jawClench);
     })
 };
 

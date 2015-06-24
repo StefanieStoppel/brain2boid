@@ -9,7 +9,7 @@ var MIN_DESIRED_SEPARATION = 5,//(conc)
 
 var NEIGHBOR_DISTANCE = 80,
     DESIRED_SEPARATION = 15,//min: 5(c); max: 50(m)
-    NORMAL_SPEED = 3,//1(m) - 2(c)
+    NORMAL_SPEED = 15,//1(m) - 2(c)
     MAX_SPEED = 100,
     MAX_FORCE = 0.03,
     SEPARATION_FACTOR = 1.5,//1.0(c) - 1.8(m); too high (4.0): they separate and turn around their own axis
@@ -44,7 +44,7 @@ var boidSizeScale = d3.scale.linear()
 
 var boidSpeedScale = d3.scale.quantize()
     .domain([DIVIDEND_DIVISOR_RATIO_MIN, DIVIDEND_DIVISOR_RATIO_MAX])
-    .range([30, 15,  10, 5, 3, 1, 0.5, 0]);
+    .range([30, 15, 10, 5, 3, 1, 0.5, 0]);
 
 /*var boidSpeedScale = d3.scale.linear()
     .domain([DIVIDEND_DIVISOR_RATIO_MIN, DIVIDEND_DIVISOR_RATIO_MAX])
