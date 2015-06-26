@@ -1,10 +1,20 @@
 function Info(){
-    this.onChannelInfoBtnClick();
-    this.onNextChannelInfoBtnClick();
-    this.onPrevChannelInfoBtnClick();
+    this.onChannelColourBtnClick();
+
+    this.onFeedbackBtnClick();
+
+    this.onChannelNamesBtnClick();
+    this.onChannelNamesNextBtnClick();
+    this.onChannelNamesPrevBtnClick();
+
+    this.onTrainingProtocolBtnClick();
+
+    this.onArtifactsBtnClick();
+
+    this.onGeneralInfoBtnClick();
 }
 
-Info.prototype.onChannelInfoBtnClick = function(){
+Info.prototype.onChannelColourBtnClick = function(){
     $('button#info-btn-channels').click(function(){
         $('div#dialog-info-channels').dialog({
             autoOpen: true
@@ -12,20 +22,77 @@ Info.prototype.onChannelInfoBtnClick = function(){
     });
 };
 
-Info.prototype.onNextChannelInfoBtnClick = function(){
-    $('button#show-channel-names-info').click(function(){
-        $('div#channel-info-1').hide();
-        $('div#channel-info-2').show();
-        $('button#show-channel-colour-info').show();
-        $('button#show-channel-names-info').hide();
+Info.prototype.onFeedbackBtnClick = function(){
+    $('button#info-btn-feedback').click(function(){
+        $('div#dialog-info-feedback').dialog({
+            autoOpen: true
+        })
     });
 };
 
-Info.prototype.onPrevChannelInfoBtnClick = function(){
-    $('button#show-channel-colour-info').click(function(){
-        $('div#channel-info-1').show();
-        $('div#channel-info-2').hide();
-        $('button#show-channel-colour-info').hide();
-        $('button#show-channel-names-info').show();
+Info.prototype.onChannelNamesBtnClick = function(){
+    $('button#info-btn-channel-names').click(function(){
+        $('div#dialog-info-channel-names').dialog({
+            width: 450,
+            autoOpen: true
+        });
+    });
+};
+
+Info.prototype.onChannelNamesNextBtnClick = function(){
+    $('button#show-channel-name-2').click(function(){
+        $('p#channel-name-1').hide();
+        $('p#channel-name-2').show();
+        $(this).hide();
+        $('button#show-channel-name-1').show();
+    });
+};
+
+Info.prototype.onChannelNamesPrevBtnClick = function(){
+    $('button#show-channel-name-1').click(function(){
+        $('p#channel-name-1').hide();
+        $('p#channel-name-2').show();
+        $(this).hide();
+        $('button#show-channel-name-2').show();
+    });
+};
+
+Info.prototype.onTrainingProtocolBtnClick = function(){
+    $('button#info-btn-training-protocol').click(function(){
+        $('div#dialog-info-training-protocol').dialog({
+            autoOpen: true
+        })
+    });
+};
+
+Info.prototype.onArtifactsBtnClick = function(){
+    $('button#info-btn-artifact').click(function(){
+        $('div#dialog-info-artifacts').dialog({
+            width: 450,
+            autoOpen: true
+        });
+    });
+};
+
+Info.prototype.onGeneralInfoBtnClick = function(){
+    $('button#general-info-btn').click(function(){
+        $('div#dialog-info-general').dialog({
+            width: "600px !important",
+            position: ['center',20],
+            autoOpen: true
+        });
+        $('button#show-general-info-2').click(function(){
+            $('div#general-info-1').hide();
+            $('div#general-info-2').show();
+            var that = this;
+            $(this).hide();
+            $('button#show-general-info-1').show();
+            $('button#show-general-info-1').click(function(){
+                $(this).hide();
+                $(that).show();
+                $('div#general-info-1').show();
+                $('div#general-info-2').hide();
+            });
+        })
     });
 };

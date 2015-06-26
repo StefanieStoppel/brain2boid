@@ -63,11 +63,6 @@ ExperimentUIController.prototype.init = function(){
     //listen for frequency selection changes in UI
     this.onFrequencySelection();
 
-    /********************************* DUAL MONITOR MODE *************************/
-    this.fullscreen = false;
-    this.onFullscreen();
-
-
     /******************** VARIABLES FOR EXPERIMENT STATE ***********************/
     this.experimentRunning = false;
     this.paused = false;
@@ -531,19 +526,6 @@ ExperimentUIController.prototype.displayJsonExperimentData = function(dataTest1,
         .attr("d", lineTest2);
 };
 
-/******************** FULLSCREEN ******************/
-ExperimentUIController.prototype.onFullscreen = function(){
-    var self = this;
-    $('button#expand-btn').click(function(){
-        /*if(!self.fullscreen){
-            window.open("", "_self", "");
-            // window.close();
-            window.open("file:///E:/Programmieren/Node.js/node_modules/test-module/index.html", "page", "toolbars=no,location=no,resizable=no");
-            //TODO: anstatt selbes fenster nochmal öffnen -> neues fenster mit index_trainer.html -> enthält Einstellungen für Freuenzbänder, Kanalauswahl
-            // , Artefaktanzeige, EEG-Anzeige pro Kanal
-        }*/
-    });
-};
 
 /**
  * Enable or disable next and previous mdoe buttons.
@@ -836,7 +818,7 @@ ExperimentUIController.prototype.initTrainingRatioIndicator = function(){
 };
 
 ExperimentUIController.prototype.updateTrainingRatioIndicator = function(trainingRatio){
-    this.trainingRatioLine.attr('transform', 'translate(5, ' + this.rewardYscale(trainingRatio) + ' )' )
+    this.trainingRatioLine.attr('transform', 'translate(10, ' + (this.rewardYscale(trainingRatio) + 10) + ' )' );
 };
 
 /**
