@@ -326,6 +326,10 @@ button.blue-btn-gradient{
     text-shadow: 1px 1px #000000;
     box-shadow: 1px 2px 4px #070D2C;
 }
+div#experiment-control{
+    position:relative;
+    left: 2%;
+}
 button.blue-btn-gradient:active{
     top: 2px;
     border: none;
