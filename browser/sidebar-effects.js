@@ -17,11 +17,18 @@ $(document).ready(function(){
     //hide or show control bar on hover (only when experiment is running)
     controls.hover(
         function() {//mouseEnter
-            $(this).opacityControlBar(200, 1);
+            if(running())
+                $(this).opacityControlBar(200, 1);
         }, function() {//mouseLeave
-            $(this).opacityControlBar(200, 0.01);
+            if(running())
+                $(this).opacityControlBar(200, 0.01);
         }
     );
+
+    $('#running').change(function(){
+        if(!$(this).is(':checked'))
+            controls.opacityControlBar(200, 1);
+    });
 
 
     //fontawesome icon
@@ -148,11 +155,9 @@ $.fn.animateRotate = function(startAngle, endAngle, duration, easing, complete){
 };
 //change opacity of control bar
 $.fn.opacityControlBar = function(animationLength, opacity){
-    if(running()){
-        $( this ).find('div#control-row').animate({
-            opacity: opacity
-        }, animationLength, movePointsDisplay(opacity));
-    }
+    $( this ).find('div#control-row').animate({
+        opacity: opacity
+    }, animationLength, movePointsDisplay(opacity));
 };
 //Move the points display depending on whether the control bar is showing or not
 function movePointsDisplay(opacity){

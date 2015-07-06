@@ -56,13 +56,13 @@ div.running-input{
     top: 0.5em;
 }
 input#running{
-    top: 2.5em;
+    top: 1em;
     position: relative;
     width: 1.4em;
     height: 1.4em;
 }
 label#running-label{
-    top: 2.5em;
+    top: 1em;
     position: relative;
     vertical-align: top;
     display:inline;
@@ -259,8 +259,8 @@ div#timer{
     float: left;
 }
 img#timer-icon{
-    margin: 0.2em 0.3em 0 0;
-    height: 1em;
+    margin: 0.18em 0.1em 0 0;
+    height: 1.2em;
     float: left;
 }
 /****POINTS DISPLAY****/

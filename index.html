@@ -40,7 +40,7 @@
                         <div id="battery-pole"></div>
                     </div>
                     <div id="timer">
-                        <img id="timer-icon" src="browser/img/timer.png"/>
+                        <img id="timer-icon" src="browser/img/Timer-Icon (2).jpg"/>
                         <p id="timer-text">10 s</p>
                     </div>
                     <div class="points col-xs-12">
@@ -57,17 +57,7 @@
                                 <i class="fa fa-user-plus"></i>
                             </button>
                         </div>
-                        <div class="col-xs-8 full-height">
-                            <!--<button type="button" name="experiment-control" id="save-experiment-btn" style="top: 14%; position: relative;">
-                                <i class="fa fa-floppy-o"></i>
-                            </button>-->
 
-                            <!--<input type="button" name="restart" id="restart-btn" value="Reset Boids">-->
-                            <input type="checkbox" name="boids-running" id="running"/>
-                            <label id="running-label" for="running">Running</label>
-
-
-                        </div>
                     </div>
                     <div class="col-xs-4 full-height" id="experiment-control">
                         <div class="col-xs-4 full-height">
@@ -108,7 +98,18 @@
         <!-- SIDEBAR BLUE - Frequency Band, Channel and Ratio settings --->
 
         <div class="sidebar sb-blue col-xs-6 col-sm-5 col-lg-4 full-height">
-            <h3>Einstellungen</h3>
+            <div class="row">
+                <div class="col-xs-6  no-padding">
+                    <h3>Einstellungen</h3>
+                </div>
+                <div class="col-xs-6 full-height">
+                    <!--<input type="button" name="restart" id="restart-btn" value="Reset Boids">-->
+                    <input type="checkbox" name="boids-running" id="running"/>
+                    <label id="running-label" for="running">Running</label>
+                </div>
+            </div>
+
+
             <!-- CHANNEL PICKER -->
             <div class="row" style="margin-bottom: 0.5em;">
                 <h4>Kan&auml;le
@@ -140,7 +141,7 @@
                     </button>
                 </h4>
                 <div class="fr-band-single no-padding col-xs-6">
-                    <h5 class="left-margin-1">Reward (Belohnung)  <i class="fa fa-arrow-circle-up"></i></h5>
+                    <h5 class="left-margin-1">Belohnung  <i class="fa fa-arrow-circle-up"></i></h5>
                     <select id="select-fr-dividend" class="frequency-picker sidebar-select sb-blue-select left-margin-1">
                         <option name="fr-picker" class="fr-dividend" id="fr-dividend-delta" value="0">&delta; (Delta) </option>
                         <option name="fr-picker" class="fr-dividend" id="fr-dividend-theta" value="1">&theta; (Theta)</option>
@@ -150,7 +151,7 @@
                     </select>
                 </div>
                 <div class="fr-band-single no-padding col-xs-6">
-                    <h5 class="left-margin-1">Inhibit (Blockierung)  <i class="fa fa-arrow-circle-down"></i></h5>
+                    <h5 class="left-margin-1">Blockierung  <i class="fa fa-arrow-circle-down"></i></h5>
                     <select id="select-fr-divisor" class="frequency-picker sidebar-select sb-blue-select left-margin-1">
                         <option name="fr-picker" class="fr-divisor" id="fr-divisor-none" value="-1"> - </option>
                         <option name="fr-picker" class="fr-divisor" id="fr-divisor-delta" value="0">&delta; (Delta) </option>
@@ -252,18 +253,6 @@
                 </div>
             </div>
             <!--- END RATIO DISPLAYS -->
-
-            <!--<div class="col-xs-4">
-                <div class="row" id="boids-control-row">
-                    <div class="col-xs-6">
-                        <input type="button" name="restart" id="restart-btn" value="Reset Boids">
-                    </div>
-                    <div class="running-input col-xs-12">
-                        <label id="running-label" for="running">
-                            <input type="checkbox" name="boids-running" id="running"/>  Running</label>
-                    </div>
-                </div>
-            </div>-->
         </div>
         <!-- END OF SIDEBAR 2 --->
 
@@ -339,7 +328,8 @@
 
     <div id="dialog-info-channels" class="blue-dialog" title="Info">
         <div id="channel-info-1">
-            <p>Ein guter Kontakt zwischen EEG-Sensoren und Kopfhaut ist wichtig f&uuml;r eine qualitativ hochwertige Messung.
+            <p>Ein guter Kontakt zwischen EEG-Sensoren und Kopfhaut ist wichtig f&uuml;r eine qualitativ hochwertige Messung und damit f&uuml;r
+                ein sinnvolles Neurofeedback.<br>
                 Die Kreise in der linken oberen Ecke zeigen die Kontaktqualit&auml;t an:
             </p>
             <div class="row">
@@ -366,6 +356,10 @@
                     <p class="top-margin-1">Guter Kontakt.</p>
                 </div>
             </div>
+            <br>
+            <p style="text-decoration: underline">Tipp:</p>
+            Je weniger du dich bewegst, desto einfacher wird es, einen guten Kontakt zwischen Kopfhaut und Elektroden herzustellen.
+            Versuche, dich w&auml;hrend der Messungen m&ouml;glichst wenig zu bewegen, indem du nicht sprichst und deine Augen so wenig wie m&ouml;glich bewegst.
         </div>
     </div>
 
@@ -483,7 +477,7 @@
                     </div>
                 </li>
                 <li>
-                    <div class="row">
+                    <div class="row top-margin-1">
                         <div class="col-xs-5 col-sm-4 col-lg-3">
                             <img src="browser/img/Eeg_gamma.svg" style="width: 18em">
                         </div>
@@ -495,10 +489,10 @@
                     </div>
                 </li>
                 <li>
-                    <div class="row">
+                    <div class="row top-margin-05">
                         <div style="font-size: 11px; padding-left: 15px;">Bildquelle:<br>
-                            <a href="https://commons.wikimedia.org/wiki/User:Hgamboa" target="_blank">Hgamboa</a>,
-                            <a href="http://www.gnu.org/licenses/fdl-1.3.de.html" target="_blank">GNU Free Documentation License</a>
+                            <a href="https://commons.wikimedia.org/wiki/User:Hgamboa" target="_blank" style="text-shadow: none">Hgamboa</a>,
+                            <a href="http://www.gnu.org/licenses/fdl-1.3.de.html" target="_blank" style="text-shadow: none">GNU Free Documentation License</a>
                         </div>
                     </div>
                 </li>

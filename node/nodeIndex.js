@@ -36,10 +36,11 @@ function MainController(){
 
 MainController.prototype.init = function(){
     this.osc = require('./dependencies/node-osc/lib/osc');
-    //WebSocket = require("websocket");
+    //create http server
     var app = require('http').createServer(this.handler);
     this.io = require('socket.io')(app);
     var fs = require('fs');
+    //listen for requests on standard port 80
     app.listen(80);
 
     var util = require('util');
@@ -67,13 +68,15 @@ MainController.prototype.init = function(){
 
 MainController.prototype.handler = function(){
     return function(req, res) {
+        console.log("request received: " + req.url);
+        //file contents of index.html are read by file system
         fs.readFile(path.join(__dirname, '..', 'index.html'),
             function (err, data) {
                 if (err) {
                     res.writeHead(500);
                     return res.end('Error loading index.html');
                 }
-
+                //if everything's ok, send Code 200 and the data in index.html
                 res.writeHead(200);
                 res.end(data);
             });
@@ -85,15 +88,15 @@ MainController.prototype.onWebSocketConnection = function(){
     //connection with Browser via WebSocket
     this.io.on('connection', function (socket) {
         console.log("WebSocket connected..");
-        //receive OSC messages on UDP port 5002 and refer them to index.html
+        //receive OSC messages on UDP port 5002
         self.oscServer = new self.osc.Server(5002, '0.0.0.0');
         //listen for osc messages from muse
         self.oscListener(socket);
 
-        /*** BLUE SIDEBAR ***/
-            //channel selection lsitener
+        /*** BLUE SIDEBAR INPUTS ***/
+        //channel selection changes
         self.channelSelectionListener(socket);
-        //frequency band selection listener
+        //frequency band selection changes
         self.frequencyBandSelectionListener(socket);
     });
 };
