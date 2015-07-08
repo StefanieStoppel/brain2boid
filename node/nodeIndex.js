@@ -388,7 +388,7 @@ MainController.prototype.oscListener = function(socket){
                 if( msg[1] !== 1  && !self.experimentController.getTouchingForehead()) // PAUSE EXPERIMENT
                 {
                     //pause experiment
-                    console.log('WARNING: Experiment paused. Muse is not touching forehead. ');
+                    console.log('WARNING: Experiment pausiert. Muse ist nicht auf dem Kopf platziert.');
                     self.experimentController.pauseExperiment();//sets experimentRunning to false
                     self.experimentController.setTouchingForehead([0, -1]);
                     socket.emit('notTouchingForehead', {pauseExperiment: true, remainingDuration: remainingDuration});

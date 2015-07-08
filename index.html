@@ -81,7 +81,7 @@
                         <div class="col-xs-8 full-height">
                             <input type="hidden" name="hidden-experiment-mode" value="0">
                             <input type="hidden" name="experiment-duration" id="hidden-experiment-duration" value="10">
-                            <p id="experiment-mode-display">Calibration</p>
+                            <p id="experiment-mode-display">Kalibration</p>
                         </div>
                         <div class="col-xs-4 full-height">
                             <button type="button" class="blue-btn-gradient" id="general-info-btn" style="top: 14%; position: relative;">
@@ -302,7 +302,7 @@
                         <label for="female">w</label>
                     </div>
                 </div>
-                <p id="warning" style="color: lavender; display: none">*Please fill out the form</p>
+                <p id="warning" style="color: lavender; display: none">*Bitte vervollst&auml;ndigen Sie die Eingaben.</p>
             </div>
 
             <input id="submit-age-gender" name="age-gender-btn" type="button" class="sidebar-button sb-red-button" value="Submit" >
@@ -311,7 +311,7 @@
 
     <div id="dialog-save-warning" class="blue-dialog" title="Warning">
         <form action="" method="post">
-            <p style="text-align: center">You are about to start a new experiment session.<br>
+            <p style="text-align: center">Sie sind dabei ein neues Experiment zu starten.<br>
             Press SAVE to save your previous data to a .csv file. <br>
             Press CONTINUE if you want to continue without saving.</p>
             <div class="row">
@@ -328,103 +328,120 @@
 
     <div id="dialog-info-channels" class="blue-dialog" title="Info">
         <div id="channel-info-1">
+            <h3>Kontaktqualit&auml;t</h3>
             <p>Ein guter Kontakt zwischen EEG-Sensoren und Kopfhaut ist wichtig f&uuml;r eine qualitativ hochwertige Messung und damit f&uuml;r
-                ein sinnvolles Neurofeedback.<br>
+                ein gutes Neurofeedback.<br>
                 Die Kreise in der linken oberen Ecke zeigen die Kontaktqualit&auml;t an:
             </p>
             <div class="row">
-                <div class="col-xs-3">
+                <div class="col-xs-3"></div>
+                <div class="col-xs-6">
                     <img src="browser/img/FP1_no_contact.jpg" class="channel-contact">
+                    Kein Kontakt.
                 </div>
-                <div class="col-xs-9">
-                    <p class="top-margin-1">Kein Kontakt.</p>
-                </div>
+                <div class="col-xs-3"></div>
             </div>
             <div class="row">
-                <div class="col-xs-3">
+                <div class="col-xs-3"></div>
+                <div class="col-xs-6">
                     <img src="browser/img/FP1_bad_contact.jpg" class="channel-contact">
+                    Schlechter Kontakt.
                 </div>
-                <div class="col-xs-9">
-                    <p class="top-margin-1">Schlechter Kontakt.</p>
-                </div>
+                <div class="col-xs-3"></div>
             </div>
             <div class="row">
-                <div class="col-xs-3">
+                <div class="col-xs-3"></div>
+                <div class="col-xs-6">
                     <img src="browser/img/FP1_good_contact.JPG" class="channel-contact">
+                    Guter Kontakt.
                 </div>
-                <div class="col-xs-9">
-                    <p class="top-margin-1">Guter Kontakt.</p>
-                </div>
+                <div class="col-xs-3"></div>
             </div>
             <br>
             <p style="text-decoration: underline">Tipp:</p>
-            Je weniger du dich bewegst, desto einfacher wird es, einen guten Kontakt zwischen Kopfhaut und Elektroden herzustellen.
-            Versuche, dich w&auml;hrend der Messungen m&ouml;glichst wenig zu bewegen, indem du nicht sprichst und deine Augen so wenig wie m&ouml;glich bewegst.
+            Je weniger Sie sich bewegen, desto einfacher wird es, einen guten Kontakt zwischen Kopfhaut und Elektroden herzustellen.
+            Versuchen Sie, sich w&auml;hrend der Messungen m&ouml;glichst wenig zu bewegen, indem Sie nicht sprechen und Ihre Augen so wenig wie m&ouml;glich bewegen.
         </div>
     </div>
 
     <div id="dialog-info-channel-names" class="blue-dialog" title="Info">
-        <p id="channel-name-1">Hier werden die f&uuml;r das Neurofeedback verwendeten Elektroden ausgew&auml;hlt.<br>
-            Das EEG-Ger&auml;t, das deine Gehirnaktivit&auml;t misst, hat 4 davon:<br>
-            Zwei an den Ohren und zwei auf der Stirn.
-        </p>
-        <p id="channel-name-2">
-            Die Namen der Elektrodenpositionen werden innerhalb der Kreise links auf dem Bildschirm angezeigt.
-            Sie werden anhand des internationalen <a target="_blank" href="https://de.wikipedia.org/wiki/10-20-System">10-20-Systems</a> festgelegt. <br>
-            Dieses System wurde entwickelt,
-            da sich Sch&auml;delform und -gr&ouml;&szlig;e bei jedem Menschen unterscheiden und eine einheitliche
-            Platzierung der Elektroden n&ouml;tig ist, um Messergebnisse vergleichen zu k&ouml;nnen.
-        </p>
+        <div id="channel-name-1">
+            <h4>Wahl der Kan&auml;le</h4>
+            <p>
+                Hier werden die f&uuml;r das Neurofeedback verwendeten Elektroden ausgew&auml;hlt.<br>
+                Das EEG-Ger&auml;t, das deine Gehirnaktivit&auml;t misst, hat 4 davon:<br>
+                Zwei an den Ohren und zwei auf der Stirn.
+            </p>
+        </div>
+        <div id="channel-name-2">
+            <h4>Warum haben die Elektrodenpositionen solche seltsamen Namen?</h4>
+            <p>
+                Die Namen der Elektrodenpositionen werden innerhalb der Kreise links auf dem Bildschirm angezeigt.<br>
+                Sie werden anhand des internationalen <a target="_blank" href="https://de.wikipedia.org/wiki/10-20-System" style="text-decoration: underline">10-20-Systems</a> festgelegt.<br>
+                Dieses System wurde entwickelt, da sich Sch&auml;delform und -gr&ouml;&szlig;e bei jedem Menschen unterscheiden.
+                Durch das 10-20-System wird es möglich, eine einheitliche Platzierung der Elektroden zu erreichen,
+                damit Messergebnisse von verschiedenen Personen verglichen werden k&ouml;nnen.
+            </p>
+        </div>
         <div class="btns-row row top-margin-1">
-            <button id="show-channel-name-1" class="prev-info-btn blue-btn-gradient"><i class="fa fa-arrow-left"></i></button>
-            <button id="show-channel-name-2" class="next-info-btn blue-btn-gradient"><i class="fa fa-arrow-right"></i></button>
+            <button id="show-channel-name-1" class="prev-info-btn blue-btn-gradient light-shadow"><i class="fa fa-arrow-left"></i></button>
+            <button id="show-channel-name-2" class="next-info-btn blue-btn-gradient light-shadow"><i class="fa fa-arrow-right"></i></button>
         </div>
     </div>
 
     <div id="dialog-info-training-protocol" class="blue-dialog" title="Info">
+        <h3>Was wird trainiert?</h3>
         <p>
             Beim Neurofeedback werden Frequenzb&auml;nder aus dem menschlichen EEG ausgesucht, die "trainiert" werden sollen.
             Diese Auswahl findet hier statt.<br><br>
-            <img src="browser/img/training_protocol_bargraph.JPG" style="width: 22em; box-shadow: 2px 2px 3px #191B30;"/>
+            <img src="browser/img/training_protocol_bargraph.JPG" style="width: 22em; box-shadow: 2px 2px 3px #191B30; position: relative; left: 22%;"/>
             <br><br> Auf der linken Seite (Belohnung) wird das Band ausgew&auml;hlt, dessen Aktivit&auml;t verst&auml;rkt werden soll.
-            Eine Verst&auml;rkung f&uuml;hrt dazu, dass viele Neuronen - das sind die Zellen im Gehirn - gleichzeitig Impulse an ihre Nachbarn weitergeben.<br>
-            Auf der rechten Seite kann ein zweites Frequenzband ausgew&auml;hlt werden, dessen Aktivit&auml;t verringert werden soll, sodass weniger
-            Neuronen gleichzeitig Informationen weitergeben.
+            Auf der rechten Seite kann ein zweites Frequenzband ausgew&auml;hlt werden, dessen Aktivit&auml;t durch das Neurofeedback verringert werden soll.
         </p>
     </div>
 
     <div id="dialog-info-feedback" class="blue-dialog" title="Info">
+        <h3>Wie funktioniert das Feedback &uuml;ber die Gehirnaktivit&auml;t?</h3>
         <p>Die Farbe und Geschwindigkeit der Dreiecke auf dem Bildschirm ver&auml;ndert sich gleichzeitig mit dem Feedback-Balkengraphen.<br>
+            Der Stand des Graphen h&auml;ngt davon ab, wie viel Aktivit&auml;t es in den Frequenzb&auml;ndern gibt, die unter dem Punkt "Trainingsprotokoll"
+            ausgew&auml;hlt wurden.<br>
             Je h&ouml;her der Graph &uuml;ber den schwarzen Balken kommt, desto satter wird die gr&uuml;ne F&auml;rbung der Dreiecke und desto langsamer bewegen sie sich. <br><br>
-            <img src="browser/img/Boids_green.JPG" style="height: 10em; float: left; box-shadow: 2px 2px 3px #191B30;">
-            <img src="browser/img/Feedback_Graph.jpg" style="height: 10em; box-shadow: 2px 2px 3px #191B30;">
-            <p style="text-decoration: underline">Tipp:</p> Je l&auml;nger man es schafft, die Dreicke gr&uuml;n zu f&auml;rben, desto mehr Punkte bekommt man.
-            <img style="height: 3em; position: relative; left: 30%; margin-top: 1em; box-shadow: 2px 2px 3px #191B30;" src="browser/img/points-display.JPG">
+            <img src="browser/img/Boids_green.JPG" style="height: 10em; float: left; box-shadow: 2px 2px 3px #191B30; left: 9em; position: relative;">
+            <img src="browser/img/Feedback_Graph.jpg" style="height: 10em; box-shadow: 2px 2px 3px #191B30; left: 9em; position: relative;">
+            <p style="text-decoration: underline">Tipp:</p>
+            <p>Je l&auml;nger man es schafft, die Dreicke gr&uuml;n zu f&auml;rben, desto mehr Punkte bekommt man.</p>
+            <img style="height: 3em; position: relative; left: 39%; margin-top: 1em; box-shadow: 2px 2px 3px #191B30;" src="browser/img/points-display.JPG">
         </p>
     </div>
 
     <div id="dialog-info-artifacts" class="blue-dialog" title="Info">
+        <h3>Artefakte</h3>
         <p>
             Bei der Messung von EEG kommt es oft zu St&ouml;rungen des Signals durch Muskel- und Augenbewegungen.
             Die Signalverunreinigungen werden auch "Artefakte" genannt.<br>
-            Wenn du blinzelst oder deine Kieferknochen aufeinanderpresst, wird das anhand der Balkengraphen angezeigt.<br><br>
-            <img src="browser/img/artifact_bargraphs2.jpg" id="img-artifact-bargraphs">
+            Wenn Sie blinzeln oder Ihre Kieferknochen aufeinanderpressen, wird das anhand der Balkengraphen angezeigt.<br><br>
+            <img src="browser/img/artifact_bargraphs2.jpg" id="img-artifact-bargraphs" style="position: relative; left: 23%;">
             <p style="text-decoration: underline">Tipp:</p>
-            Versuche dich w&auml;hrend des Neurofeedbacks m&ouml;glichst wenig zu bewegen, damit die Signalqualit&auml;t gut ist und du ein sinnvolles Feedback zu erh&auml;ltst.
+            Versuchen Sie sich w&auml;hrend des Neurofeedbacks m&ouml;glichst wenig zu bewegen, damit die Signalqualit&auml;t gut ist und Sie ein pr&auml;zises Feedback erhalten.
         </p>
     </div>
 
-    <div id="dialog-info-general" class="blue-dialog" title="Was ist Neurofeedback?">
+    <div id="dialog-info-general" class="blue-dialog" title="Info">
         <div id="general-info-1">
+            <h3>Was ist Neurofeedback?</h3>
             <p>
-                Beim Neurofeedback wird deine Gehirnaktivit&auml;t mit Hilfe eines EEG-Ger&auml;ts gemessen und du
-                erh&auml;ltst anhand der Dreiecke auf dem Bildschirm eine R&uuml;ckmeldung dar&uuml;ber, was gerade in deinem Kopf passiert.<br><br>
-                <p style="text-decoration: underline">Keine Sorge:</p> Das Ger&auml;t kann deine Gedanken nicht lesen.</p>
+                Beim Neurofeedback wird Ihre Gehirnaktivit&auml;t mit Hilfe eines EEG-Ger&auml;ts gemessen.
+                Sie erhalten anhand der Dreiecke auf dem Bildschirm eine R&uuml;ckmeldung dar&uuml;ber, was gerade in Ihrem Kopf passiert.<br>
+                Neurofeedback wird zu verschiedenen Zwecken angewendet. Dazu geh&ouml;ren z.B. die Behandlung von
+                ADHS (Aufmerksamkeits-Defizit-Hyperaktivit&auml;tsst&ouml;rung), Tinnitus, Mig&auml;ne und anderen Erkrankungen.<br>
+                Es kann aber auch in anderen Bereichen eingesetzt werden, wie beim Entspannungstraining.<br><br>
+                <p style="text-decoration: underline">Keine Sorge:</p> Das Ger&auml;t kann Ihre Gedanken nicht lesen.</p>
             </p>
         </div>
         <div id="general-info-2" class="col-xs-12" style="font-size: 13px;">
+            <h3>Was wird beim Neurofeedback gemessen?</h3>
             <p>
-                Die Gehirnaktivit&auml;t des Menschen l&auml;sst sich als "Schwingungen" mit Frequenzen von ungef&auml;hr 1 - 80 Hz messen.
+                Die Gehirnaktivit&auml;t des Menschen l&auml;sst sich als "Schwingungen" mit Frequenzen von ungef&auml;hr 1 - 80 Hz beschreiben.
                 Die Aktivit&auml;t ist dabei in 5 Frequenzb&auml;nder aufgeteilt, die nach griechischen Buchstaben benannt sind und unterschiedliche Bedeutungen haben:
             </p>
             <ul style="padding-left: 10px;">
@@ -434,7 +451,8 @@
                             <img src="browser/img/Eeg_delta.svg" style="width: 18em">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
-                            <p>Delta-Wellen (&delta;, 1 - 4 Hz): <br>
+                            <p class="big-font">Delta-Wellen (&delta;, 1 - 4 Hz): </p>
+                            <p>
                                 Diese Wellen findet man bei Erwachsenen verst&auml;rkt in der Tiefschlafphase.
                             </p>
                         </div>
@@ -446,7 +464,8 @@
                             <img src="browser/img/Eeg_theta.svg" style="width: 18em">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
-                            <p>Theta-Wellen (&delta;, 4 - 8 Hz): <br>
+                            <p class="big-font">Theta-Wellen (&delta;, 4 - 8 Hz): </p>
+                            <p>
                                 Beim &Uuml;bergang vom Wach- in den Schlafzustand treten Theta-Wellen vermehrt auf.
                             </p>
                         </div>
@@ -458,7 +477,8 @@
                             <img src="browser/img/Eeg_alpha.svg" style="width: 18em">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
-                            <p>Alpha-Wellen (&alpha;, 8 - 13 Hz): <br>
+                            <p class="big-font">Alpha-Wellen (&alpha;, 8 - 13 Hz): </p>
+                            <p>
                                 Man misst diese Wellen vermehrt in Personen, die wach und relativ entspannt sind.
                             </p>
                         </div>
@@ -470,7 +490,8 @@
                             <img src="browser/img/Eeg_beta.svg" style="width: 18em">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
-                            <p>Beta-Wellen (&beta;, 13 - 30 Hz): <br>
+                            <p class="big-font">Beta-Wellen (&beta;, 13 - 30 Hz): </p>
+                            <p>
                                 Beta-Wellen kommen dann vermehrt vor, wenn sich eine Person konzentriert, also z.B. Matheaufgaben im Kopf l&ouml;st.
                             </p>
                         </div>
@@ -482,7 +503,8 @@
                             <img src="browser/img/Eeg_gamma.svg" style="width: 18em">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
-                            <p>Gamma-Wellen (&gamma;, > 30 Hz): <br>
+                            <p class="big-font">Gamma-Wellen (&gamma;, > 30 Hz):</p>
+                            <p>
                                 Diese Wellen treten auf, wenn eine Person sich stark konzentriert oder gerade etwas Neues lernt.
                             </p>
                         </div>
@@ -500,8 +522,8 @@
         </div>
 
         <div class="btns-row row top-margin-1">
-            <button id="show-general-info-1" class="prev-info-btn blue-btn-gradient"><i class="fa fa-arrow-left"></i></button>
-            <button id="show-general-info-2" class="next-info-btn blue-btn-gradient"><i class="fa fa-arrow-right"></i></button>
+            <button id="show-general-info-1" class="prev-info-btn blue-btn-gradient light-shadow"><i class="fa fa-arrow-left"></i></button>
+            <button id="show-general-info-2" class="next-info-btn blue-btn-gradient light-shadow"><i class="fa fa-arrow-right"></i></button>
         </div>
     </div>
 </div><!-- div.container --->

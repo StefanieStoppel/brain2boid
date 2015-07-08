@@ -711,11 +711,11 @@ ExperimentUIController.prototype.enableSidebarSettings = function(bool){
 
 /****************** WARNING ALERTS ******************/
 ExperimentUIController.prototype.displayMuseNotConnected = function(){
-    alert('WARNING: Muse is not connected! Please connect it and retry.');
+    alert('WARNING: Keine Verbindung zu Muse! Bitte verbinden Sie Muse und versuchen Sie es erneut.');
 };
 
 ExperimentUIController.prototype.displayExperimentNotCreated = function(){
-    alert('WARNING: No experiment was created! Create one and retry.');
+    alert('WARNING: Es wurde noch kein Experiment erstellt! Bitte erstellen sie ein neues Experiment und evrsuchen Sie es erneut.');
 };
 
 /******************************** BLUE SIDEBAR ****************************************************/

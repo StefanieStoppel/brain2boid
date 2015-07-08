@@ -41,8 +41,8 @@ Info.prototype.onChannelNamesBtnClick = function(){
 
 Info.prototype.onChannelNamesNextBtnClick = function(){
     $('button#show-channel-name-2').click(function(){
-        $('p#channel-name-1').hide();
-        $('p#channel-name-2').show();
+        $('#channel-name-1').hide();
+        $('#channel-name-2').show();
         $(this).hide();
         $('button#show-channel-name-1').show();
     });
@@ -50,8 +50,8 @@ Info.prototype.onChannelNamesNextBtnClick = function(){
 
 Info.prototype.onChannelNamesPrevBtnClick = function(){
     $('button#show-channel-name-1').click(function(){
-        $('p#channel-name-1').hide();
-        $('p#channel-name-2').show();
+        $('#channel-name-1').hide();
+        $('#channel-name-2').show();
         $(this).hide();
         $('button#show-channel-name-2').show();
     });

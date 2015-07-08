@@ -208,31 +208,43 @@ div#training-ratio-display{
 }
 /*** Dialog on new experiment ***/
 .ui-dialog{
-    min-width: 400px !important;
+    min-width: 600px !important;
 }
 .ui-dialog > .ui-widget-header {
-    background: cadetblue;
+    /*background: rgb(159, 190, 218);*/
+    background: linear-gradient(to right, #245580, cadetblue) !important; /* Standard syntax */
     border: 1px solid #032c52;
 }
 .ui-dialog-title{
     text-shadow: 1px 1px #032c52;
 }
+.ui-dialog .ui-dialog-content{
+    overflow-x: hidden;
+}
 .ui-widget-content a{
-    color: #100F3C;
+    color: lavender;
 }
 .ui-widget-header .ui-icon {
     background-image: url("browser/dependencies/jquery-ui-1.11.4.custom/images/ui-icons_ffffff_256x240.png");
 }
 div.blue-dialog{
-    background: -webkit-linear-gradient(right, #245580, cadetblue); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(left,#245580, cadetblue); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(left, #245580, cadetblue); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(to left, #245580, cadetblue) !important; /* Standard syntax */
+    /*background: -webkit-linear-gradient(right, #245580, cadetblue); /* For Safari 5.1 to 6.0 */
+    /*background: -o-linear-gradient(left,#245580, cadetblue); /* For Opera 11.1 to 12.0 */
+    /*background: -moz-linear-gradient(left, #245580, cadetblue); /* For Firefox 3.6 to 15 */
+    /*background: linear-gradient(to left, #245580, cadetblue) !important; /* Standard syntax */
+    background-color: #092744 !important;
     color: white;
-    text-shadow: 1px 1px #032c52;
+    text-shadow: 1px 1px #000000;
     border-radius: 0.2em;
     border: 1px solid #1C4048;
     border-right: none;
+    font-size: 14px;
+    overflow-x: hidden;
+}
+p.big-font{
+    font-weight: 900;
+    font-size: 16px;
+    margin-bottom: 0.2em;
 }
 input#submit-age-gender{
     width: 100%;
@@ -325,6 +337,9 @@ button.blue-btn-gradient{
     color: #FFFFFF;
     text-shadow: 1px 1px #000000;
     box-shadow: 1px 2px 4px #070D2C;
+}
+button.light-shadow{
+    box-shadow: 1px 2px 4px lavender;
 }
 div#experiment-control{
     position:relative;
@@ -478,6 +493,7 @@ i.info-icon-sb{
 img.channel-contact{
     width: 4em;
     box-shadow: 2px 2px 3px #191B30;
+    margin-right: 2em;
 }
 .top-margin-05{
     margin-top: 0.5em;
@@ -506,7 +522,7 @@ button.prev-info-btn{
     right: 0;
     display: none;
 }
-p#channel-name-2, button#show-channel-name-1{
+#channel-name-2, button#show-channel-name-1{
     display: none;
 }
 div#general-info-2{
