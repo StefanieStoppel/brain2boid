@@ -19,7 +19,7 @@ var NEIGHBOR_DISTANCE = 80,
 var MELLOW = 0,
     CONCENTRATION = 0;
 var THETA_ALPHA_RATIO = [];
-var COLOUR = 'yellow';//default
+var COLOUR = "red";//default
 var BOID_SCALE = "scale(1)";
 
 /** Frequencies and ratios **/

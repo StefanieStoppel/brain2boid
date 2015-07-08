@@ -75,8 +75,6 @@ ExperimentUIController.prototype.init = function(){
     this.onNextModeButtonClick();
     this.onStopExperiment();
 
-    //CONTINUE button in warning dialog clicked (after new experiment btn)
-    this.onContinueNewExperimentButtonClick(this);
 
     //Ratio bar graph in sidebar
     this.initRewardBarGraph();
@@ -130,37 +128,25 @@ ExperimentUIController.prototype.onNewExperimentButtonClick = function(){
     var self = this;
     $('button#new-experiment-btn').click(function(){
         //open warning dialog
-        if(self.museConnected)
-            self.saveWarning.dialog('open');
+        if(self.museConnected) {
+            self.ageGenderDialog.children(':input[type="radio"]').removeAttr('checked');
+            self.ageGenderDialog.children(':input[type="number"]').val('');
+
+            //open dialog for new experiment inputs
+            self.ageGenderDialog.dialog('open');
+            self.onAgeGenderSubmitButtonClick();
+
+            //new calibration needs to be done
+            self.calibrationFinished = false;
+            //disable next and prev mode btns until calibration finished
+            self.enableControlButtons(false);
+        }
         else
             self.displayMuseNotConnected();
     });
 };
 
 /********************************* DIALOG BOX BUTTON LISTENERS ********************************/
-
-/**
- * Continue btn in new experiment dialog clicked
- * @param self
- */
-ExperimentUIController.prototype.onContinueNewExperimentButtonClick = function(self){
-    $('input[name="ok-new-experiment"]').click(function(){
-        self.ageGenderDialog.children(':input[type="radio"]').removeAttr('checked');
-        self.ageGenderDialog.children(':input[type="number"]').val('');
-
-        //open dialog for new experiment inputs
-        self.ageGenderDialog.dialog('open');
-        //TODO: send socket message to reset all data to experimentcontroller after showing warning dialog (with save option)
-        self.onAgeGenderSubmitButtonClick();
-        //close warning dialog
-        self.saveWarning.dialog('close');
-
-        //new calibration needs to be done
-        self.calibrationFinished = false;
-        //disable next and prev mode btns until calibration finished
-        self.enableControlButtons(false);
-    });
-};
 
 /**
  * Listen for button submit in dialog box (age gender)

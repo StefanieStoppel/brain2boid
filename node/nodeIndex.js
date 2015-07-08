@@ -108,7 +108,7 @@ MainController.prototype.onWebSocketConnection = function(){
 MainController.prototype.newExperimentListener = function(socket){
     var self = this;
     socket.on('newExperiment', function(data){//no data
-        console.log('new experiment set up for ' + data.age + ', '+ data.gender + ', ' + 'mode: ' + data.mode);
+        console.log('new experiment set up for ' + data.initials + ', ' + data.age + ', '+ data.gender + ', ' + 'mode: ' + data.mode);
         //init experiment with mode, gender  and age
         self.experimentController = new ExperimentController(data.initials, data.age, data.gender, data.mode, socket);
         socket.emit('experimentCreated', { experimentCreated: true});
