@@ -216,6 +216,7 @@ ExperimentUIController.prototype.setDuration = function(duration){
 ExperimentUIController.prototype.onStopExperiment = function(){
     var self = this;
     this.socket.on('experimentStopped', function(data){
+        self.constants.setBoidSizeScale("scale(1)");
         self.automaticallyStopExperiment(data);
     });
 };
@@ -853,6 +854,10 @@ ExperimentUIController.prototype.updatePercentiles = function(percentiles){
 ExperimentUIController.prototype.onBlinkUpdate = function(){
     var self = this;
     this.socket.on('blink', function(data){
+        if(data.blink === 1)
+            self.constants.setBoidSizeScale("scale(0.7)");
+        else
+            self.constants.setBoidSizeScale("scale(1)");
         if(self.getExperimentRunning() && getSidebarShowing())
             self.updateBlinkBarGraph(data.blink);
     })
@@ -867,6 +872,10 @@ ExperimentUIController.prototype.updateBlinkBarGraph = function(blink){
 ExperimentUIController.prototype.onJawClenchUpdate = function(){
     var self = this;
     this.socket.on('jawClench', function(data){
+        if(data.jawClench === 1)
+            self.constants.setBoidSizeScale("scale(0.7)");
+        else
+            self.constants.setBoidSizeScale("scale(1)");
         if(self.getExperimentRunning() && getSidebarShowing())
             self.updateJawClenchBarGraph(data.jawClench);
     })

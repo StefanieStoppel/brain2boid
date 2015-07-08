@@ -36,7 +36,8 @@ var training_ratio_display, ratio_display;
 
 var colourScale = d3.scale.linear()
         .domain([DIVIDEND_DIVISOR_RATIO_MIN, TRAINING_RATIO])
-        .range(["magenta","mediumspringgreen"]); //more alpha (atm) = green, more beta = yellow
+        //.range(["magenta","mediumspringgreen"]); //more alpha (atm) = green, more beta = yellow
+        .range(["red", "#261ADB"]);
 
 var boidSizeScale = d3.scale.linear()
         .domain([DIVIDEND_DIVISOR_RATIO_MIN, TRAINING_RATIO])
@@ -79,7 +80,7 @@ Constants.prototype.getBoidSizeScale = function(){
 Constants.prototype.setBoidSizeScale = function(scale){
     BOID_SCALE = scale;
 };
-
+/*
 Constants.prototype.updateBoidSizeScale = function(){
     boidSizeScale.domain([DIVIDEND_DIVISOR_RATIO_MIN, DIVIDEND_DIVISOR_RATIO_MAX]);
 };
@@ -87,7 +88,7 @@ Constants.prototype.updateBoidSizeScale = function(){
 Constants.prototype.setBoidSizeScaleByFreqRatio = function(){
     BOID_SCALE = boidSizeScale(RATIO[1]);
 };
-
+*/
 /******* PERCENTILES ********/
 
 /**
