@@ -112,11 +112,13 @@ div.sidebar h4, div.sidebar h5{
 .sb-blue-input, .sb-blue-select{
     background-color: #042E57;
     border: 1px solid rgba(230, 230, 250, 0.8);
+    color: lavender;
 }
 .sidebar-button{
-    background-color: lavender;
+    background-color: #042E57;
     border-radius: 0.3em;
     border: 1px solid rgba(230, 230, 250, 0.8);
+    color: lavender;
 }
 .sb-red-button{
     color: #640100;
@@ -208,7 +210,7 @@ div#training-ratio-display{
 }
 /*** Dialog on new experiment ***/
 .ui-dialog{
-    min-width: 600px !important;
+    /*min-width: 600px !important;*/
 }
 .ui-dialog > .ui-widget-header {
     /*background: rgb(159, 190, 218);*/
@@ -222,7 +224,7 @@ div#training-ratio-display{
     overflow-x: hidden;
 }
 .ui-widget-content a{
-    color: lavender;
+    color: #02203c;
 }
 .ui-widget-header .ui-icon {
     background-image: url("browser/dependencies/jquery-ui-1.11.4.custom/images/ui-icons_ffffff_256x240.png");
@@ -232,14 +234,19 @@ div.blue-dialog{
     /*background: -o-linear-gradient(left,#245580, cadetblue); /* For Opera 11.1 to 12.0 */
     /*background: -moz-linear-gradient(left, #245580, cadetblue); /* For Firefox 3.6 to 15 */
     /*background: linear-gradient(to left, #245580, cadetblue) !important; /* Standard syntax */
-    background-color: #092744 !important;
-    color: white;
-    text-shadow: 1px 1px #000000;
+    /*background-color: #092744 !important;*/
+    background-color: rgba(171, 210, 239, 0.43) !important;
+    color: #1C4048;
+    /*text-shadow: 1px 1px #000000;*/
+    text-shadow: 1px 1px #B8D1F7;
     border-radius: 0.2em;
     border: 1px solid #1C4048;
     border-right: none;
     font-size: 14px;
     overflow-x: hidden;
+}
+#dialog-age-gender{
+    min-width: 300px !important;
 }
 p.big-font{
     font-weight: 900;
@@ -531,6 +538,28 @@ div#general-info-2{
 img#img-artifact-bargraphs{
     width: 20em;
     position: relative;
-    left: 12%;
+    left: 16%;
+    box-shadow: 2px 2px 3px #191B30;
+}
+img.brainwaves-img{
+    width: 18em;
+    box-shadow: 1px 1px 10px #191B30;
+}
+img#img-training-protocol{
+    width: 22em;
+    box-shadow: 2px 2px 3px #191B30;
+    position: relative;
+    left: 8%;
+}
+img.img-feedback{
+    height: 10em;
+    box-shadow: 2px 2px 3px #191B30;
+    left: 10em;
+    position: relative;
+}
+img#img-points{
+    height: 3em;
+    position: relative;
+    left: 39%;
     box-shadow: 2px 2px 3px #191B30;
 }

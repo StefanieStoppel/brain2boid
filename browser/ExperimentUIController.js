@@ -43,6 +43,7 @@ ExperimentUIController.prototype.init = function(){
     /************************ DIALOG *********************************************/
     //dialog with age and gender input
     this.ageGenderDialog = $('#dialog-age-gender').dialog({
+        minWidth: "400px !important",
         autoOpen: false
     });
     //dialog warning showing when new experiment btn is clicked (with saving option)

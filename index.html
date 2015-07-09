@@ -306,7 +306,7 @@
                 <p id="warning" style="color: lavender; display: none; float: left;">*Bitte vervollst&auml;ndigen Sie die Eingaben.</p>
             </div>
 
-            <input id="submit-age-gender" name="age-gender-btn" type="button" class="sidebar-button sb-red-button" value="Submit" >
+            <input id="submit-age-gender" name="age-gender-btn" type="button" class="sidebar-button" value="Submit" >
         </form>
     </div>
 
@@ -369,8 +369,8 @@
             </p>
         </div>
         <div class="btns-row row top-margin-1">
-            <button id="show-channel-name-1" class="prev-info-btn blue-btn-gradient light-shadow"><i class="fa fa-arrow-left"></i></button>
-            <button id="show-channel-name-2" class="next-info-btn blue-btn-gradient light-shadow"><i class="fa fa-arrow-right"></i></button>
+            <button id="show-channel-name-1" class="prev-info-btn blue-btn-gradient"><i class="fa fa-arrow-left"></i></button>
+            <button id="show-channel-name-2" class="next-info-btn blue-btn-gradient"><i class="fa fa-arrow-right"></i></button>
         </div>
     </div>
 
@@ -379,7 +379,7 @@
         <p>
             Beim Neurofeedback werden Frequenzb&auml;nder aus dem menschlichen EEG ausgesucht, die "trainiert" werden sollen.
             Diese Auswahl findet hier statt.<br><br>
-            <img src="browser/img/training_protocol_bargraph.JPG" style="width: 22em; box-shadow: 2px 2px 3px #191B30; position: relative; left: 22%;"/>
+            <img src="browser/img/training_protocol_bargraph.JPG" id="img-training-protocol"/>
             <br><br> Auf der linken Seite (Belohnung) wird das Band ausgew&auml;hlt, dessen Aktivit&auml;t verst&auml;rkt werden soll.
             Auf der rechten Seite kann ein zweites Frequenzband ausgew&auml;hlt werden, dessen Aktivit&auml;t durch das Neurofeedback verringert werden soll.
         </p>
@@ -391,11 +391,11 @@
             Der Stand des Graphen h&auml;ngt davon ab, wie viel Aktivit&auml;t es in den Frequenzb&auml;ndern gibt, die unter dem Punkt "Trainingsprotokoll"
             ausgew&auml;hlt wurden.<br>
             Je h&ouml;her der Graph &uuml;ber den schwarzen Balken kommt, desto satter wird die gr&uuml;ne F&auml;rbung der Dreiecke und desto langsamer bewegen sie sich. <br><br>
-            <img src="browser/img/Boids_green.JPG" style="height: 10em; float: left; box-shadow: 2px 2px 3px #191B30; left: 9em; position: relative;">
-            <img src="browser/img/Feedback_Graph.jpg" style="height: 10em; box-shadow: 2px 2px 3px #191B30; left: 9em; position: relative;">
+            <img src="browser/img/Boids_green.JPG" class="img-feedback">
+            <img src="browser/img/Feedback_Graph.jpg" class="img-feedback">
             <p style="text-decoration: underline">Tipp:</p>
             <p>Je l&auml;nger man es schafft, die Dreicke gr&uuml;n zu f&auml;rben, desto mehr Punkte bekommt man.</p>
-            <img style="height: 3em; position: relative; left: 39%; margin-top: 1em; box-shadow: 2px 2px 3px #191B30;" src="browser/img/points-display.JPG">
+            <img id="img-points" src="browser/img/points-display.JPG">
         </p>
     </div>
 
@@ -405,7 +405,7 @@
             Bei der Messung von EEG kommt es oft zu St&ouml;rungen des Signals durch Muskel- und Augenbewegungen.
             Die Signalverunreinigungen werden auch "Artefakte" genannt.<br>
             Wenn Sie blinzeln oder Ihre Kieferknochen aufeinanderpressen, wird das anhand der Balkengraphen angezeigt.<br><br>
-            <img src="browser/img/artifact_bargraphs2.jpg" id="img-artifact-bargraphs" style="position: relative; left: 23%;">
+            <img src="browser/img/artifact_bargraphs2.jpg" id="img-artifact-bargraphs">
             <p style="text-decoration: underline">Tipp:</p>
             Versuchen Sie sich w&auml;hrend des Neurofeedbacks m&ouml;glichst wenig zu bewegen, damit die Signalqualit&auml;t gut ist und Sie ein pr&auml;zises Feedback erhalten.
         </p>
@@ -433,7 +433,7 @@
                 <li>
                     <div class="row">
                         <div class="col-xs-5 col-sm-4 col-lg-3">
-                            <img src="browser/img/Eeg_delta.svg" style="width: 18em">
+                            <img src="browser/img/Eeg_delta.svg" class="brainwaves-img">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
                             <p class="big-font">Delta-Wellen (&delta;, 1 - 4 Hz): </p>
@@ -446,7 +446,7 @@
                 <li>
                     <div class="row top-margin-1">
                         <div class="col-xs-5 col-sm-4 col-lg-3">
-                            <img src="browser/img/Eeg_theta.svg" style="width: 18em">
+                            <img src="browser/img/Eeg_theta.svg" class="brainwaves-img">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
                             <p class="big-font">Theta-Wellen (&delta;, 4 - 8 Hz): </p>
@@ -459,7 +459,7 @@
                 <li>
                     <div class="row top-margin-1">
                         <div class="col-xs-5 col-sm-4 col-lg-3">
-                            <img src="browser/img/Eeg_alpha.svg" style="width: 18em">
+                            <img src="browser/img/Eeg_alpha.svg" class="brainwaves-img">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
                             <p class="big-font">Alpha-Wellen (&alpha;, 8 - 13 Hz): </p>
@@ -472,7 +472,7 @@
                 <li>
                     <div class="row top-margin-1">
                         <div class="col-xs-5 col-sm-4 col-lg-3">
-                            <img src="browser/img/Eeg_beta.svg" style="width: 18em">
+                            <img src="browser/img/Eeg_beta.svg" class="brainwaves-img">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
                             <p class="big-font">Beta-Wellen (&beta;, 13 - 30 Hz): </p>
@@ -483,9 +483,9 @@
                     </div>
                 </li>
                 <li>
-                    <div class="row top-margin-1">
+                    <div class="row">
                         <div class="col-xs-5 col-sm-4 col-lg-3">
-                            <img src="browser/img/Eeg_gamma.svg" style="width: 18em">
+                            <img src="browser/img/Eeg_gamma.svg" class="brainwaves-img">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
                             <p class="big-font">Gamma-Wellen (&gamma;, > 30 Hz):</p>
@@ -507,8 +507,8 @@
         </div>
 
         <div class="btns-row row top-margin-1">
-            <button id="show-general-info-1" class="prev-info-btn blue-btn-gradient light-shadow"><i class="fa fa-arrow-left"></i></button>
-            <button id="show-general-info-2" class="next-info-btn blue-btn-gradient light-shadow"><i class="fa fa-arrow-right"></i></button>
+            <button id="show-general-info-1" class="prev-info-btn blue-btn-gradient"><i class="fa fa-arrow-left"></i></button>
+            <button id="show-general-info-2" class="next-info-btn blue-btn-gradient"><i class="fa fa-arrow-right"></i></button>
         </div>
     </div>
 </div><!-- div.container --->

@@ -17,6 +17,7 @@ function Info(){
 Info.prototype.onChannelColourBtnClick = function(){
     $('button#info-btn-channels').click(function(){
         $('div#dialog-info-channels').dialog({
+            minWidth: 600,
             autoOpen: true
         });
     });
@@ -25,6 +26,7 @@ Info.prototype.onChannelColourBtnClick = function(){
 Info.prototype.onFeedbackBtnClick = function(){
     $('button#info-btn-feedback').click(function(){
         $('div#dialog-info-feedback').dialog({
+            minWidth: 650,
             autoOpen: true
         })
     });
@@ -50,8 +52,8 @@ Info.prototype.onChannelNamesNextBtnClick = function(){
 
 Info.prototype.onChannelNamesPrevBtnClick = function(){
     $('button#show-channel-name-1').click(function(){
-        $('#channel-name-1').hide();
-        $('#channel-name-2').show();
+        $('#channel-name-2').hide();
+        $('#channel-name-1').show();
         $(this).hide();
         $('button#show-channel-name-2').show();
     });
@@ -60,6 +62,7 @@ Info.prototype.onChannelNamesPrevBtnClick = function(){
 Info.prototype.onTrainingProtocolBtnClick = function(){
     $('button#info-btn-training-protocol').click(function(){
         $('div#dialog-info-training-protocol').dialog({
+            minWidth: 400,
             autoOpen: true
         })
     });
