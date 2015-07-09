@@ -61,6 +61,7 @@ function UIController(){
     this.onRatioMinUpdate(this);
     this.averageRatioUpdate(this);
     this.onHorseshoeUpdate();
+    this.onIsGood();
     this.onBatteryUpdate();
 
    // this.showCircularCountdown(parseInt($('input[name="experiment-duration"]').val()));
@@ -162,6 +163,13 @@ UIController.prototype.onTouchingForehead = function(){
                 self.experimentUIController.setDuration(data.remainingDuration);
             }
         }
+    })
+};
+
+UIController.prototype.onIsGood = function(){
+    var self = this;
+    this.socket.on('isGood', function(data){
+        self.graphicsController.updateIsGoodIndicator(data.isGood);
     })
 };
 

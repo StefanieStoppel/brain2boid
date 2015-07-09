@@ -39,6 +39,11 @@ var HORSESHOE_DATA = [  {horseshoe: 3, cx: 40,  cy: 50, r:20, colour: "orange", 
                         {horseshoe: 3, cx: 128, cy: 50, r:20, colour: "#A4D5FF",  opaque: false, channel: "Fp2"},
                         {horseshoe: 3, cx: 172, cy: 50, r:20, colour: "magenta", opaque: false, channel: "T10"}];
 
+var IS_GOOD_DATA = [ {isGood: 0, cx: 60, cy: 50, r: 8},
+                     {isGood: 0, cx: 80, cy: 50, r: 8},
+                     {isGood: 0, cx: 100, cy: 50, r: 8},
+                     {isGood: 0, cx: 120, cy: 50, r: 8}];
+
 function GraphicsController(){
     /** BOIDS & CONSTANTS**/
     this.boids = [];
@@ -72,7 +77,10 @@ function GraphicsController(){
     this.horseshoe = this.setupHorseshoe();
     //battery display
     this.setupBatteryDisplay();
+    //setup is good indicator
+    this.isGoodIndicator = this.setupIsGoodIndicator();
 
+    //TODO: DOES THE BUTTON STILLE EXIST?
     //init restartButton and listen for clicks
     this.restartButton = this.body.select('#restart-btn');
     this.onResetBoids(this);
@@ -251,6 +259,42 @@ GraphicsController.prototype.setHorseshoeChannelOpaque = function(opaqueArray){
                 return '1';
         }
     );
+};
+
+GraphicsController.prototype.setupIsGoodIndicator = function(){
+
+    var circles = d3.select("#is-good-indicator").selectAll("g")
+        .data(IS_GOOD_DATA)
+        .enter().append("g")
+        .attr("transform", function(d){return "translate("+d.cx+"," + d.cy +")"});
+
+    circles.append("circle")
+        .attr("r", function(d){ return d.r; })
+        .attr("fill" ,function(d){
+            if(d.isGood === 0){
+                return "white";
+            }else{
+                return "#042E57 ";
+            }
+        });
+
+    return circles;
+};
+
+GraphicsController.prototype.updateIsGoodIndicator = function(isGoodValues){
+
+    for(var i = 0; i < isGoodValues.length; i++){
+        IS_GOOD_DATA[i].isGood = isGoodValues[i];
+    }
+    this.isGoodIndicator.data(IS_GOOD_DATA);
+    this.isGoodIndicator.selectAll("circle").attr("fill" ,
+        function(d){
+            if(d.isGood === 0){
+                return "white";
+            }else{
+                return "#042E57 ";
+            }
+        });
 };
 
 GraphicsController.prototype.setupBatteryDisplay = function(){

@@ -140,8 +140,8 @@ ExperimentController.prototype.getQuantileResults = function(freqBand1, freqBand
             .map(function(el){ return el.val; }).toVector();
         var firstBandRes = vecFirstBandFirstChan.add(vecFirstBandSecondChan).divide(2);
 
-
-        this.percentilesDividend = firstBandRes.quantile(quantile1).pow(2);
+        this.percentilesDividend = firstBandRes.quantile(quantile1);
+        //this.percentilesDividend = firstBandRes.quantile(quantile1).pow(2);
         this.percentilesDividendPow = this.percentilesDividend.clone(
             function(el){//el === Array
                 for(var i = 0; i < el.length; i++){
@@ -162,7 +162,8 @@ ExperimentController.prototype.getQuantileResults = function(freqBand1, freqBand
                 .map(function(el){ return el.val; }).toVector();
             var secondBandRes = vecSecondBandFirstChan.add(vecSecondBandSecondChan).divide(2);
 
-            this.percentilesDivisor = secondBandRes.quantile(quantile2).pow(2);
+            this.percentilesDivisor = secondBandRes.quantile(quantile2);
+           // this.percentilesDivisor = secondBandRes.quantile(quantile2).pow(2);
             this.percentilesDivisorPow = this.percentilesDivisor.clone(
                 function(el){//el === Array
                     for(var i = 0; i < el.length; i++){
@@ -180,11 +181,8 @@ ExperimentController.prototype.getQuantileResults = function(freqBand1, freqBand
             }
             this.setDivisor(0, this.percentilesDivisorIdx, freqBand2);
         }
-        //TODO: testen was raus kommen wenn nur ein Frequenzband ausgew?hlt wurde -> range error
-
         //set the ratio that is used for training
         this.setTrainingRatio(Math.pow(10, this.dividend.value) / Math.pow(10, this.divisor.value), freqBand1 + '/' + freqBand2);
-
 
         //Quantiles as specified
         console.log("quantiles for average of band " + freqBand1 + " over channel(s) " + channelIdx1 + ", " +channelIdx2 + ": " +  this.percentilesDividend);
@@ -197,7 +195,6 @@ ExperimentController.prototype.getQuantileResults = function(freqBand1, freqBand
     }else{
         return null;
     }
-
 };
 
 /**

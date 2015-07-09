@@ -297,8 +297,12 @@ ExperimentUIController.prototype.onStartModeButtonClick = function(){
     $('button#start-mode-btn').click(function(){
         if($(this).children('i.fa.fa-play').length !== 0){ //experiment was paused or stopped
             if(self.museConnected && self.experimentControllerExists){
-                if(self.experimentMode === 0)
+                if(self.experimentMode === 0){
+                    //todo: check electrode contact + channel values
+
+
                     self.displayExperimentModeState('Kalibration','Start');
+                }
                 else if(self.experimentMode === 1)
                     self.displayExperimentModeState('Schwellwert Test','Start');
                 else if(self.experimentMode === 2)

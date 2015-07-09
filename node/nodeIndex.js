@@ -409,6 +409,12 @@ MainController.prototype.oscListener = function(socket){
                 }
             }
         }
+        /******************** QUALITY INDICATION *************************/
+        else if(msg[0] === '/muse/elements/is_good'){
+            msg.shift();
+            socket.emit('isGood', {isGood: msg});
+        }
+
         /***********************BATTERY*************************/
         else if(msg[0] === '/muse/batt'){//four integers. idx 0 is battery precentage remaining (divide by 100)
             var charge = Math.round(msg[1]/100);
