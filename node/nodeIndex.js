@@ -161,8 +161,15 @@ MainController.prototype.startExperimentListener = function(socket){
                         })
                     );
                     break;
+                case 1://test calibration threshold
+                    self.experimentController.startExperimentMode(data.mode,(function () {
+                            console.log('experiment mode ' + data.mode + ' stopped.');
+                            socket.emit('experimentStopped', {mode: data.mode});
+                        })
+                    );
+                    break;
                 //start TEST 1
-                case 1:
+                case 2:
                     self.experimentController.startExperimentMode(data.mode,(function (points) {
                             console.log('experiment mode ' + data.mode + ' stopped.');
                             socket.emit('experimentStopped', {mode: data.mode, points: points});
@@ -170,7 +177,7 @@ MainController.prototype.startExperimentListener = function(socket){
                     );
                     break;
                 // start FREE NEUROFEEDBACK
-                case 2:
+                case 3:
                     self.experimentController.startExperimentMode(data.mode,(function () {
                             console.log('experiment mode ' + data.mode + ' stopped.');
                             socket.emit('experimentStopped', {mode: data.mode});
@@ -178,7 +185,7 @@ MainController.prototype.startExperimentListener = function(socket){
                     );
                     break;
                 //start TEST 2
-                case 3:
+                case 4:
                     self.experimentController.startExperimentMode(data.mode,(function (points) {
                             console.log('experiment mode ' + data.mode + ' stopped.');
                             socket.emit('experimentStopped', {mode: data.mode, points: points});

@@ -24,7 +24,6 @@ function ExperimentUIController(constants, graphicsController, socket, uiControl
 
 
     this.percentiles = [];
-    //TODO: IST DAS ÜBERHAUPT SINNVOLLL????????
     this.selectedFrequencyIndices = [];
     this.selectedFrequencyIndices[0] = parseInt($('select.frequency-picker').children('option.fr-dividend:selected').val());
     this.selectedFrequencyIndices[1] = parseInt($('select.frequency-picker').children('option.fr-divisor:selected').val());
@@ -197,7 +196,7 @@ ExperimentUIController.prototype.setDuration = function(duration){
 
 /***
  * Message from node that part of an experiment has finished.
- * The data send via the WebSocket contains the experiment mode idx (0-3) and other data.
+ * The data send via the WebSocket contains the experiment mode idx (0-4) and other data.
  */
 ExperimentUIController.prototype.onStopExperiment = function(){
     var self = this;
@@ -211,6 +210,7 @@ ExperimentUIController.prototype.automaticallyStopExperiment = function(data){
     var self = this;
     if(data.percentiles !== null){
         switch(data.mode){
+            //TODO: IS THIS USED???
             case -1: //last experiment mode failed
                 //TODO: add handling for experiment failed
                 break;
@@ -218,7 +218,7 @@ ExperimentUIController.prototype.automaticallyStopExperiment = function(data){
             case 0:
                 if(data.error){ //calibration failed
                     console.log(data.error);
-                    alert('Calibration failed! No data received. Please check the electrode contact and recalibrate!');
+                    alert('Kalibration fehlgeschlagen! Bitte unescape("%FC")berprunescape("%FC")fen Sie den Kontakt zwischen Elektroden und Kopfhaut. Starten Sie dann die Kalibratione erneut.');
                     console.log('self.duration: ' + self.duration);
                     $('input[name="experiment-duration"]').val(self.duration);
                     //set countdown
@@ -228,23 +228,25 @@ ExperimentUIController.prototype.automaticallyStopExperiment = function(data){
                     self.updatePercentiles(data.percentiles);
 
                     console.log('received calibration data');
-                    self.displayExperimentModeState('Calibration', 'Finished');
+                    self.displayExperimentModeState('Kalibration', 'Ende');
                     self.calibrationFinished = true; //TODO: ADD ERROR HANDLING IN CASE OF NO RESULTS
                 }
                 break;
-            //TEST 1 finished
+            //TEST SCHWELLWERT
             case 1:
-                //data.points
-                self.displayExperimentModeState('First Test', 'Finished');
-                //TODO: save data (points and stuff) and make d3 graph for showing later
+                self.displayExperimentModeState('Schwellwert Test', 'Ende');
+                break;
+            //TEST 1 finished
+            case 2:
+                self.displayExperimentModeState('Test 1', 'Ende');
                 break;
             //FREE NEUROFEEDBACK finished
-            case 2:
-                self.displayExperimentModeState('Neurofeedback', 'Finished');
+            case 3:
+                self.displayExperimentModeState('Neurofeedback', 'Ende');
                 break;
             //TEST 2 finished
-            case 3:
-                self.displayExperimentModeState('Second Test', 'Finished');
+            case 4:
+                self.displayExperimentModeState('Test 2', 'Ende');
                 break;
 
         }
@@ -295,13 +297,15 @@ ExperimentUIController.prototype.onStartModeButtonClick = function(){
         if($(this).children('i.fa.fa-play').length !== 0){ //experiment was paused or stopped
             if(self.museConnected && self.experimentControllerExists){
                 if(self.experimentMode === 0)
-                    self.displayExperimentModeState('Calibration','Started');
+                    self.displayExperimentModeState('Kalibration','Start');
                 else if(self.experimentMode === 1)
-                    self.displayExperimentModeState('First Test','Started');
+                    self.displayExperimentModeState('Schwellwert Test','Start');
                 else if(self.experimentMode === 2)
-                    self.displayExperimentModeState('Neurofeedback', 'Started');
+                    self.displayExperimentModeState('Test 1','Start');
                 else if(self.experimentMode === 3)
-                    self.displayExperimentModeState('Second Test', 'Started');
+                    self.displayExperimentModeState('Neurofeedback', 'Start');
+                else if(self.experimentMode === 4)
+                    self.displayExperimentModeState('Test 2', 'Start');
 
                 //get mode idx from radio btn and send info via socket
                 self.socket.emit('startExperimentButton',
@@ -332,13 +336,15 @@ ExperimentUIController.prototype.onStartModeButtonClick = function(){
             }
         } else {//experiment was running and is to be paused
             if(self.experimentMode === 0)
-                self.displayExperimentModeState('Calibration', 'Paused');
+                self.displayExperimentModeState('Kalibration', 'Pause');
             else if(self.experimentMode === 1)
-                self.displayExperimentModeState('First Test', 'Paused');
+                self.displayExperimentModeState('Schwellwert Test', 'Pause');
             else if(self.experimentMode === 2)
-                self.displayExperimentModeState('Neurofeedback', 'Paused');
+                self.displayExperimentModeState('Test 1', 'Pause');
             else if(self.experimentMode === 3)
-                self.displayExperimentModeState('Second Test', 'Paused');
+                self.displayExperimentModeState('Neurofeedback', 'Pause');
+            else if(self.experimentMode === 4)
+                self.displayExperimentModeState('Test 2', 'Pause');
 
             //get mode idx from radio btn and send info via socket
             self.socket.emit('pauseExperimentButton',
@@ -348,7 +354,6 @@ ExperimentUIController.prototype.onStartModeButtonClick = function(){
             $('.sb-red :input').prop('disabled', false);
             self.experimentRunning = false;
             self.pauseExperiment();
-            //self.enableControlButtons(true);
         }
     });
 };
@@ -363,19 +368,22 @@ ExperimentUIController.prototype.onPreviousModeButtonClick = function(){
     var self = this;
     $('button#prev-mode-btn').click(function(){
         if(self.museConnected && self.experimentControllerExists){
-            self.experimentMode === 0 ? self.experimentMode = 3: self.experimentMode--;
+            self.experimentMode === 0 ? self.experimentMode = 4: self.experimentMode--;
             $('input[name="hidden-experiment-mode"]').val(self.experimentMode);
             switch(self.experimentMode){
                 case 0:
-                    self.updateExperimentModeDisplayAndDuration('Calibration', 10);
+                    self.updateExperimentModeDisplayAndDuration('Kalibration', 10);
                     break;
                 case 1:
-                    self.updateExperimentModeDisplayAndDuration('Test 1', 60);
+                    self.updateExperimentModeDisplayAndDuration('Schwellwert Test' , 30);
                     break;
                 case 2:
-                    self.updateExperimentModeDisplayAndDuration('Neurofeedback', 120);
+                    self.updateExperimentModeDisplayAndDuration('Test 1', 60);
                     break;
                 case 3:
+                    self.updateExperimentModeDisplayAndDuration('Neurofeedback', 120);
+                    break;
+                case 4:
                     self.updateExperimentModeDisplayAndDuration('Test 2', 60);
                     break;
             }
@@ -402,19 +410,22 @@ ExperimentUIController.prototype.onNextModeButtonClick = function(){
     var self = this;
     $('button#next-mode-btn').click(function(){
         if(self.museConnected && self.experimentControllerExists){
-            self.experimentMode === 3 ? self.experimentMode = 0 : self.experimentMode++;
+            self.experimentMode === 4 ? self.experimentMode = 0 : self.experimentMode++;
             $('input[name="hidden-experiment-mode"]').val(self.experimentMode);
             switch(self.experimentMode){
                 case 0:
-                    self.updateExperimentModeDisplayAndDuration('Calibration', 10);
+                    self.updateExperimentModeDisplayAndDuration('Kalibration', 10);
                     break;
                 case 1:
-                    self.updateExperimentModeDisplayAndDuration('Test 1', 60);
+                    self.updateExperimentModeDisplayAndDuration('Schwellwert Test', 30);
                     break;
                 case 2:
-                    self.updateExperimentModeDisplayAndDuration('Neurofeedback', 120);
+                    self.updateExperimentModeDisplayAndDuration('Test 1', 60);
                     break;
                 case 3:
+                    self.updateExperimentModeDisplayAndDuration('Neurofeedback', 120);
+                    break;
+                case 4:
                     self.updateExperimentModeDisplayAndDuration('Test 2', 60);
                     break;
             }
@@ -434,9 +445,9 @@ ExperimentUIController.prototype.onJsonExperimentData = function(){
     var self = this;
     this.socket.on('jsonTest',
         function(data){
-            if(data.mode === 1)
+            if(data.mode === 2)
                 self.test1Json = data.jsonTest;
-            else if(data.mode === 3)
+            else if(data.mode === 4)
                 self.test2Json = data.jsonTest;
 
             if(typeof self.test1Json !== 'undefined' && typeof self.test2Json !== 'undefined')

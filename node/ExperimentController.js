@@ -22,9 +22,10 @@ function ExperimentController(initials, age, gender, mode, socket){ //age and ge
 
     /* the experiment mode:
      * 0: calibration
-     * 1: first trial with point scores
-     * 2: unsupervised mode (free mode)
-     * 3: second trial with point scores
+     * 1: test calibration threshold
+     * 2: first trial with point scores
+     * 3: unsupervised mode (free mode)
+     * 4: second trial with point scores
      */
     this.mode = mode;//default: calibration
     //WebSocket
@@ -65,8 +66,6 @@ function ExperimentController(initials, age, gender, mode, socket){ //age and ge
     this.onPercentileDivisorChanged();
    // this.horseshoe = [4,4,4,4];//none touching forehead
 }
-
-
 
 ExperimentController.prototype.getCalibrationCollectionLength = function(){
     return this.calibrationCollection.length;
@@ -117,16 +116,14 @@ ExperimentController.prototype.startExperimentMode = function(mode, callback){
             self.stopPointsTimer();
             if(mode === 0) //calibration
                 callback();//callback
-            else if(mode === 1)//test1
-                callback(self.getTest1Points());
-            else if(mode === 2)//free nf
-            {
+            else if(mode === 1)//test calibration
                 callback();
-            }
-            else if(mode === 3)//test2
-            {
+            else if(mode === 2)//test 1
+                callback(self.getTest1Points());
+            else if(mode === 3)//free nf
+                callback();
+            else if(mode === 4)//test2
                 callback(self.getTest2Points());
-            }
         }
     }, 1000);
 };
@@ -218,15 +215,16 @@ ExperimentController.prototype.addToCollection = function(values){
         case 0:
             this.calibrationCollection.append(obj);
             break;
-        case 1:
-            //todo: 3 POINTS CASES
+        //case 1 is only calibration test
+        case 2:
             this.test1Collection.append(obj);
             break;
-        case 2:
+        case 3:
             this.freeNFCollection.append(obj);
             break;
-        case 3:
+        case 4:
             this.test2Collection.append(obj);
+            break;
     }
 };
 
@@ -247,7 +245,7 @@ ExperimentController.prototype.stopExperiment = function(){
     this.experimentRunning = false;
     this.clearTimer(MODE_TIMER);
 
-    if(this.mode === 1 || this.mode === 3){
+    if(this.mode === 2 || this.mode === 43){
         this.saveAsCSV();
     }
 };
@@ -258,18 +256,15 @@ ExperimentController.prototype.saveAsCSV = function(){
         if (err)
             console.log(err);
         var filename = '';
-        if(self.mode === 1)
+        if(self.mode === 2)
             filename = 'test1_' + self.initials + '_' + self.age + '_' + self.gender + '.csv';
-        else if(self.mode === 3)
+        else if(self.mode === 4)
             filename = 'test2_'  + self.initials + '_' + self.age + '_' + self.gender + '.csv';
         fs.writeFile('csv/' + filename, csv, function(err) {
             if (err) throw err;
             console.log('file saved');
         });
     });
-    //todo: send data to browser
-    //var socketMessage = '';
-    //this.mode === 1 ? socketMessage = 'jsonTest1' : socketMessage = 'jsonTest2';
     this.socket.emit('jsonTest', {jsonTest: this.jsonExpData, mode: this.mode});
     //clear json data
     this.jsonExpData = [];
@@ -337,9 +332,9 @@ ExperimentController.prototype.setRatioMax = function(ratioMax){
     this.ratioMax = ratioMax;
     //TODO: test
     if(this.experimentRunning){
-        if(this.mode === 1){
+        if(this.mode === 2){
             this.test1Points.add(ratioMax * 1000);
-        }else if(this.mode === 3){
+        }else if(this.mode === 4){
             this.test2Points.add(ratioMax * 1000);
         }
     }
@@ -359,23 +354,17 @@ ExperimentController.prototype.pushExperimentData = function(ratio){
 ExperimentController.prototype.setRatio = function(ratio){
     if(this.experimentRunning)
     {
-        //TODO: SAVE AS CSV AND TEST
-        //add values to jsonExpData if mode === 1 || mode === 3
-        if(this.mode === 1 || this.mode === 3){
+        if(this.mode === 2 || this.mode === 4){
             this.pushExperimentData(ratio);
         }
 
         console.log('ratio: ' + ratio + ', threshold: ' + this.thresholdRatio);
         // 1) POINTS: ratio over threshold
         if(ratio > this.thresholdRatio)
-        {
             this.startPointsTimer();
-        }
         if(ratio < this.thresholdRatio)
-        {
             this.stopPointsTimer();
-        }
-    }else{//todo: test beim ende des experiments die noch ausstehenden punkte übermitteln
+    }else{
         this.updatePointsByTime();
     }
 };
@@ -403,20 +392,16 @@ ExperimentController.prototype.updatePointsByTime = function(){
         var diff = process.hrtime(this.timeAboveRatio);//idx 0: seconds, idx 1: nanoseconds
         //change from nano- to milliseconds
         var ms = Math.floor(diff[1] / 1000000);
-       // if((diff[0] === 0 && ms >= 500) || (diff[0] > 0)){
-            //var p = Math.floor((diff[0] * 1000 + ms) / 10);
-            //Points 1): f.e. 1 s 450 ms = 1450 points
-            var p = Math.floor(diff[0] * 1000 + ms);
-            if(this.mode === 1){
-                console.log('emitting points: ' + p);
-                this.test1Points.addThreshPoints(p);
-                this.socket.emit('updatePoints', {points: p});
-            }else if(this.mode === 3){
-                console.log('emitting points: ' + p);
-                this.test2Points.addThreshPoints(p);
-                this.socket.emit('updatePoints', {points: p});
-            }
-       // }
+        var p = Math.floor(diff[0] * 1000 + ms);
+        if(this.mode === 2){
+            console.log('emitting points: ' + p);
+            this.test1Points.addThreshPoints(p);
+            this.socket.emit('updatePoints', {points: p});
+        }else if(this.mode === 4){
+            console.log('emitting points: ' + p);
+            this.test2Points.addThreshPoints(p);
+            this.socket.emit('updatePoints', {points: p});
+        }
         this.timeAboveRatio = 0;
     }
 };
