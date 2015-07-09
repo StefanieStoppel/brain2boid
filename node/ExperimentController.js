@@ -36,7 +36,7 @@ function ExperimentController(initials, age, gender, mode, socket){ //age and ge
     this.gender = gender;
 
     //json array with all experiment data, will be written to csv file
-    this.csvFields = ["ratio", "trainingRatio", "quotientName", "mode"];
+    this.csvFields = ["ratio", "trainingRatio", "quotientName", "mode", "points"];
     this.jsonExpData = [];
     //percentiles for both frequency bands
     this.percentilesDividendIdx = 0;
@@ -64,7 +64,6 @@ function ExperimentController(initials, age, gender, mode, socket){ //age and ge
     //listen for updates from sliders regarding reward threshold percentiles
     this.onPercentileDividendChanged();
     this.onPercentileDivisorChanged();
-   // this.horseshoe = [4,4,4,4];//none touching forehead
 }
 
 ExperimentController.prototype.getCalibrationCollectionLength = function(){
@@ -235,7 +234,7 @@ ExperimentController.prototype.getExperimentPaused = function(){
 
 ExperimentController.prototype.setExperimentPaused = function(bool){
     this.experimentPaused = bool;
-}
+};
 
 ExperimentController.prototype.stopExperiment = function(){
     this.experimentPaused = false;
@@ -325,27 +324,35 @@ ExperimentController.prototype.setRatioMin = function(ratioMin){
     this.ratioMin = ratioMin;
 };
 
+
 ExperimentController.prototype.setRatioMax = function(ratioMax){
     this.ratioMax = ratioMax;
     //TODO: test
-    if(this.experimentRunning){
+    /*if(this.experimentRunning){
         if(this.mode === 2){
             this.test1Points.add(ratioMax * 1000);
         }else if(this.mode === 4){
             this.test2Points.add(ratioMax * 1000);
         }
-    }
+    }*/
 };
 
 ExperimentController.prototype.pushExperimentData = function(ratio){
     var self = this;
+    var points;
+    if(this.mode === 2)
+        points = this.test1Points.getTotalPoints();
+    else if(this.mode === 4)
+        points = this.test2Points.getTotalPoints();
     this.jsonExpData.push(
-        {"ratio": ratio.toString(),
+        {
+            "ratio": ratio.toString(),
             "trainingRatio": self.trainingRatio.value.toString(),
             "quotientName": self.trainingRatio.quotientName,
-            "mode": self.mode.toString()}
+            "mode": self.mode.toString(),
+            "points": points
+        }
     );
-    //console.log('added new json data entry');
 };
 
 ExperimentController.prototype.setRatio = function(ratio){
