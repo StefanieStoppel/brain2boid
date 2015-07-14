@@ -708,6 +708,7 @@ ExperimentUIController.prototype.enableSidebarSettings = function(bool){
     $('#slider-dividend-percentile').slider( "option", "disabled", !bool );
     $('#slider-divisor-percentile').slider( "option", "disabled", !bool );
     $('.sb-blue select, .sb-blue input').attr('disabled', !bool);
+    $('input#running').attr('disabled', false);
 };
 
 
