@@ -254,7 +254,7 @@ GraphicsController.prototype.setHorseshoeChannelOpaque = function(opaqueArray){
     this.horseshoe.selectAll("circle").style('opacity',
         function(d){
             if(d.opaque)
-                return '0.3';
+                return '0.2';
             else
                 return '1';
         }

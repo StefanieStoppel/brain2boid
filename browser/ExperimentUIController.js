@@ -377,7 +377,7 @@ ExperimentUIController.prototype.onPreviousModeButtonClick = function(){
             $('input[name="hidden-experiment-mode"]').val(self.experimentMode);
             switch(self.experimentMode){
                 case 0:
-                    self.updateExperimentModeDisplayAndDuration('Kalibration', 10);
+                    self.updateExperimentModeDisplayAndDuration('Kalibration', 60);
                     break;
                 case 1:
                     self.updateExperimentModeDisplayAndDuration('Schwellwert Test' , 30);
@@ -386,7 +386,7 @@ ExperimentUIController.prototype.onPreviousModeButtonClick = function(){
                     self.updateExperimentModeDisplayAndDuration('Test 1', 60);
                     break;
                 case 3:
-                    self.updateExperimentModeDisplayAndDuration('Neurofeedback', 120);
+                    self.updateExperimentModeDisplayAndDuration('Neurofeedback', 300);
                     break;
                 case 4:
                     self.updateExperimentModeDisplayAndDuration('Test 2', 60);
@@ -419,7 +419,7 @@ ExperimentUIController.prototype.onNextModeButtonClick = function(){
             $('input[name="hidden-experiment-mode"]').val(self.experimentMode);
             switch(self.experimentMode){
                 case 0:
-                    self.updateExperimentModeDisplayAndDuration('Kalibration', 10);
+                    self.updateExperimentModeDisplayAndDuration('Kalibration', 60);
                     break;
                 case 1:
                     self.updateExperimentModeDisplayAndDuration('Schwellwert Test', 30);
@@ -428,7 +428,7 @@ ExperimentUIController.prototype.onNextModeButtonClick = function(){
                     self.updateExperimentModeDisplayAndDuration('Test 1', 60);
                     break;
                 case 3:
-                    self.updateExperimentModeDisplayAndDuration('Neurofeedback', 120);
+                    self.updateExperimentModeDisplayAndDuration('Neurofeedback', 300);
                     break;
                 case 4:
                     self.updateExperimentModeDisplayAndDuration('Test 2', 60);
