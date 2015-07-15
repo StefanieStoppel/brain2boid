@@ -46,7 +46,7 @@ var boidSizeScale = d3.scale.linear()
 
 var boidSpeedScale = d3.scale.quantize()
     .domain([DIVIDEND_DIVISOR_RATIO_MIN, DIVIDEND_DIVISOR_RATIO_MAX])
-    .range([30, 15, 10, 5, 3, 1, 0.5, 0]);
+    .range([50, 25, 15, 5, 3, 1, 0.5, 0]);
 
 /*var boidSpeedScale = d3.scale.linear()
     .domain([DIVIDEND_DIVISOR_RATIO_MIN, DIVIDEND_DIVISOR_RATIO_MAX])
@@ -183,11 +183,13 @@ Constants.prototype.setRatio = function(ratio){
 
 Constants.prototype.updateColourScale = function(){
     //colourScale.domain([DIVIDEND_DIVISOR_RATIO_MIN, (DIVIDEND_DIVISOR_RATIO_MAX]);
-    colourScale.domain([DIVIDEND_DIVISOR_RATIO_MIN, (DIVIDEND_DIVISOR_RATIO_MAX + TRAINING_RATIO) / 2]);
+   // colourScale.domain([DIVIDEND_DIVISOR_RATIO_MIN, (DIVIDEND_DIVISOR_RATIO_MAX + TRAINING_RATIO) / 2]);
+    colourScale.domain([DIVIDEND_DIVISOR_RATIO_MIN,  TRAINING_RATIO]);
 };
 
 Constants.prototype.updateBoidSpeedScale = function(){
-    boidSpeedScale.domain([DIVIDEND_DIVISOR_RATIO_MIN, DIVIDEND_DIVISOR_RATIO_MAX]);
+    //boidSpeedScale.domain([DIVIDEND_DIVISOR_RATIO_MIN, DIVIDEND_DIVISOR_RATIO_MAX]);
+    boidSpeedScale.domain([DIVIDEND_DIVISOR_RATIO_MIN, (DIVIDEND_DIVISOR_RATIO_MAX + TRAINING_RATIO) / 2]);
 };
 
 
