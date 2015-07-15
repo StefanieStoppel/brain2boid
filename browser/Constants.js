@@ -21,6 +21,7 @@ var MELLOW = 0,
 var THETA_ALPHA_RATIO = [];
 var COLOUR = "red";//default
 var BOID_SCALE = "scale(1)";
+var BOID_OPACITY = 1;
 
 /** Frequencies and ratios **/
 var FREQUENCY_BANDS = [];
@@ -80,15 +81,16 @@ Constants.prototype.getBoidSizeScale = function(){
 Constants.prototype.setBoidSizeScale = function(scale){
     BOID_SCALE = scale;
 };
-/*
-Constants.prototype.updateBoidSizeScale = function(){
-    boidSizeScale.domain([DIVIDEND_DIVISOR_RATIO_MIN, DIVIDEND_DIVISOR_RATIO_MAX]);
+
+Constants.prototype.setBoidOpacity = function(opacity){
+    BOID_OPACITY = opacity;
 };
 
-Constants.prototype.setBoidSizeScaleByFreqRatio = function(){
-    BOID_SCALE = boidSizeScale(RATIO[1]);
+Constants.prototype.getBoidOpacity = function(){
+    return BOID_OPACITY;
 };
-*/
+
+
 /******* PERCENTILES ********/
 
 /**

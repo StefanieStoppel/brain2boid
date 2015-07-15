@@ -858,9 +858,11 @@ ExperimentUIController.prototype.onBlinkUpdate = function(){
     var self = this;
     this.socket.on('blink', function(data){
         if(data.blink === 1)
-            self.constants.setBoidSizeScale("scale(0.7)");
+            self.constants.setBoidOpacity("0.5");
+            //self.constants.setBoidSizeScale("scale(0.7)");
         else
-            self.constants.setBoidSizeScale("scale(1)");
+            self.constants.setBoidOpacity("1");
+            // self.constants.setBoidSizeScale("scale(1)");
         if(self.getExperimentRunning() && getSidebarShowing())
             self.updateBlinkBarGraph(data.blink);
     })
@@ -876,9 +878,11 @@ ExperimentUIController.prototype.onJawClenchUpdate = function(){
     var self = this;
     this.socket.on('jawClench', function(data){
         if(data.jawClench === 1)
-            self.constants.setBoidSizeScale("scale(0.7)");
+            self.constants.setBoidOpacity("0.5");
+            //self.constants.setBoidSizeScale("scale(0.7)");
         else
-            self.constants.setBoidSizeScale("scale(1)");
+            self.constants.setBoidOpacity("1");
+            //self.constants.setBoidSizeScale("scale(1)");
         if(self.getExperimentRunning() && getSidebarShowing())
             self.updateJawClenchBarGraph(data.jawClench);
     })

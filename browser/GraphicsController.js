@@ -174,7 +174,8 @@ GraphicsController.prototype.flock = function(){
  */
 GraphicsController.prototype.draw = function(){
     this.allBoids.attr('transform', function(boid){ return boid.transform() })
-        .attr('fill', function(boid){ return boid.getColour() });
+        .attr('fill', function(boid){ return boid.getColour() })
+        .style("opacity", this.constants.getBoidOpacity() );
 };
 
 //horseshoe
