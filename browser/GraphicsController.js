@@ -104,7 +104,7 @@ GraphicsController.prototype.newBoids = function(){
 
 //adds 50 boids with the specified channel and frequency band attribute
 GraphicsController.prototype.addBoids = function(){
-    for(var j = 0; j < 150; j++){
+    for(var j = 0; j < 250; j++){
         //random position within a certain area
         var x = Math.floor( Math.random()*150 + AREA_WIDTH/2);
         var y = Math.floor( Math.random()*150 + AREA_HEIGHT/2 );

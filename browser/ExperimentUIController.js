@@ -858,7 +858,7 @@ ExperimentUIController.prototype.onBlinkUpdate = function(){
     var self = this;
     this.socket.on('blink', function(data){
         if(data.blink === 1)
-            self.constants.setBoidOpacity("0.3");
+            self.constants.setBoidOpacity("0.4");
             //self.constants.setBoidSizeScale("scale(0.7)");
         else
             self.constants.setBoidOpacity("1");
@@ -878,7 +878,7 @@ ExperimentUIController.prototype.onJawClenchUpdate = function(){
     var self = this;
     this.socket.on('jawClench', function(data){
         if(data.jawClench === 1)
-            self.constants.setBoidOpacity("0.3");
+            self.constants.setBoidOpacity("0.4");
             //self.constants.setBoidSizeScale("scale(0.7)");
         else
             self.constants.setBoidOpacity("1");
