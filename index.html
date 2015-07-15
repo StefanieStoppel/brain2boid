@@ -41,7 +41,7 @@
                     </div>
                     <div id="timer">
                         <img id="timer-icon" src="browser/img/Timer-Icon (2).jpg"/>
-                        <p id="timer-text">10 s</p>
+                        <p id="timer-text">60 s</p>
                     </div>
                     <div class="points col-xs-12">
                         <p class="points-display"><i class="fa fa-star"></i>0</p>
@@ -83,7 +83,7 @@
                     <div class="col-xs-4 full-height">
                         <div class="col-xs-8 full-height">
                             <input type="hidden" name="hidden-experiment-mode" value="0">
-                            <input type="hidden" name="experiment-duration" id="hidden-experiment-duration" value="10">
+                            <input type="hidden" name="experiment-duration" id="hidden-experiment-duration" value="60">
                             <p id="experiment-mode-display">Kalibration</p>
                         </div>
                         <div class="col-xs-4 full-height">
@@ -393,11 +393,11 @@
         <p>Die Farbe und Geschwindigkeit der Dreiecke auf dem Bildschirm ver&auml;ndert sich gleichzeitig mit dem Feedback-Balkengraphen.<br>
             Der Stand des Graphen h&auml;ngt davon ab, wie viel Aktivit&auml;t es in den Frequenzb&auml;ndern gibt, die unter dem Punkt "Trainingsprotokoll"
             ausgew&auml;hlt wurden.<br>
-            Je h&ouml;her der Graph &uuml;ber den schwarzen Balken kommt, desto satter wird die gr&uuml;ne F&auml;rbung der Dreiecke und desto langsamer bewegen sie sich. <br><br>
-            <img src="browser/img/Boids_green.JPG" class="img-feedback">
+            Je h&ouml;her der Graph &uuml;ber den schwarzen Balken kommt, desto satter wird die blaue F&auml;rbung der Dreiecke und desto langsamer bewegen sie sich. <br><br>
+            <img src="browser/img/Boidsblue.JPG" class="img-feedback">
             <img src="browser/img/Feedback_Graph.jpg" class="img-feedback">
             <p style="text-decoration: underline">Tipp:</p>
-            <p>Je l&auml;nger man es schafft, die Dreicke gr&uuml;n zu f&auml;rben, desto mehr Punkte bekommt man.</p>
+            <p>Je l&auml;nger man es schafft, die Dreicke blau zu f&auml;rben, desto mehr Punkte bekommt man.</p>
             <img id="img-points" src="browser/img/points-display.JPG">
         </p>
     </div>
@@ -407,7 +407,8 @@
         <p>
             Bei der Messung von EEG kommt es oft zu St&ouml;rungen des Signals durch Muskel- und Augenbewegungen.
             Die Signalverunreinigungen werden auch "Artefakte" genannt.<br>
-            Wenn Sie blinzeln oder Ihre Kieferknochen aufeinanderpressen, wird das anhand der Balkengraphen angezeigt.<br><br>
+            Wenn Sie blinzeln oder Ihre Kieferknochen aufeinanderpressen, wird das anhand der Balkengraphen angezeigt.<br>
+            Zus&auml;tzlich werden auch die Dreicke durchsichtig, wenn Muskelbewegungen erfasst werden.<br><br>
             <img src="browser/img/artifact_bargraphs2.jpg" id="img-artifact-bargraphs">
             <p style="text-decoration: underline">Tipp:</p>
             Versuchen Sie sich w&auml;hrend des Neurofeedbacks m&ouml;glichst wenig zu bewegen, damit die Signalqualit&auml;t gut ist und Sie ein pr&auml;zises Feedback erhalten.
@@ -421,7 +422,7 @@
                 Beim Neurofeedback wird Ihre Gehirnaktivit&auml;t mit Hilfe eines EEG-Ger&auml;ts gemessen.
                 Sie erhalten anhand der Dreiecke auf dem Bildschirm eine R&uuml;ckmeldung dar&uuml;ber, was gerade in Ihrem Kopf passiert.<br>
                 Neurofeedback wird zu verschiedenen Zwecken angewendet. Dazu geh&ouml;ren z.B. die Behandlung von
-                ADHS (Aufmerksamkeits-Defizit-Hyperaktivit&auml;tsst&ouml;rung), Tinnitus, Mig&auml;ne und anderen Erkrankungen.<br>
+                ADHS (Aufmerksamkeits-Defizit-Hyperaktivit&auml;tsst&ouml;rung), Tinnitus, Migr&auml;ne und anderen Erkrankungen.<br>
                 Es kann aber auch in anderen Bereichen eingesetzt werden, wie beim Entspannungstraining.<br><br>
                 <p style="text-decoration: underline">Keine Sorge:</p> Das Ger&auml;t kann Ihre Gedanken nicht lesen.</p>
             </p>
@@ -486,7 +487,7 @@
                     </div>
                 </li>
                 <li>
-                    <div class="row">
+                    <div class="row top-margin-1">
                         <div class="col-xs-5 col-sm-4 col-lg-3">
                             <img src="browser/img/Eeg_gamma.svg" class="brainwaves-img">
                         </div>
