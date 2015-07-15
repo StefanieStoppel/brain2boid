@@ -146,7 +146,6 @@ GraphicsController.prototype.resetBoids = function(self){
 /**
  * Calculate flocking and draw it on svg every 5 ms.
  */
-    //TODO REFACTOR TO MAKE MORE EFIICIENT
 GraphicsController.prototype.updateBoidSvg = function(){
     var self = this;
     setInterval(

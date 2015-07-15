@@ -455,8 +455,8 @@ ExperimentUIController.prototype.onJsonExperimentData = function(){
             else if(data.mode === 4)
                 self.test2Json = data.jsonTest;
 
-            if(typeof self.test1Json !== 'undefined' && typeof self.test2Json !== 'undefined')
-                self.displayJsonExperimentData(self.test1Json, self.test2Json);
+            /*if(typeof self.test1Json !== 'undefined' && typeof self.test2Json !== 'undefined')
+                self.displayJsonExperimentData(self.test1Json, self.test2Json);*/
         }
     );
 };
@@ -506,7 +506,8 @@ ExperimentUIController.prototype.displayJsonExperimentData = function(dataTest1,
     svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height - 30 + ")")
-        .call(xAxis);
+        .call(xAxis)
+        .text("Zeit");
 
     svg.append("g")
         .attr("class", "y axis")
@@ -516,7 +517,7 @@ ExperimentUIController.prototype.displayJsonExperimentData = function(dataTest1,
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("Price ($)");
+        .text("Alpha/Beta");
 
     svg.append("path")
         .datum(dataTest1)

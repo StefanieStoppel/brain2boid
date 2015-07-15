@@ -241,7 +241,7 @@ ExperimentController.prototype.stopExperiment = function(){
     this.experimentRunning = false;
     this.clearTimer(MODE_TIMER);
 
-    if(this.mode === 2 || this.mode === 43){
+    if(this.mode === 2 || this.mode === 4){
         this.saveAsCSV();
     }
 };
