@@ -80,8 +80,6 @@ function GraphicsController(){
     //setup is good indicator
     this.isGoodIndicator = this.setupIsGoodIndicator();
 
-    this.onResetBoids(this);
-
     //draw boids on svg every 5 ms
     this.updateBoidSvg();
 }
