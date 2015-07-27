@@ -327,7 +327,7 @@ MainController.prototype.oscListener = function(socket){
                                 socket.emit('ratio', {ratio: RATIO});
 
                                 if(typeof self.experimentController !== 'undefined'){
-                                    self.experimentController.setRatio(RATIO[1]);
+                                    self.experimentController.updateRatio(RATIO[1]);
                                     if(!self.experimentController.getExperimentRunning())//todo: is this needed?
                                         self.experimentController.stopPointsTimer();
                                 }
@@ -353,7 +353,7 @@ MainController.prototype.oscListener = function(socket){
                                 socket.emit('ratio', {ratio: RATIO});
 
                                 if(typeof self.experimentController !== 'undefined'){
-                                    self.experimentController.setRatio(RATIO[1]);
+                                    self.experimentController.updateRatio(RATIO[1]);
                                     if(!self.experimentController.getExperimentRunning())
                                         self.experimentController.stopPointsTimer();
                                 }

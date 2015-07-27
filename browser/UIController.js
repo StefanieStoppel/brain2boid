@@ -104,7 +104,7 @@ UIController.prototype.onTimerUpdate = function(){
 UIController.prototype.socketRatio = function(self){
     this.socket.on('ratio', function(data){
         if(data.ratio[1] !== null){
-            self.constants.setRatio(data.ratio);
+            self.constants.updateRatio(data.ratio);
             //update bar chart in sidebar if sidebar is showing
             if(self.experimentUIController.getExperimentRunning() && getSidebarShowing())
                 self.experimentUIController.updateRewardBarGraph(data.ratio);

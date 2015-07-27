@@ -172,7 +172,7 @@ Constants.prototype.updateTrainingRatio = function(){
         .attr('value', function(d){ return d; });
 };
 
-Constants.prototype.setRatio = function(ratio){
+Constants.prototype.updateRatio = function(ratio){
     RATIO = ratio;
     ratio_display.datum(RATIO)
         .attr('value', function(d){ return d[1].toFixed(5); });

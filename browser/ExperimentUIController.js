@@ -69,7 +69,6 @@ ExperimentUIController.prototype.init = function(){
 
     //******************* LISTENERS for ui inputs (browser)
     this.onNewExperimentButtonClick();
-    this.onSaveExperimentButtonClick();
     this.onStartModeButtonClick();
     this.onPreviousModeButtonClick();
     this.onNextModeButtonClick();
@@ -115,7 +114,7 @@ ExperimentUIController.prototype.onSocketConnection = function(){
 ExperimentUIController.prototype.onExperimentCreated = function(){
     var self = this;
     this.socket.on('experimentCreated', function(data){
-        self.experimentControllerExists = data.experimentCreated;//TODO: variable
+        self.experimentControllerExists = data.experimentCreated;
     });
 };
 
@@ -177,44 +176,33 @@ ExperimentUIController.prototype.onAgeGenderSubmitButtonClick = function(){
     });
 };
 
-/*************************** END DIALOG BOX BUTTON LISTENERS ******/
-
-ExperimentUIController.prototype.onSaveExperimentButtonClick = function(){
-    var self = this;
-    $('button#save-experiment-btn').click(function(){
-        if(self.museConnected && self.experimentControllerExists)
-            console.log('SAVE CSV DATA HERE');
-        else if(!self.museConnected)
-            self.displayMuseNotConnected();
-        else if(self.museConnected  && !self.experimentControllerExists)
-            self.displayExperimentNotCreated();
-    });
-};
-
+/**
+ * Set duration of selected experiment mode.
+ * @param duration
+ */
 ExperimentUIController.prototype.setDuration = function(duration){
     this.duration = duration;
 };
 
 /***
- * Message from node that part of an experiment has finished.
+ * Message from server that part of an experiment has finished.
  * The data send via the WebSocket contains the experiment mode idx (0-4) and other data.
  */
 ExperimentUIController.prototype.onStopExperiment = function(){
     var self = this;
     this.socket.on('experimentStopped', function(data){
-        self.constants.setBoidSizeScale("scale(1)");
         self.automaticallyStopExperiment(data);
     });
 };
 
+/**
+ * Called on experiment mode finished.
+ * @param data
+ */
 ExperimentUIController.prototype.automaticallyStopExperiment = function(data){
     var self = this;
     if(data.percentiles !== null){
         switch(data.mode){
-            //TODO: IS THIS USED???
-            case -1: //last experiment mode failed
-                //TODO: add handling for experiment failed
-                break;
             //CALIBRATION finished
             case 0:
                 if(data.error){ //calibration failed
@@ -277,12 +265,18 @@ ExperimentUIController.prototype.getExperimentRunning = function(){
     return this.experimentRunning;
 };
 
+/**
+ * Pause boids from running and set play button -> pause
+ */
 ExperimentUIController.prototype.pauseExperiment = function(){ //true = pause, false = unpause
     run(false);
     //change button to play
     $('button#start-mode-btn').children('i').attr('class', 'fa fa-play');
 };
 
+/**
+ * Start boids & change pause button -> play.
+ * */
 ExperimentUIController.prototype.resumeExperiment = function(){
    // this.socket.emit('resumeExperiment', {bla: 'bla'});
     run(true);
@@ -292,17 +286,16 @@ ExperimentUIController.prototype.resumeExperiment = function(){
 
 /**** CONTROL PANEL BUTTON LISTENERS ***/
 
+/**
+ * When play/pause button is clicked.
+ */
 ExperimentUIController.prototype.onStartModeButtonClick = function(){
     var self = this;
     $('button#start-mode-btn').click(function(){
         if($(this).children('i.fa.fa-play').length !== 0){ //experiment was paused or stopped
             if(self.museConnected && self.experimentControllerExists){
-                if(self.experimentMode === 0){
-                    //todo: check electrode contact + channel values
-
-
+                if(self.experimentMode === 0)
                     self.displayExperimentModeState('Kalibration','Start');
-                }
                 else if(self.experimentMode === 1)
                     self.displayExperimentModeState('Schwellwert Test','Start');
                 else if(self.experimentMode === 2)
@@ -329,7 +322,6 @@ ExperimentUIController.prototype.onStartModeButtonClick = function(){
                 self.experimentRunning = true;
                 //disable red sidebar inputs
                 $('.sb-red :input').prop('disabled', true);
-                //TODO: hier mehr sachen reinpacken, die immer ausgeführt werden sollen, wenn experiment resumed wird
                 self.resumeExperiment();//run boids
                 //disable controls and sidebar settings
                 self.enableControlButtons(false);
@@ -363,12 +355,20 @@ ExperimentUIController.prototype.onStartModeButtonClick = function(){
     });
 };
 
+/**
+ * Change experiment mode and duration. Called on next and previous button clicks.
+ * @param text
+ * @param duration
+ */
 ExperimentUIController.prototype.updateExperimentModeDisplayAndDuration = function(text, duration){
     $('p#experiment-mode-display').text(text);
     this.duration = duration;
     $('input[name="experiment-duration"]').val(duration);
 };
 
+/**
+ * Previous button was clicked.
+ */
 ExperimentUIController.prototype.onPreviousModeButtonClick = function(){
     var self = this;
     $('button#prev-mode-btn').click(function(){
@@ -404,13 +404,16 @@ ExperimentUIController.prototype.onPreviousModeButtonClick = function(){
 };
 
 /**
- * Automatically select next experiment mode and set experiment duration.
+ * Automatically select next experiment mode and set experiment duration at end of mode.
  */
 ExperimentUIController.prototype.selectNextMode = function(){
     //"click" on nextmode btn
     $('button#next-mode-btn').click();
 };
 
+/**
+ * Called when next button is clicked.
+ */
 ExperimentUIController.prototype.onNextModeButtonClick = function(){
     var self = this;
     $('button#next-mode-btn').click(function(){
@@ -446,6 +449,9 @@ ExperimentUIController.prototype.onNextModeButtonClick = function(){
 };
 
 /********* EXPERIMENT RESULTS AS CSV FILES *******************/
+/**
+ * When json experiment data is received from server.
+ */
 ExperimentUIController.prototype.onJsonExperimentData = function(){
     var self = this;
     this.socket.on('jsonTest',
@@ -460,7 +466,10 @@ ExperimentUIController.prototype.onJsonExperimentData = function(){
         }
     );
 };
-
+/**
+ * NOT FINISHED!
+ * Display graph showing ratio in test 1 and 2.
+ */
 ExperimentUIController.prototype.displayJsonExperimentData = function(dataTest1, dataTest2){
     var overlay = $('div#experiment-data-overlay');
     overlay.css('display', 'inherit');
@@ -532,7 +541,7 @@ ExperimentUIController.prototype.displayJsonExperimentData = function(dataTest1,
 
 
 /**
- * Enable or disable next and previous mdoe buttons.
+ * Enable or disable next and previous mode buttons.
  * @param enable
  */
 ExperimentUIController.prototype.enableControlButtons = function(enable){
@@ -604,6 +613,9 @@ ExperimentUIController.prototype.onFrequencySelection = function(){
     });
 };
 
+/**
+ * Update quotient name display in sidebar.
+ **/
 ExperimentUIController.prototype.updateQuotientName = function(bandNames){
     if(bandNames[1] !== undefined)
         $('label[for="ratio"]').html('Quotient &' + bandNames[0] + ';/&' + bandNames[1] + ';:');
@@ -611,6 +623,9 @@ ExperimentUIController.prototype.updateQuotientName = function(bandNames){
         $('label[for="ratio"]').html('Einzelband &' + bandNames[0] + ';:');
 };
 
+/**
+ * Called when different channel is selected in sidebar.
+ */
 ExperimentUIController.prototype.onChannelSelection = function(){
     var self = this;
     $('select.channel-picker').change(function(){
@@ -628,6 +643,9 @@ ExperimentUIController.prototype.onChannelSelection = function(){
     });
 };
 
+/**
+ * Make channels that are not selected opaque (80%)
+ */
 ExperimentUIController.prototype.setHorseshoeChannelOpaque = function(){
     var opaque = [];
     for(var i = 1; i < 5; i++){
@@ -725,6 +743,9 @@ ExperimentUIController.prototype.displayExperimentNotCreated = function(){
 
 /******************************** BLUE SIDEBAR ****************************************************/
 
+/**
+ * Init Feedback bar graph
+ */
 ExperimentUIController.prototype.initRewardBarGraph = function(){
     var self = this;
     this.barWidth = 100;
@@ -760,6 +781,9 @@ ExperimentUIController.prototype.initRewardBarGraph = function(){
     this.initTrainingRatioIndicator();
 };
 
+/**
+ * Init artifact bar graphs
+ */
 ExperimentUIController.prototype.initArtifactBarGraphs = function(){
     var self = this;
     var artifactBarWidth = 40;
@@ -813,6 +837,9 @@ ExperimentUIController.prototype.initArtifactBarGraphs = function(){
 
 };
 
+/**
+ * Training ratio indicator in feedback bar graph (black rectangle)
+ */
 ExperimentUIController.prototype.initTrainingRatioIndicator = function(){
     this.trainingRatioLine = this.rewardChart.append('rect')
         .attr('class', 'training-ratio-line')
@@ -822,6 +849,10 @@ ExperimentUIController.prototype.initTrainingRatioIndicator = function(){
         .attr('transform', 'translate(10, ' + (this.rewardYscale(0.5)+10)  + ' )');
 };
 
+/**
+ * Update height of black rectangle in feedback graph depending on training ratio.
+ * @param trainingRatio
+ */
 ExperimentUIController.prototype.updateTrainingRatioIndicator = function(trainingRatio){
     this.trainingRatioLine.attr('transform', 'translate(10, ' + (this.rewardYscale(trainingRatio) + 10) + ' )' );
 };
@@ -836,7 +867,9 @@ ExperimentUIController.prototype.onPercentileUpdate = function(){
         self.updatePercentiles(data.percentiles);
     })
 };
-//todo: split into more functions
+/*
+   Update threshold with new percentile values.
+ */
 ExperimentUIController.prototype.updatePercentiles = function(percentiles){
     this.percentiles = percentiles;
     var dividend = percentiles[0][this.rewardIdx];
@@ -846,8 +879,6 @@ ExperimentUIController.prototype.updatePercentiles = function(percentiles){
     //set training ratio
     this.trainingRatio = Math.pow(10, dividend) / Math.pow(10, divisor);
     this.updateTrainingRatioIndicator(this.trainingRatio);
-    //set training ratio in graphicscontroller
-    //this.graphicsController.setTrainingRatio(this.trainingRatio);
 
     this.firstFreqBandMin = percentiles[0][0];
     this.secondFreqBandMax = percentiles[1][percentiles[1].length-1];
@@ -855,26 +886,34 @@ ExperimentUIController.prototype.updatePercentiles = function(percentiles){
     this.constants.setMaxDividendDivisorRatio(percentiles[0][percentiles[0].length-1],percentiles[1][0]);
 };
 
+/**
+ * Called when blink update is received from server.
+ */
 ExperimentUIController.prototype.onBlinkUpdate = function(){
     var self = this;
     this.socket.on('blink', function(data){
         if(data.blink === 1)
             self.constants.setBoidOpacity("0.4");
-            //self.constants.setBoidSizeScale("scale(0.7)");
         else
             self.constants.setBoidOpacity("1");
-            // self.constants.setBoidSizeScale("scale(1)");
         if(self.getExperimentRunning() && getSidebarShowing())
             self.updateBlinkBarGraph(data.blink);
     })
 };
 
+/**
+ * Display blink bar.
+ * @param blink
+ */
 ExperimentUIController.prototype.updateBlinkBarGraph = function(blink){
     var self = this;
     this.blinkRect.data([{blink: blink}])
         .attr('height', function(d) { return self.barHeight - self.artifactYScale(d.blink) + 'px'; });
 };
 
+/**
+ * Called on jaw clench updates from server.
+ */
 ExperimentUIController.prototype.onJawClenchUpdate = function(){
     var self = this;
     this.socket.on('jawClench', function(data){
@@ -889,18 +928,30 @@ ExperimentUIController.prototype.onJawClenchUpdate = function(){
     })
 };
 
+/**
+ * Display jaw clench bar.
+ * @param jawClench
+ */
 ExperimentUIController.prototype.updateJawClenchBarGraph = function(jawClench){
     var self = this;
     this.jcRect.data([{jc: jawClench}])
         .attr('height', function(d) { return self.barHeight - self.artifactYScale(d.jc) + 'px'; });
 };
 
+/**
+ * Update feedback bar graph depending on ratio.
+ * @param ratio
+ */
 ExperimentUIController.prototype.updateRewardBarGraph = function(ratio){
     var self = this;
     this.rewardRect.data([{ratio: ratio[1]}])
         .attr('height', function(d) { return self.barHeight - self.rewardYscale(d.ratio) + 'px'; });
 };
 
+/**
+ * Update maximum y scale of feedback graph.
+ * @param maxRatio
+ */
 ExperimentUIController.prototype.updateRewardScaleMax = function(maxRatio){
     if(maxRatio > this.rewardYscale.domain()[1]){
         this.rewardYscale.domain([0, maxRatio]);
@@ -910,6 +961,10 @@ ExperimentUIController.prototype.updateRewardScaleMax = function(maxRatio){
     }
 };
 
+/**
+ * set muse connection status.
+ * @param bool
+ */
 ExperimentUIController.prototype.setMuseConnected = function(bool){
     this.museConnected = bool;
 };

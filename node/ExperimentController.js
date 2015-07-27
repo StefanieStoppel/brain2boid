@@ -1,6 +1,6 @@
 /**
  * This class is the main control for the experiment environment. It keeps track of
- * all the data, starts and stops trials and saves the trial data to a json array, which
+ * all the data, starts and stops modes and saves the mode data (ratio, training ratio, frequency bands and points) in a json array, which
  * is converted to a csv file at the end of each experiment.
  *
  **/
@@ -43,8 +43,7 @@ function ExperimentController(initials, age, gender, mode, socket){ //age and ge
     this.percentilesDivisorIdx = 0;
     this.percentilesDividend = new Collection();
     this.percentilesDivisor = new Collection();
-    //threshold values ( thresholdRatio = dividend / divisor = alphaMed / BetaMed )
-    this.thresholdRatio = 0;
+
     this.dividend = {value: 0, percentile: 0, band: ''};//{value: x, percentile: y, band: z}
     this.divisor =  {value: 0, percentile: 0, band: ''};
     this.trainingRatio = {value: 0, quotientName: ''};
@@ -69,7 +68,9 @@ function ExperimentController(initials, age, gender, mode, socket){ //age and ge
 ExperimentController.prototype.getCalibrationCollectionLength = function(){
     return this.calibrationCollection.length;
 };
-
+/**
+ * Different percentile for first band was selected in sidebar.
+ */
 ExperimentController.prototype.onPercentileDividendChanged = function(){
     var self = this;
     this.socket.on('dividendPercentileChanged', function(data){
@@ -80,6 +81,9 @@ ExperimentController.prototype.onPercentileDividendChanged = function(){
     });
 };
 
+/**
+ * Different percentile for second band was selected in sidebar.
+ */
 ExperimentController.prototype.onPercentileDivisorChanged = function(){
     var self = this;
     this.socket.on('divisorPercentileChanged', function(data){
@@ -98,12 +102,26 @@ ExperimentController.prototype.setPercentileDivisorIdx = function(idx){
     this.percentilesDivisorIdx = idx;
 };
 
-
+/**
+ * Set training ratio.
+ * @param trainingRatio
+ * @param freqBandQuotientName
+ */
 ExperimentController.prototype.setTrainingRatio = function(trainingRatio, freqBandQuotientName){
     this.trainingRatio = {value: trainingRatio, quotientName: freqBandQuotientName};
     console.log('Training ratio update: ' +  this.trainingRatio.value);
 };
 
+ExperimentController.prototype.setTrainingRatioValue = function(value){
+    this.trainingRatio.value = value;
+    console.log('Training ratio value update: ' +  this.trainingRatio.value);
+};
+
+/**
+ * Starts the passed experiment mode and calls the callback when done.
+ * @param mode
+ * @param callback
+ */
 ExperimentController.prototype.startExperimentMode = function(mode, callback){
     var self = this;
     this.experimentRunning = true;
@@ -127,8 +145,17 @@ ExperimentController.prototype.startExperimentMode = function(mode, callback){
     }, 1000);
 };
 
+/**
+ * Calculate training ratio from all the calibration values, depending on the passed frequency bands, channels and quantiles.
+ * @param freqBand1
+ * @param freqBand2
+ * @param channelIdx1
+ * @param quantile1
+ * @param channelIdx2
+ * @param quantile2
+ * @returns {*}
+ */
 ExperimentController.prototype.getQuantileResults = function(freqBand1, freqBand2, channelIdx1, quantile1, channelIdx2, quantile2){
-    //TODO: WHAT HAPPENS TO NEGATIVE VALUES?
     if(this.calibrationCollection.length !== 0){
         //freqBand2, channelName2 and percentile2 can be undefined
         var firstBandSelChans = this.calibrationCollection.find(function(e) { return e.freqBandName === freqBand1; })
@@ -140,7 +167,6 @@ ExperimentController.prototype.getQuantileResults = function(freqBand1, freqBand
         var firstBandRes = vecFirstBandFirstChan.add(vecFirstBandSecondChan).divide(2);
 
         this.percentilesDividend = firstBandRes.quantile(quantile1);
-        //this.percentilesDividend = firstBandRes.quantile(quantile1).pow(2);
         this.percentilesDividendPow = this.percentilesDividend.clone(
             function(el){//el === Array
                 for(var i = 0; i < el.length; i++){
@@ -162,7 +188,6 @@ ExperimentController.prototype.getQuantileResults = function(freqBand1, freqBand
             var secondBandRes = vecSecondBandFirstChan.add(vecSecondBandSecondChan).divide(2);
 
             this.percentilesDivisor = secondBandRes.quantile(quantile2);
-           // this.percentilesDivisor = secondBandRes.quantile(quantile2).pow(2);
             this.percentilesDivisorPow = this.percentilesDivisor.clone(
                 function(el){//el === Array
                     for(var i = 0; i < el.length; i++){
@@ -236,6 +261,9 @@ ExperimentController.prototype.setExperimentPaused = function(bool){
     this.experimentPaused = bool;
 };
 
+/**
+ * Called when a mode is finished.
+ */
 ExperimentController.prototype.stopExperiment = function(){
     this.experimentPaused = false;
     this.experimentRunning = false;
@@ -246,6 +274,9 @@ ExperimentController.prototype.stopExperiment = function(){
     }
 };
 
+/**
+ * Save the collected data in the json Array as a .csv file.
+ */
 ExperimentController.prototype.saveAsCSV = function(){
     var self = this;
     json2csv({ data: self.jsonExpData, fields: self.csvFields }, function(err, csv) {
@@ -327,16 +358,12 @@ ExperimentController.prototype.setRatioMin = function(ratioMin){
 
 ExperimentController.prototype.setRatioMax = function(ratioMax){
     this.ratioMax = ratioMax;
-    //TODO: test
-    /*if(this.experimentRunning){
-        if(this.mode === 2){
-            this.test1Points.add(ratioMax * 1000);
-        }else if(this.mode === 4){
-            this.test2Points.add(ratioMax * 1000);
-        }
-    }*/
 };
 
+/**
+ * Push data into json array.
+ * @param ratio
+ */
 ExperimentController.prototype.pushExperimentData = function(ratio){
     var self = this;
     var points;
@@ -355,18 +382,22 @@ ExperimentController.prototype.pushExperimentData = function(ratio){
     );
 };
 
-ExperimentController.prototype.setRatio = function(ratio){
+/**
+ * update ratio and check whether its above threshold. if so, start points timer.
+ * @param ratio
+ */
+ExperimentController.prototype.updateRatio = function(ratio){
     if(this.experimentRunning)
     {
         if(this.mode === 2 || this.mode === 4){
             this.pushExperimentData(ratio);
         }
 
-        console.log('ratio: ' + ratio + ', threshold: ' + this.thresholdRatio);
-        // 1) POINTS: ratio over threshold
-        if(ratio > this.thresholdRatio)
+        console.log('ratio: ' + ratio + ', threshold: ' + this.trainingRatio.value);
+        // ratio over threshold -> start points timer
+        if(ratio > this.trainingRatio.value)
             this.startPointsTimer();
-        if(ratio < this.thresholdRatio)
+        if(ratio < this.trainingRatio.value)
             this.stopPointsTimer();
     }else{
         this.updatePointsByTime();
@@ -391,6 +422,9 @@ ExperimentController.prototype.stopPointsTimer = function(){
     }
 };
 
+/**
+ * Update the experiment points depending on the points timer.
+ */
 ExperimentController.prototype.updatePointsByTime = function(){
     if(this.timeAboveRatio !== 0){
         var diff = process.hrtime(this.timeAboveRatio);//idx 0: seconds, idx 1: nanoseconds
@@ -419,17 +453,15 @@ ExperimentController.prototype.updatePointsByTime = function(){
  */
 ExperimentController.prototype.setDividend = function(dividendVal, dividendPercentile, bandName){
     this.dividend = {value: dividendVal, percentile: dividendPercentile, band: bandName};
-    console.log('######dividend.value: ' + this.dividend.value);
-    this.setThresholdRatio(dividendVal, this.divisor.value);
+    console.log('######dividend.valure: ' + this.dividend.value);
+    this.setTrainingRatioValue(Math.pow(10, dividendVal) / Math.pow(10, this.divisor.value));
 };
 
 ExperimentController.prototype.updateDividendValueAndPercentile = function(val, perc){
     this.dividend.value = val;
     this.dividend.percentile = perc;
     console.log('this.dividend.value: ' + val + ', and percentile: ' + perc + ' changed');
-    //TODO: FIX SO THIS ISNT DOUBLE
     this.setTrainingRatio(Math.pow(10, this.dividend.value) / Math.pow(10, this.divisor.value), this.dividend.band + '/' + this.divisor.band);
-    this.setThresholdRatio(val, this.divisor.value);
 };
 
 /**
@@ -442,29 +474,16 @@ ExperimentController.prototype.updateDividendValueAndPercentile = function(val, 
 ExperimentController.prototype.setDivisor = function(divisorVal, divisorPercentile, bandName){
     this.divisor =  {value: divisorVal, percentile: divisorPercentile, band: bandName};
     console.log('#####divisor.value ' + this.divisor.value);
-    this.setThresholdRatio(this.dividend.value, divisorVal);
+    this.setTrainingRatioValue(Math.pow(10, this.dividend.value) / Math.pow(10, divisorVal))
 };
 
 ExperimentController.prototype.updateDivisorValueAndPercentile = function(val, perc){
     this.divisor.value = val;
     this.divisor.percentile = perc;
     console.log('this.divisor.value: ' + val + ', and percentile: ' + perc + ' changed');
-    //TODO: FIX SO THIS ISNT DOUBLE
     this.setTrainingRatio(Math.pow(10, this.dividend.value) / Math.pow(10, this.divisor.value), this.dividend.band + '/' + this.divisor.band);
-    this.setThresholdRatio(this.dividend.val, val);
 };
 
-
-/***
- * Threshold ratio is set.
- *
- * @param dividendMed
- * @param divisorMed
- */
-ExperimentController.prototype.setThresholdRatio = function(dividendMed, divisorMed){
-    if(this.dividend.value !== 0 && this.divisor.value !== 0)
-        this.thresholdRatio = Math.pow(10, dividendMed) / Math.pow(10, divisorMed);
-};
 
 ExperimentController.prototype.setTouchingForehead = function(msg){
     this.touchingForehead = msg[1];
