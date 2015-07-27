@@ -1,6 +1,6 @@
 /**
- * This class controls all the svg graphics elements.
- * It controls the svg field and draws boids on it.
+ * This class controls all the svg graphics elements in the feedback area.
+ * It controls the svg field and draws boids on it, visualises the electrode contact and more.
  * @constructor
  */
 var chartWidth = 800, chartHeight = 350;
@@ -45,9 +45,9 @@ var IS_GOOD_DATA = [ {isGood: 0, cx: 60, cy: 50, r: 8},
                      {isGood: 0, cx: 120, cy: 50, r: 8}];
 
 function GraphicsController(){
-    /** BOIDS & CONSTANTS**/
+    /** BOIDS & BOID DATA**/
     this.boids = [];
-    this.constants = new Constants();
+    this.boidData = new BoidData();
 
     //append boidSvg field
     this.body = d3.select('body');
@@ -80,19 +80,19 @@ function GraphicsController(){
     //setup is good indicator
     this.isGoodIndicator = this.setupIsGoodIndicator();
 
-    //TODO: DOES THE BUTTON STILLE EXIST?
-    //init restartButton and listen for clicks
-    this.restartButton = this.body.select('#restart-btn');
     this.onResetBoids(this);
 
     //draw boids on svg every 5 ms
     this.updateBoidSvg();
 }
 
-GraphicsController.prototype.getConstants = function(){
-    return this.constants;
+GraphicsController.prototype.getBoidData = function(){
+    return this.boidData;
 };
 
+/**
+ * init new boids.
+ */
 GraphicsController.prototype.newBoids = function(){
     //the number of boidGroups depends on selectedChannel
     //single ch: t9,t10,fp1,fp2; channel pairs: t9-fp1,fp1-fp2,t9-t10,t10-fp2
@@ -102,7 +102,7 @@ GraphicsController.prototype.newBoids = function(){
     this.mainBoid = this.boids[75];
 };
 
-//adds 50 boids with the specified channel and frequency band attribute
+//adds 200 boids
 GraphicsController.prototype.addBoids = function(){
     for(var j = 0; j < 200; j++){
         //random position within a certain area
@@ -111,24 +111,12 @@ GraphicsController.prototype.addBoids = function(){
         //let boids face in random directions
         var x_face = Math.floor( (Math.random()*3) - 1.5) * 100;
         var y_face = Math.floor( (Math.random()*2) - 1) * 100;
-        this.boids.push(new Boid(new Vector(x, y), new Vector( x_face, y_face ), this.constants ) );
+        this.boids.push(new Boid(new Vector(x, y), new Vector( x_face, y_face ), this.boidData ) );
     }
 };
 
 GraphicsController.prototype.getBoids = function(){
     return this.boids;
-};
-
-/**
- * Called when "Restart" button is clicked
- * @param self
- */
-GraphicsController.prototype.onResetBoids = function(self){
-    this.restartButton.on("click",  function(){
-        if(!running()){
-            self.resetBoids(self);
-        }
-    });
 };
 
 /**
@@ -174,10 +162,10 @@ GraphicsController.prototype.flock = function(){
 GraphicsController.prototype.draw = function(){
     this.allBoids.attr('transform', function(boid){ return boid.transform() })
         .attr('fill', function(boid){ return boid.getColour() })
-        .style("opacity", this.constants.getBoidOpacity() );
+        .style("opacity", this.boidData.getBoidOpacity() );
 };
 
-//horseshoe
+//Visualise electrode connection data.
 // 3 || 4 = white circle; 2 = coloured outline; 1 = coloured circle
 GraphicsController.prototype.setupHorseshoe = function(){
 
@@ -222,6 +210,10 @@ GraphicsController.prototype.setupHorseshoe = function(){
     return circleGroup;
 };
 
+/**
+ * Update electrode connection data
+ * @param horseshoeValues
+ */
 GraphicsController.prototype.updateHorseshoe = function(horseshoeValues){
     for(var i = 0; i < horseshoeValues.length; i++){
         HORSESHOE_DATA[i].horseshoe = horseshoeValues[i];
@@ -246,6 +238,10 @@ GraphicsController.prototype.updateHorseshoe = function(horseshoeValues){
             });
 };
 
+/**
+ * Set channels opaque if they're not selected.
+ * @param opaqueArray
+ */
 GraphicsController.prototype.setHorseshoeChannelOpaque = function(opaqueArray){
     for(var i = 0; i < opaqueArray.length; i++){
         HORSESHOE_DATA[i].opaque = opaqueArray[i].opaque;
@@ -260,7 +256,10 @@ GraphicsController.prototype.setHorseshoeChannelOpaque = function(opaqueArray){
         }
     );
 };
-
+/**
+ * Init 4 white circles in control row that visualise the signal quality per channel.
+ * @returns {*}
+ */
 GraphicsController.prototype.setupIsGoodIndicator = function(){
 
     var circles = d3.select("#is-good-indicator").selectAll("g")
@@ -296,13 +295,18 @@ GraphicsController.prototype.updateIsGoodIndicator = function(isGoodValues){
             }
         });
 };
-
+/**
+ * Set up the display of battery charge status (top right corner)
+ */
 GraphicsController.prototype.setupBatteryDisplay = function(){
     this.batteryCharge = $('div#battery-charge');
     this.batteryChargeText = $('span#battery-charge-text');
     this.batteryChargeWidth = parseInt(this.batteryCharge.width());
 };
-
+/**
+ * Update battery charge display
+ * @param charge
+ */
 GraphicsController.prototype.updateBatteryDisplay = function(charge){
     this.batteryCharge.width( (charge/100) * this.batteryChargeWidth );
     this.batteryChargeText.html(charge + '&#37;');

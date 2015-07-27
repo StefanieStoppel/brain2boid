@@ -2,8 +2,10 @@
  * Created by Stefanie on 10.05.2015.
  */
 
-
-var COUNTDOWN = undefined;
+/**
+ * This class is responsible for receiving updates from the server regarding the data sent by muse.
+ * The data is forwarded to ExperimentUIController or GraphicsController and visualised there.
+ */
 
 function UIController(){
     /************************** MAIN AREA ***********************************/
@@ -13,7 +15,6 @@ function UIController(){
     //Frequency band name and idx mapping
     this.frequencyBandNames = ['delta','theta','alpha','beta','gamma'];
     //frequency selection, array of numbers
-    //TODO: FIX
     var self = this;
     this.selectedFrequencyIndices = [];
     //this.selectedFrequencies = $('option[name="fr-picker"]:selected').val().map(Number);
@@ -27,7 +28,7 @@ function UIController(){
     $('input[name="fr-dividend"].fr-single').each(function(idx, el){
         self.frequencyBandsAbs.push([0,0,0,0]);
     });
-    //set selected frequency band names in Constants
+    //set selected frequency band names in boidData
     this.bandNames = [];
     this.selectedFrequencyIndices.forEach(function(idx, el){
         if(el !== -1)
@@ -39,8 +40,8 @@ function UIController(){
     /****************************** GRAPHICS CONTROLLER, CONSTANTS *****************************/
 
     this.graphicsController = new GraphicsController();
-    this.constants = this.graphicsController.getConstants();
-    this.constants.setFrequencyBands(this.bandNames);
+    this.boidData = this.graphicsController.getBoidData();
+    this.boidData.setFrequencyBands(this.bandNames);
 
 
     /************************** SOCKET **********************/
@@ -49,22 +50,18 @@ function UIController(){
         self.onTimerUpdate();
         self.onTouchingForehead();
     });
-    //todo. error handling +  connection schlieﬂen
 
     /******************************* OTHER UI CONTROLLERS ***************************************/
-    this.experimentUIController = new ExperimentUIController(this.constants, this.graphicsController, this.socket, this);
+    this.experimentUIController = new ExperimentUIController(this.boidData, this.graphicsController, this.socket, this);
 
-    //*********************** LISTENERS for messages from node (nodeIndex or experimentController)
+    //*********************** LISTENERS for messages from node (MainController or experimentController)
     this.onMuseConnected();
     this.socketRatio(this);
     this.onRatioMaxUpdate(this);
     this.onRatioMinUpdate(this);
-    this.averageRatioUpdate(this);
     this.onHorseshoeUpdate();
     this.onIsGood();
     this.onBatteryUpdate();
-
-   // this.showCircularCountdown(parseInt($('input[name="experiment-duration"]').val()));
 
     /**** POINTS RECEIVE & DISPLAY ***/
     this.onPointsUpdate();
@@ -72,7 +69,7 @@ function UIController(){
 }
 
 /**
- * Update points display in main area (left corner of svg field with boids)
+ * Update points display in main area
  */
 UIController.prototype.onPointsUpdate = function(){
     var self = this;
@@ -88,6 +85,10 @@ UIController.prototype.resetPoints = function(){
     this.pointsDisplay.html('<i class="fa fa-star"></i>' +this.points);
 };
 
+/**
+ * Set duration of countdown in top left corner.
+ * @param duration
+ */
 UIController.prototype.setCountdown = function(duration){
     $('#timer-text').text(duration + ' s');
 };
@@ -104,7 +105,7 @@ UIController.prototype.onTimerUpdate = function(){
 UIController.prototype.socketRatio = function(self){
     this.socket.on('ratio', function(data){
         if(data.ratio[1] !== null){
-            self.constants.updateRatio(data.ratio);
+            self.boidData.updateRatio(data.ratio);
             //update bar chart in sidebar if sidebar is showing
             if(self.experimentUIController.getExperimentRunning() && getSidebarShowing())
                 self.experimentUIController.updateRewardBarGraph(data.ratio);
@@ -113,17 +114,9 @@ UIController.prototype.socketRatio = function(self){
     });
 };
 
-//gets moving average frequency ratio updates from node.js via websocket
-UIController.prototype.averageRatioUpdate = function(self){
-    this.socket.on('mov_avg_ratio', function(data){
-       // self.boidController.getConstants().setMovAvgRatio(data.mov_avg_ratio);
-        console.log(data.bands + ' mov avg:\t' + data.mov_avg_ratio);
-    });
-};
-
 UIController.prototype.onRatioMaxUpdate = function(self){
     this.socket.on('ratio_max', function(data){
-        self.constants.setRatioMax(data.ratio_max);
+        self.boidData.setRatioMax(data.ratio_max);
         console.log('RATIO_MAX updated: ' + data.ratio_max);
         self.experimentUIController.updateRewardScaleMax(data.ratio_max);
     })
@@ -131,7 +124,7 @@ UIController.prototype.onRatioMaxUpdate = function(self){
 
 UIController.prototype.onRatioMinUpdate = function(self){
     this.socket.on('ratio_min', function(data){
-        self.constants.setRatioMin(data.ratio_min);
+        self.boidData.setRatioMin(data.ratio_min);
         console.log('RATIO_MIN updated: ' + data.ratio_min);
     })
 };
@@ -166,6 +159,9 @@ UIController.prototype.onTouchingForehead = function(){
     })
 };
 
+/**
+ * Signal quality indication.
+ */
 UIController.prototype.onIsGood = function(){
     var self = this;
     this.socket.on('isGood', function(data){
@@ -174,6 +170,9 @@ UIController.prototype.onIsGood = function(){
 };
 
 /***************** BATTERY ***********************/
+/**
+ * Battery charge updates.
+ */
 UIController.prototype.onBatteryUpdate = function(){
     var self = this;
     this.socket.on('batteryUpdate', function(data){
@@ -182,6 +181,9 @@ UIController.prototype.onBatteryUpdate = function(){
 };
 
 /***************** HORSESHOE **********************/
+/**
+ * Electrode contact indication.
+ */
 //1 = good; 2 = ok; 3 = bad
 UIController.prototype.onHorseshoeUpdate = function(){
     var self = this;

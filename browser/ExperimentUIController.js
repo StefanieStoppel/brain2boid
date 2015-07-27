@@ -2,8 +2,8 @@
  * Created by Stefanie on 15.06.2015.
  */
 var bandnames = ['delta','theta','alpha','beta','gamma'];
-function ExperimentUIController(constants, graphicsController, socket, uiController){
-    this.constants = constants;
+function ExperimentUIController(boidData, graphicsController, socket, uiController){
+    this.boidData = boidData;
     this.graphicsController = graphicsController;
     this.socket = socket;
     this.socketConnected = false;
@@ -706,13 +706,13 @@ ExperimentUIController.prototype.onSlide = function(ui, isDividend){
         if(isDividend){
             this.rewardIdx = ui.value / 10 - 1;
             if(this.percentiles.length !== 0)
-                this.constants.setDividendThreshold(this.percentiles[0][this.rewardIdx]);
+                this.boidData.setDividendThreshold(this.percentiles[0][this.rewardIdx]);
             if(this.socketConnected)
                 this.socket.emit('dividendPercentileChanged', {percentileIdx: self.rewardIdx});
         }else{
             this.inhibitIdx = ui.value / 10 - 1;
             if(this.percentiles.length !== 0)
-                this.constants.setDivisorThreshold(this.percentiles[1][this.inhibitIdx]);
+                this.boidData.setDivisorThreshold(this.percentiles[1][this.inhibitIdx]);
             if(this.socketConnected)
                 this.socket.emit('divisorPercentileChanged', {percentileIdx: self.inhibitIdx});
         }
@@ -863,7 +863,7 @@ ExperimentUIController.prototype.updateTrainingRatioIndicator = function(trainin
 ExperimentUIController.prototype.onPercentileUpdate = function(){
     var self = this;
     this.socket.on('percentiles', function(data){
-        //update Percentiles and training ratio (+ in constants), also update max and min ratio
+        //update Percentiles and training ratio (+ in boidData), also update max and min ratio
         self.updatePercentiles(data.percentiles);
     })
 };
@@ -874,16 +874,16 @@ ExperimentUIController.prototype.updatePercentiles = function(percentiles){
     this.percentiles = percentiles;
     var dividend = percentiles[0][this.rewardIdx];
     var divisor = percentiles[1][this.inhibitIdx];
-    this.constants.setDividendThreshold(dividend);
-    this.constants.setDivisorThreshold(divisor);
+    this.boidData.setDividendThreshold(dividend);
+    this.boidData.setDivisorThreshold(divisor);
     //set training ratio
     this.trainingRatio = Math.pow(10, dividend) / Math.pow(10, divisor);
     this.updateTrainingRatioIndicator(this.trainingRatio);
 
     this.firstFreqBandMin = percentiles[0][0];
     this.secondFreqBandMax = percentiles[1][percentiles[1].length-1];
-    this.constants.setMinDividendDivisorRatio(this.firstFreqBandMin, this.secondFreqBandMax);
-    this.constants.setMaxDividendDivisorRatio(percentiles[0][percentiles[0].length-1],percentiles[1][0]);
+    this.boidData.setMinDividendDivisorRatio(this.firstFreqBandMin, this.secondFreqBandMax);
+    this.boidData.setMaxDividendDivisorRatio(percentiles[0][percentiles[0].length-1],percentiles[1][0]);
 };
 
 /**
@@ -893,9 +893,9 @@ ExperimentUIController.prototype.onBlinkUpdate = function(){
     var self = this;
     this.socket.on('blink', function(data){
         if(data.blink === 1)
-            self.constants.setBoidOpacity("0.4");
+            self.boidData.setBoidOpacity("0.4");
         else
-            self.constants.setBoidOpacity("1");
+            self.boidData.setBoidOpacity("1");
         if(self.getExperimentRunning() && getSidebarShowing())
             self.updateBlinkBarGraph(data.blink);
     })
@@ -918,11 +918,9 @@ ExperimentUIController.prototype.onJawClenchUpdate = function(){
     var self = this;
     this.socket.on('jawClench', function(data){
         if(data.jawClench === 1)
-            self.constants.setBoidOpacity("0.4");
-            //self.constants.setBoidSizeScale("scale(0.7)");
+            self.boidData.setBoidOpacity("0.4");
         else
-            self.constants.setBoidOpacity("1");
-            //self.constants.setBoidSizeScale("scale(1)");
+            self.boidData.setBoidOpacity("1");
         if(self.getExperimentRunning() && getSidebarShowing())
             self.updateJawClenchBarGraph(data.jawClench);
     })

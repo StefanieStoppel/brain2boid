@@ -16,11 +16,11 @@ var MELLOW = 0,
  //  'gold', 'indigo', 'lawngreen', 'lightyellow', 'olivedrab', 'purple', 'yellowgreen', 'seagreen', 'darkred'];
 
 //constructor
-function Boid(pos, vel, constants, channelIndices, freqBandIndices){ //position and velocity
+function Boid(pos, vel, boidData, channelIndices, freqBandIndices){ //position and velocity
     this.position = pos || new Vector(); //Center of the boid (vector)
 	this.velocity = vel || new Vector(); //Velocity (vector)
-    this.constants = constants || new Constants();
-    this.BOID_COLOUR = this.constants.getColour();
+    this.boidData = boidData || new BoidData();
+    this.BOID_COLOUR = this.boidData.getColour();
     this.channelIndices = channelIndices; //selected channel indices
     this.freqBandIndices = freqBandIndices; //selected frequency band indices
     //Boids als (anfangs) nach rechts gerichtetes, gleichschenkliges Dreieck
@@ -53,7 +53,7 @@ Boid.prototype.getPositionArray = function(){
 
 Boid.prototype.transform = function(){
     return "translate(" + this.position.x +", " + this.position.y + ")"
-        + " rotate(" + this.angle() + ") " + this.constants.getBoidSizeScale(); //rotate, then translate! -> so no rotation center needed
+        + " rotate(" + this.angle() + ") " + this.boidData.getBoidSizeScale(); //rotate, then translate! -> so no rotation center needed
         //last comes first! 1) rotate, 2) translate
 };
 
@@ -76,7 +76,7 @@ Boid.prototype.move = function(){
 };
 
 Boid.prototype.changeColour = function(){
-    this.BOID_COLOUR = this.constants.getColour();
+    this.BOID_COLOUR = this.boidData.getColour();
     return this.BOID_COLOUR;
 };
 
@@ -98,7 +98,7 @@ Boid.prototype.align =
 Boid.prototype.separate =
     function(otherBoids){
       var steer = new Vector(),
-        neighbors = this.neighbors(otherBoids, this.constants.getDesiredSeparation()),
+        neighbors = this.neighbors(otherBoids, this.boidData.getDesiredSeparation()),
         count = neighbors.length,
         orig_pos = this.position;
 
@@ -149,7 +149,7 @@ Boid.prototype.neighbors =
 Boid.prototype.computeAcceleration =
     function(w_velocity){
       //(i) normalize w_velocity (= gewünschte Geschwindigkeit)
-      w_velocity = w_velocity.normalize(this.constants.getNormalSpeed());
+      w_velocity = w_velocity.normalize(this.boidData.getNormalSpeed());
       //calculate acceleration vector that needs to be added to momentary velocity to get w_velocity
       var acceleration = w_velocity.sub(this.velocity);
       //(ii) norm of acceleration vector is limited to MAX_FORCE
@@ -159,7 +159,7 @@ Boid.prototype.computeAcceleration =
 Boid.prototype.accelerate =
     function(acceleration){
       n_vel = this.velocity.add(acceleration);
-      var max_speed = this.constants.getMaxSpeed();
+      var max_speed = this.boidData.getMaxSpeed();
       //this.velocity = (acceleration.magnitude() < MAX_SPEED) ? acceleration : acceleration.normalize(MAX_SPEED);
       this.velocity = (n_vel.magnitude() < max_speed) ? n_vel : n_vel.limit(max_speed);
     };

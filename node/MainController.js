@@ -197,6 +197,10 @@ MainController.prototype.startExperimentListener = function(socket){
     });
 };
 
+/**
+ * On pause button click.
+ * @param socket
+ */
 MainController.prototype.pauseExperimentListener = function(socket){
     var self = this;
     socket.on('pauseExperimentButton', function(data){
@@ -218,6 +222,10 @@ MainController.prototype.experimentModeChangeListener = function(socket){
     });
 };
 
+/**
+ * Different channels selected.
+ * @param socket
+ */
 MainController.prototype.channelSelectionListener = function(socket){
     var self = this;
     //receive channel selection changes
@@ -245,6 +253,10 @@ MainController.prototype.channelSelectionListener = function(socket){
     });
 };
 
+/**
+ * Different frequency band selected.
+ * @param socket
+ */
 MainController.prototype.frequencyBandSelectionListener = function(socket){
     var self = this;
     //receive frequency selection changes
@@ -274,7 +286,6 @@ MainController.prototype.oscListener = function(socket){
             //send muse connected message
             socket.emit('museConnected',{museConnected: true});
 
-            /****** RED SIDEBAR ****/
             //listen for new experiment btn click
             self.newExperimentListener(socket);
             //listen for experiment start btn click
@@ -304,13 +315,6 @@ MainController.prototype.oscListener = function(socket){
 
             SELECTED_FREQ_BANDS.forEach(function(selBand, selIdx)
             {
-                /*CHANNELS.forEach(function(el, idx) {
-                    //add values to moving average
-                    MOV_AVG[selBand.index][el.index].push(Date.now(), Math.pow(10,msg[el.index]));
-                    //console.log('moving average of ' + MOV_AVG[selBand.index][0] + ' now is', MOV_AVG[selBand.index][el.index].movingAverage());
-                    // console.log('moving variance now is', MOV_AVG[selBand.index][el.index].variance());
-                });*/
-               // console.log('selIdx: ' + selIdx)
                 if(msg[0].indexOf(selBand.name) !== -1)
                 {
                     FREQ_BANDS.forEach(function(allBand, allIdx)

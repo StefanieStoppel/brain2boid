@@ -53,7 +53,7 @@ var boidSpeedScale = d3.scale.quantize()
     .range([50, 0]);
 */
 
-function Constants(){
+function BoidData(){
 	training_ratio_display = d3.select('#training-ratio')
         .datum(TRAINING_RATIO)
         .attr('value', function(d){ return d; });
@@ -62,31 +62,31 @@ function Constants(){
         .attr('value', function(d){ return d[1]; });
 }
 
-Constants.prototype.setMellow = function(mellowValue){
+BoidData.prototype.setMellow = function(mellowValue){
   MELLOW = mellowValue;
   this.setDesiredSeparation();
   //this.setNormalSpeed();
 };
 
-Constants.prototype.setConcentration = function(concentrationValue){
+BoidData.prototype.setConcentration = function(concentrationValue){
   CONCENTRATION = concentrationValue;
   this.setDesiredSeparation();
   //this.setNormalSpeed();
 };
 
-Constants.prototype.getBoidSizeScale = function(){
+BoidData.prototype.getBoidSizeScale = function(){
     return BOID_SCALE;
 };
 
-Constants.prototype.setBoidSizeScale = function(scale){
+BoidData.prototype.setBoidSizeScale = function(scale){
     BOID_SCALE = scale;
 };
 
-Constants.prototype.setBoidOpacity = function(opacity){
+BoidData.prototype.setBoidOpacity = function(opacity){
     BOID_OPACITY = opacity;
 };
 
-Constants.prototype.getBoidOpacity = function(){
+BoidData.prototype.getBoidOpacity = function(){
     return BOID_OPACITY;
 };
 
@@ -107,7 +107,7 @@ Constants.prototype.getBoidOpacity = function(){
  * Set frequency band names
  * @param frequencyBands{Array}
  */
-Constants.prototype.setFrequencyBands = function(frequencyBands){
+BoidData.prototype.setFrequencyBands = function(frequencyBands){
     FREQUENCY_BANDS = frequencyBands;
 };
 
@@ -115,7 +115,7 @@ Constants.prototype.setFrequencyBands = function(frequencyBands){
 
 //everything < TRAINING_RATIO = DIVIDEND_THRESH/DIVISOR_THRESH is yellow
 //set to >30%
-Constants.prototype.setDividendThreshold = function(lowThreshold){
+BoidData.prototype.setDividendThreshold = function(lowThreshold){
     console.log('before DIVIDEND_TRESH: ' + DIVIDEND_THRESH);
     DIVIDEND_THRESH = lowThreshold;
     console.log('after DIVIDEND_TRESH: ' + lowThreshold);
@@ -125,7 +125,7 @@ Constants.prototype.setDividendThreshold = function(lowThreshold){
 };
 
 //set to <70%
-Constants.prototype.setDivisorThreshold = function(highThreshold){
+BoidData.prototype.setDivisorThreshold = function(highThreshold){
     console.log('before DIVISOR_TRESH: ' + DIVISOR_THRESH);
     DIVISOR_THRESH = highThreshold;
     console.log('after DIVISOR_TRESH: ' + highThreshold);
@@ -134,7 +134,7 @@ Constants.prototype.setDivisorThreshold = function(highThreshold){
     this.setColourByFreqRatio();
 };
 
-Constants.prototype.setMaxDividendDivisorRatio = function(highestDividend, lowestDivisor){
+BoidData.prototype.setMaxDividendDivisorRatio = function(highestDividend, lowestDivisor){
     DIVIDEND_DIVISOR_RATIO_MAX = highestDividend / lowestDivisor;
     this.updateBoidSpeedScale();
     this.setColourByFreqRatio();
@@ -143,7 +143,7 @@ Constants.prototype.setMaxDividendDivisorRatio = function(highestDividend, lowes
     //this.setBoidSizeScaleByFreqRatio();
 };
 
-Constants.prototype.setMinDividendDivisorRatio = function(lowestDividend, highestDivisor){
+BoidData.prototype.setMinDividendDivisorRatio = function(lowestDividend, highestDivisor){
     DIVIDEND_DIVISOR_RATIO_MIN = lowestDividend / highestDivisor;
     this.updateColourScale();
     this.setColourByFreqRatio();
@@ -152,27 +152,27 @@ Constants.prototype.setMinDividendDivisorRatio = function(lowestDividend, highes
     //this.setBoidSizeScaleByFreqRatio();
 };
 
-Constants.prototype.setRatioMin = function(ratioMin){
+BoidData.prototype.setRatioMin = function(ratioMin){
     DIVIDEND_DIVISOR_RATIO_MIN = ratioMin;
     this.updateBoidSpeedScale();
     //this.updateColourScale();
     this.setColourByFreqRatio();
 };
 
-Constants.prototype.setRatioMax = function(ratioMax){
+BoidData.prototype.setRatioMax = function(ratioMax){
     DIVIDEND_DIVISOR_RATIO_MAX = ratioMax;
     this.updateBoidSpeedScale();
     this.updateColourScale();
     this.setColourByFreqRatio();
 };
 
-Constants.prototype.updateTrainingRatio = function(){
+BoidData.prototype.updateTrainingRatio = function(){
     TRAINING_RATIO = Math.pow(10, DIVIDEND_THRESH) / Math.pow(10, DIVISOR_THRESH);
     training_ratio_display.datum(TRAINING_RATIO)
         .attr('value', function(d){ return d; });
 };
 
-Constants.prototype.updateRatio = function(ratio){
+BoidData.prototype.updateRatio = function(ratio){
     RATIO = ratio;
     ratio_display.datum(RATIO)
         .attr('value', function(d){ return d[1].toFixed(5); });
@@ -181,65 +181,65 @@ Constants.prototype.updateRatio = function(ratio){
     this.setNormalSpeed();
 };
 
-Constants.prototype.updateColourScale = function(){
+BoidData.prototype.updateColourScale = function(){
     //colourScale.domain([DIVIDEND_DIVISOR_RATIO_MIN, (DIVIDEND_DIVISOR_RATIO_MAX]);
    // colourScale.domain([DIVIDEND_DIVISOR_RATIO_MIN, (DIVIDEND_DIVISOR_RATIO_MAX + TRAINING_RATIO) / 2]);
     colourScale.domain([DIVIDEND_DIVISOR_RATIO_MIN,  TRAINING_RATIO]);
 };
 
-Constants.prototype.updateBoidSpeedScale = function(){
+BoidData.prototype.updateBoidSpeedScale = function(){
     //boidSpeedScale.domain([DIVIDEND_DIVISOR_RATIO_MIN, DIVIDEND_DIVISOR_RATIO_MAX]);
     boidSpeedScale.domain([DIVIDEND_DIVISOR_RATIO_MIN, (DIVIDEND_DIVISOR_RATIO_MAX + TRAINING_RATIO) / 2]);
 };
 
 
-Constants.prototype.setColourByFreqRatio = function(){
+BoidData.prototype.setColourByFreqRatio = function(){
     COLOUR = colourScale(RATIO[1]);
 };
 
-Constants.prototype.setDesiredSeparation = function(){
+BoidData.prototype.setDesiredSeparation = function(){
      DESIRED_SEPARATION = ((MELLOW * (MAX_DESIRED_SEPARATION-MIN_DESIRED_SEPARATION) + MIN_DESIRED_SEPARATION) +
                   (MAX_DESIRED_SEPARATION - CONCENTRATION * (MAX_DESIRED_SEPARATION-MIN_DESIRED_SEPARATION))) / 2;
 };
 
-Constants.prototype.setNormalSpeed = function(){
+BoidData.prototype.setNormalSpeed = function(){
    if(boidSpeedScale(RATIO[1]) != NORMAL_SPEED ){
         NORMAL_SPEED = boidSpeedScale(RATIO[1]);
    }
 };
 
-Constants.prototype.getColour = function(){
+BoidData.prototype.getColour = function(){
 	return COLOUR;
 };
 
-Constants.prototype.getDesiredSeparation = function(){
+BoidData.prototype.getDesiredSeparation = function(){
 	return DESIRED_SEPARATION;
 }
 
-Constants.prototype.getNeighbourDistance = function(){
+BoidData.prototype.getNeighbourDistance = function(){
 	return NEIGHBOR_DISTANCE;
 }
 
-Constants.prototype.getNormalSpeed = function(){
+BoidData.prototype.getNormalSpeed = function(){
 	return NORMAL_SPEED;
 }
 
-Constants.prototype.getMaxSpeed = function(){
+BoidData.prototype.getMaxSpeed = function(){
 	return MAX_SPEED;
 }
 
-Constants.prototype.getMaxForce = function(){
+BoidData.prototype.getMaxForce = function(){
 	return MAX_FORCE;
 }
 
-Constants.prototype.getSeparationFactor = function(){
+BoidData.prototype.getSeparationFactor = function(){
 	return SEPARATION_FACTOR;
 }
 
-Constants.prototype.getAlignmentFactor = function(){
+BoidData.prototype.getAlignmentFactor = function(){
 	return ALIGNMENT_FACTOR;
 }
 
-Constants.prototype.getCohesionFactor = function(){
+BoidData.prototype.getCohesionFactor = function(){
 	return COHESION_FACTOR;
 }
