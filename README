@@ -1,0 +1,27 @@
+/************************************************************************************************/
+/**************************** Neurofeedbacksystem: Brain2Boid ***********************************/
+/************************************************************************************************/
+
+Dieses Projekt entstand im Zuge meiner Bachelorarbeit im Studiengang Media Systems an der Hochschule
+für Angewandte Wissenschaften Hamburg. Es handelt sich hierbei um ein Neurofeedbacksystem, das für die
+Verwendung mit dem Consumer-EEG-Gerät Muse(TM) entwickelt wurde.
+Um die Software nutzen zu können, muss zunächst einmal Node.js (https://nodejs.org/) installiert werden.
+Zusätzlich müssen die Muse SDK Tools im Ordner "Muse" in einen lokalen Ordner auf dem PC kopiert werden
+- vorausgesetzt es handelt sich um ein Windows Betriebssystem. Ist dies nicht der Fall, kann eine andere
+Version der Muse SDK Tools unter https://sites.google.com/a/interaxon.ca/muse-developer-site/download heruntergeladen
+werden. An dieser Stelle möchte ich jedoch darauf aufmerksam machen, dass die hier mitgelieferte Version der SDK Tools
+schon etwas älter ist und die Funktionalität der Software NICHT mit neueren Versionen getestet wurde!
+
+Damit die Software auch von denjenigen ausprobiert werden kann, die keinen Muse(TM) besitzen, habe ich
+einige EEG-Aufnahmen dem Ordner "MusePlayer Scripts" hinzugefügt. Durch einen Klick auf das BATCH-Skript
+im selben Ordner wird die OSC Replay Datei "test-file3" durch das SDK Tool "MusePlayer" abgespielt
+(Infos zum Tool unter https://sites.google.com/a/interaxon.ca/muse-developer-site/muse-player).
+Die EEG-Aufnahme wird dabei an den lokalen UDP Port 5002 weitergeleitet.
+Der nächste Schritt ist das Öffnen der "index.html" mit einem MODERNEN!! Browser. Getestet wurde die Software mit
+Chrome 44 und Firefox 39.0, wo sie auch ordnungsgemäß funktionieren sollte.
+Zum Schluss wird dann der serverseitige Teil der Software gestartet, indem im Ordner "node" die Konsole geöffnet und der
+Befehl "node MainController.js" eingegeben wird.
+Falls alles funktioniert hat, sollte in der Konsole nun "WebSocket connected..." erscheinen.
+Nun sollte man im Browser sehen, dass sich die Anzeige der Kontaktqualität in der linken oberen Ecke bunt gefärbt hat.
+
+(C) Copyright 2015 - Stefanie Stoppel

@@ -1,1 +1,0 @@
-muse-io --50hz --lsl-eeg eeg_muse
