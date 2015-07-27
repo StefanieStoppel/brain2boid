@@ -1,3 +1,8 @@
+/**
+ * This Class represents the individuals of the flock, the so-called boids.
+ * The basic functionalities of this class were implemented in the course of the lecture
+ * "Ausgewählte Themen der Medieninformatik", held by Prof. Dr. Weitz in the summer semester of 2014.
+ */
 
 var BOID_WIDTH = 6,
     BOID_LENGTH = 12,
@@ -9,11 +14,6 @@ var BOID_WIDTH = 6,
     SEPARATION_FACTOR = 1.5,//1.0(c) - 1.8(m); too high (4.0): they separate and turn around their own axis
     ALIGNMENT_FACTOR = 1.3,
     COHESION_FACTOR = 1.0;//0.8(m) - 1.5(c)
-//muse experimental values
-var MELLOW = 0,
-    CONCENTRATION = 0;
-//var colours = ['white', 'red', 'green', 'orange', 'aqua', 'chartreuse', 'darkmagenta', 'deeppink', 'blue', 'yellow', 'coral', 'deepskyblue', 'fuchsia', 
- //  'gold', 'indigo', 'lawngreen', 'lightyellow', 'olivedrab', 'purple', 'yellowgreen', 'seagreen', 'darkred'];
 
 //constructor
 function Boid(pos, vel, boidData, channelIndices, freqBandIndices){ //position and velocity
@@ -21,22 +21,17 @@ function Boid(pos, vel, boidData, channelIndices, freqBandIndices){ //position a
 	this.velocity = vel || new Vector(); //Velocity (vector)
     this.boidData = boidData || new BoidData();
     this.BOID_COLOUR = this.boidData.getColour();
+    this.BOID_POINTS = "-" + (BOID_LENGTH / 2) + ",-" + (BOID_WIDTH / 2) + " "
+        + "-" + (BOID_LENGTH / 2) + "," + (BOID_WIDTH / 2) + " "
+        + (BOID_LENGTH / 2) + ",0";
+    // NOT USED
     this.channelIndices = channelIndices; //selected channel indices
     this.freqBandIndices = freqBandIndices; //selected frequency band indices
-    //Boids als (anfangs) nach rechts gerichtetes, gleichschenkliges Dreieck
-    //soz. statische Property
-    this.BOID_POINTS = "-" + (BOID_LENGTH / 2) + ",-" + (BOID_WIDTH / 2) + " " //linke untere Ecke des Boids
-        + "-" + (BOID_LENGTH / 2) + "," + (BOID_WIDTH / 2) + " " //rechte untere Ecke des Boids
-        + (BOID_LENGTH / 2) + ",0"; //Spitze des Boids
+
 }
 
 Boid.prototype.getPoints = function(){
     return this.BOID_POINTS;
-};
-
-Boid.prototype.setContainer = function(container){
-    if(typeof container === Container)
-        this.container = container;
 };
 
 Boid.prototype.getColour = function(){
@@ -46,23 +41,30 @@ Boid.prototype.getColour = function(){
 Boid.prototype.getPosition = function(){
     return this.position;
 };
-//get position as array for drawing path
-Boid.prototype.getPositionArray = function(){
-    return [this.position.x, this.position.y];
-};
 
+/**
+ * Return the boids changed position and rotation.
+ * @returns {string}
+ */
 Boid.prototype.transform = function(){
     return "translate(" + this.position.x +", " + this.position.y + ")"
-        + " rotate(" + this.angle() + ") " + this.boidData.getBoidSizeScale(); //rotate, then translate! -> so no rotation center needed
+        + " rotate(" + this.angle() + ") "; //rotate, then translate! -> so no rotation center needed
         //last comes first! 1) rotate, 2) translate
 };
 
+/**
+ * Change Boid's orientation.
+ * @returns {number}
+ */
 Boid.prototype.angle = function(){
   //return angle in degrees
     return Math.atan2(this.velocity.y, this.velocity.x) / Math.PI * 180; //Degrees = radians * (180/PI)
     //atan2([x,y]) returns angle in radians
 };
 
+/**
+ * Move the boid.
+ */
 Boid.prototype.move = function(){
     this.position = this.position.add(this.velocity);
     if(this.position.x >= AREA_WIDTH)
@@ -80,6 +82,10 @@ Boid.prototype.changeColour = function(){
     return this.BOID_COLOUR;
 };
 
+/**
+ * Calculate boid's alignment.
+ * @param otherBoids
+ */
 Boid.prototype.align =
     function (otherBoids) {
       var steer = new Vector(),
@@ -95,6 +101,10 @@ Boid.prototype.align =
       return this.computeAcceleration(steer);
 };
 
+/**
+ * Calculate separation to neighbours.
+ * @param otherBoids
+ */
 Boid.prototype.separate =
     function(otherBoids){
       var steer = new Vector(),
@@ -114,6 +124,10 @@ Boid.prototype.separate =
 
 };
 
+/**
+ *
+ * @param otherBoids
+ */
 Boid.prototype.cohere =
     function(otherBoids){
       var steer = new Vector(),
@@ -131,42 +145,41 @@ Boid.prototype.cohere =
       return this.computeAcceleration(steer);
 };
 
+/**
+ * Figure out which of the flock's members are neighbours.
+ * @param otherBoids
+ * @param neigh_dist
+ * @returns {Array}
+ */
 Boid.prototype.neighbors = 
     function(otherBoids, neigh_dist){
       var neighbors = [], distance = new Vector();
       for(i = 0; i < otherBoids.length; i++){
-        //Distanz zwischen aktuellem Boid und allen anderen Boids berechnen
+        //calculate distance between this boid and otherboids
         distance = this.position.sub(otherBoids[i].position);
-        //distance.x = Math.abs(distance.x);
-        //distance.y = Math.abs(distance.y);
-        //Ist die Distanz > 0 (also ungleich Boid self) oder kleiner der maximalen Distanz
         if(distance.magnitude() > 0 && distance.magnitude() < neigh_dist)
             neighbors.push(otherBoids[i]); //dann füge diesen Boid als Nachbarn hinzu
       }
       return neighbors;
 };
 
-Boid.prototype.computeAcceleration =
-    function(w_velocity){
-      //(i) normalize w_velocity (= gewünschte Geschwindigkeit)
+Boid.prototype.computeAcceleration = function(w_velocity){
+      //(i) normalize w_velocity
       w_velocity = w_velocity.normalize(this.boidData.getNormalSpeed());
       //calculate acceleration vector that needs to be added to momentary velocity to get w_velocity
       var acceleration = w_velocity.sub(this.velocity);
       //(ii) norm of acceleration vector is limited to MAX_FORCE
       return acceleration.limit(MAX_FORCE);
-    };
+};
 
-Boid.prototype.accelerate =
-    function(acceleration){
+Boid.prototype.accelerate = function(acceleration){
       n_vel = this.velocity.add(acceleration);
       var max_speed = this.boidData.getMaxSpeed();
-      //this.velocity = (acceleration.magnitude() < MAX_SPEED) ? acceleration : acceleration.normalize(MAX_SPEED);
       this.velocity = (n_vel.magnitude() < max_speed) ? n_vel : n_vel.limit(max_speed);
-    };
+};
 
 
-Boid.prototype.flock =
-    function (otherBoids) {
+Boid.prototype.flock = function (otherBoids) {
       var separation = this.separate(otherBoids)
                            .mult(SEPARATION_FACTOR),
           alignment = this.align(otherBoids)

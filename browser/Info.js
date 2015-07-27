@@ -1,3 +1,7 @@
+/**
+ * This class handles the info dialogs.
+ */
+
 function Info(){
     this.onChannelColourBtnClick();
 

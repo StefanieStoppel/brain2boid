@@ -1,5 +1,6 @@
 /**
- * Created by Stefanie on 17.04.2015.
+ * This class was supposed to be used for the flocking algorithm optimisation. Due to lack of time
+ * and other priorities, the development on it came to a halt.
  */
 
 

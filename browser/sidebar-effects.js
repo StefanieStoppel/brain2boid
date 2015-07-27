@@ -1,5 +1,5 @@
 /**
- * Created by Stefanie on 14.05.2015.
+ * This file handles the sidebar + control bar effects (scroll in and out + animation)
  */
 var SIDEBAR_SHOWING = false;
 

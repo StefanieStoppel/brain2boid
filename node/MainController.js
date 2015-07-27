@@ -1,3 +1,9 @@
+/**
+ * This class is the server side entry point of the neurofeedback application.
+ * It sets up an http server, receives osc messages from Muse and forwards them to the ExperimentController and the
+ * browser (via WebSocket). It also listens to changes to the GUI and initiates actions accordingly.
+ */
+
 var oscPathFreqBandMap = [  "/muse/elements/delta_absolute", "delta",
                             "/muse/elements/theta_absolute", "theta",
                             "/muse/elements/alpha_absolute", "alpha",
@@ -21,8 +27,6 @@ var FREQ_BANDS = [  {name: 'none', index: -1},
     SELECTED_FREQ_BANDS = [ {name: 'alpha', index: 2},
                             {name: 'beta', index: 3}];//default: alpha/beta
 
-var MOV_AVG;
-
 var DIVIDEND = [], DIVISOR = [];
 var RATIO = [];
 var RATIO_MIN = 0.5, RATIO_MAX = 0;
@@ -45,27 +49,14 @@ MainController.prototype.init = function(){
 
     var util = require('util');
 
-    //moving average
-    var MA = require('./dependencies/moving-average.js');
-    var timeInterval = 60 * 1000; // 1 minute
-    /*MOV_AVG = [ ['delta', 0, 0, 0, 0],
-        ['theta', 0, 0, 0, 0],
-        ['alpha', 0, 0, 0, 0],
-        ['beta',  0, 0, 0, 0],
-        ['gamma', 0, 0, 0, 0] ];
-    for(var i = 0; i < FREQ_BANDS.length; i++){
-        MOV_AVG[i][0] = FREQ_BANDS[i].name;
-        CHANNELS.forEach(function(el, idx){
-            MOV_AVG[i][el.index] = MA(timeInterval);
-        });
-    }*/
-
     this.experimentController = undefined;
     this.firstMessage = true;
     //connection to browser via WebSocket
     this.onWebSocketConnection();
 };
-
+/**
+ * Request handler
+ */
 MainController.prototype.handler = function(){
     return function(req, res) {
         console.log("request received: " + req.url);
@@ -83,6 +74,9 @@ MainController.prototype.handler = function(){
     }
 };
 
+/**
+ * Called when the WebSocket connection is established.
+ */
 MainController.prototype.onWebSocketConnection = function(){
     var self = this;
     //connection with Browser via WebSocket
@@ -279,6 +273,10 @@ MainController.prototype.frequencyBandSelectionListener = function(socket){
     });
 };
 
+/**
+ * Receive osc messages from Muse.
+ * @param socket
+ */
 MainController.prototype.oscListener = function(socket){
     var self = this;
     this.oscServer.on("message", function (msg) {
@@ -439,6 +437,7 @@ MainController.prototype.oscListener = function(socket){
     });
 };
 
+/*
 MainController.prototype.resumeExperimentListener = function(socket){
     var self = this;
     if(typeof this.experimentController !== 'undefined'){
@@ -471,7 +470,7 @@ MainController.prototype.resumeExperimentListener = function(socket){
             );
         })
     }
-};
+};*/
 
 function getFrequencyBandByOSCPath(oscPath){
     return bandName = oscPathFreqBandMap[oscPathFreqBandMap.indexOf(oscPath)+1];
@@ -485,7 +484,6 @@ function setDividend(freqBandName, data){
         chanCount++;
     });
     DIVIDEND = [freqBandName, medFreq/chanCount];
-    //console.log('DIVIDEND: ' + DIVIDEND);
 }
 
 function setDivisor(freqBandName, data){
@@ -496,12 +494,10 @@ function setDivisor(freqBandName, data){
         chanCount++;
     });
     DIVISOR = [freqBandName, medFreq/chanCount];
-    //console.log('DIVISOR: ' + DIVISOR);
 }
 
 function setRatio(){
     RATIO = [DIVIDEND[0] + '/' + DIVISOR[0], (Math.pow(10, DIVIDEND[1])/Math.pow(10, DIVISOR[1]))];
-    //console.log('RATIO: ' +RATIO);
 }
 
 new MainController();

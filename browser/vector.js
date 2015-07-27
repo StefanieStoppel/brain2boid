@@ -1,13 +1,11 @@
-// constructor
+/**
+ * This class defines a two dimensional vector. It is used by the boid class to describe the boid's position and velocity.
+ */
+
 function Vector(x, y) {
   this.x = x || 0; //sodass man den Nullvektor zurückbekommt, falls keine Werte übergeben
   this.y = y || 0;
 }
-
-//Speichereffizienz mit Prototype:
-//-> deswegen werden Methoden den Prototypen zugeordnet und nicht dem Objekt selbst 
-//durch Methoden im Konstruktor, denn sonst müsste für jeden einzelnen Vektor die Methoden neu erzeugt werden,
-//durch Verwendung des Prototypen aber nur einmal füt alle Vektor Instanzen.
 
 // length (i.e. norm) of the vector
 Vector.prototype.magnitude =
