@@ -39,7 +39,7 @@ function MainController(){
 }
 
 MainController.prototype.init = function(){
-    this.osc = require('./dependencies/node-osc/lib/osc');
+    this.osc = require('node-osc');
     //create http server
     var app = require('http').createServer(this.handler);
     this.io = require('socket.io')(app);
