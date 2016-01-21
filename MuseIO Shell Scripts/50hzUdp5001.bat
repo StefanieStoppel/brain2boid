@@ -1,1 +1,0 @@
-muse-io --50hz --osc osc.udp://localhost:5001

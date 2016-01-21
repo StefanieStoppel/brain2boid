@@ -227,7 +227,7 @@ div#training-ratio-display{
     color: #02203c;
 }
 .ui-widget-header .ui-icon {
-    background-image: url("browser/dependencies/jquery-ui-1.11.4.custom/images/ui-icons_ffffff_256x240.png");
+    background-image: url("app/lib/jquery-ui-1.11.4.custom/images/ui-icons_ffffff_256x240.png");
 }
 div.blue-dialog{
     /*background: -webkit-linear-gradient(right, #245580, cadetblue); /* For Safari 5.1 to 6.0 */
