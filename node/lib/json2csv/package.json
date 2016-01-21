@@ -1,0 +1,72 @@
+{
+  "name": "json2csv",
+  "preferGlobal": "true",
+  "version": "2.4.1",
+  "description": "Convert json to csv with column titles",
+  "keywords": [
+    "json",
+    "to",
+    "csv",
+    "export",
+    "convert",
+    "parse"
+  ],
+  "author": {
+    "name": "Mirco Zeiss",
+    "email": "mirco.zeiss@gmail.com"
+  },
+  "bin": {
+    "json2csv": "./bin/json2csv.js"
+  },
+  "main": "./lib/json2csv.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zeMirco/json2csv"
+  },
+  "scripts": {
+    "test": "node test | tap-spec",
+    "format": "node ./node_modules/js-beautify/js/bin/js-beautify.js lib/json2csv.js test/test.js package.json -r --config js-beautify.json",
+    "test-coverage": "istanbul cover test/index.js --report lcovonly | tap-spec"
+  },
+  "dependencies": {
+    "commander": "~1.0.5",
+    "cli-table": "~0.2.0",
+    "async": "~0.2.9"
+  },
+  "devDependencies": {
+    "istanbul": "^0.3.14",
+    "js-beautify": "~1.4.2",
+    "tap-spec": "^3.0.0",
+    "tape": "^4.0.0"
+  },
+  "gitHead": "ff5d505bf6727b38e78f1f25793c6c0527d844de",
+  "bugs": {
+    "url": "https://github.com/zeMirco/json2csv/issues"
+  },
+  "homepage": "https://github.com/zeMirco/json2csv",
+  "_id": "json2csv@2.4.1",
+  "_shasum": "3ff7d8247c2b5a48ea91f3aa238f66c14bec6d4d",
+  "_from": "json2csv@",
+  "_npmVersion": "2.6.1",
+  "_nodeVersion": "1.8.1",
+  "_npmUser": {
+    "name": "knownasilya",
+    "email": "ilya@burstcreations.com"
+  },
+  "maintainers": [
+    {
+      "name": "zemirco",
+      "email": "mirco.zeiss@gmail.com"
+    },
+    {
+      "name": "knownasilya",
+      "email": "ilya@burstcreations.com"
+    }
+  ],
+  "dist": {
+    "shasum": "3ff7d8247c2b5a48ea91f3aa238f66c14bec6d4d",
+    "tarball": "http://registry.npmjs.org/json2csv/-/json2csv-2.4.1.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/json2csv/-/json2csv-2.4.1.tgz"
+}
