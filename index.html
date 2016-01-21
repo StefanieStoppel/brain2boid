@@ -3,15 +3,15 @@
 <head>
     <meta charset="iso-8859-1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="browser/dependencies/bootstrap-3.3.4-dist/css/bootstrap.min.css"  media="screen">
-    <link rel="stylesheet" type="text/css" href="browser/dependencies/font-awesome-4.3.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="browser/dependencies/jquery-ui-1.11.4.custom/jquery-ui.min.css">
-    <link rel="stylesheet" type="text/css" href="browser/dependencies/jquery-ui-1.11.4.custom/jquery-ui.theme.min.css">
+    <link rel="stylesheet" type="text/css" href="app/lib/bootstrap-3.3.4-dist/css/bootstrap.min.css"  media="screen">
+    <link rel="stylesheet" type="text/css" href="app/lib/font-awesome-4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="app/lib/jquery-ui-1.11.4.custom/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="app/lib/jquery-ui-1.11.4.custom/jquery-ui.theme.min.css">
     <link rel="stylesheet" type="text/css" href="style.css">
     <link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-    <script src="browser/dependencies/jquery-2.1.3.js"></script>
-    <script src="browser/dependencies/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
-    <script type="javascript" src="browser/dependencies/bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
+    <script src="app/lib/jquery-2.1.3.js"></script>
+    <script src="app/lib/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
+    <script type="javascript" src="app/lib/bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
 
 
 </head>
@@ -40,7 +40,7 @@
                         <div id="battery-pole"></div>
                     </div>
                     <div id="timer">
-                        <img id="timer-icon" src="browser/img/Timer-Icon (2).jpg"/>
+                        <img id="timer-icon" src="app/img/Timer-Icon (2).jpg"/>
                         <p id="timer-text">60 s</p>
                     </div>
                     <div class="points col-xs-12">
@@ -323,7 +323,7 @@
             <div class="row">
                 <div class="col-xs-3"></div>
                 <div class="col-xs-6">
-                    <img src="browser/img/FP1_no_contact.jpg" class="channel-contact">
+                    <img src="app/img/FP1_no_contact.jpg" class="channel-contact">
                     Kein Kontakt.
                 </div>
                 <div class="col-xs-3"></div>
@@ -331,7 +331,7 @@
             <div class="row">
                 <div class="col-xs-3"></div>
                 <div class="col-xs-6">
-                    <img src="browser/img/FP1_bad_contact.jpg" class="channel-contact">
+                    <img src="app/img/FP1_bad_contact.jpg" class="channel-contact">
                     Schlechter Kontakt.
                 </div>
                 <div class="col-xs-3"></div>
@@ -339,7 +339,7 @@
             <div class="row">
                 <div class="col-xs-3"></div>
                 <div class="col-xs-6">
-                    <img src="browser/img/FP1_good_contact.JPG" class="channel-contact">
+                    <img src="app/img/FP1_good_contact.JPG" class="channel-contact">
                     Guter Kontakt.
                 </div>
                 <div class="col-xs-3"></div>
@@ -381,7 +381,7 @@
         <p>
             Beim Neurofeedback werden Frequenzb&auml;nder aus dem menschlichen EEG ausgesucht, die "trainiert" werden sollen.
             Diese Auswahl findet hier statt.<br><br>
-            <img src="browser/img/training_protocol_bargraph.JPG" id="img-training-protocol"/>
+            <img src="app/img/training_protocol_bargraph.JPG" id="img-training-protocol"/>
             <br><br> Auf der linken Seite (Belohnung) wird das Band ausgew&auml;hlt, dessen Aktivit&auml;t verst&auml;rkt werden soll.
             Auf der rechten Seite kann ein zweites Frequenzband ausgew&auml;hlt werden, dessen Aktivit&auml;t durch das Neurofeedback verringert werden soll.
         </p>
@@ -393,11 +393,11 @@
             Der Stand des Graphen h&auml;ngt davon ab, wie viel Aktivit&auml;t es in den Frequenzb&auml;ndern gibt, die unter dem Punkt "Trainingsprotokoll"
             ausgew&auml;hlt wurden.<br>
             Je h&ouml;her der Graph &uuml;ber den schwarzen Balken kommt, desto satter wird die blaue F&auml;rbung der Dreiecke und desto langsamer bewegen sie sich. <br><br>
-            <img src="browser/img/Boidsblue.JPG" class="img-feedback">
-            <img src="browser/img/Feedback_Graph.jpg" class="img-feedback">
+            <img src="app/img/Boidsblue.JPG" class="img-feedback">
+            <img src="app/img/Feedback_Graph.jpg" class="img-feedback">
             <p style="text-decoration: underline">Tipp:</p>
             <p>Je l&auml;nger man es schafft, die Dreiecke blau zu f&auml;rben, desto mehr Punkte bekommt man.</p>
-            <img id="img-points" src="browser/img/points-display.JPG">
+            <img id="img-points" src="app/img/points-display.JPG">
         </p>
     </div>
 
@@ -408,7 +408,7 @@
             Die Signalverunreinigungen werden auch "Artefakte" genannt.<br>
             Wenn Sie blinzeln oder Ihre Kieferknochen aufeinanderpressen, wird das anhand der Balkengraphen angezeigt.<br>
             Zus&auml;tzlich werden auch die Dreicke durchsichtig, wenn Muskelbewegungen erfasst werden.<br><br>
-            <img src="browser/img/artifact_bargraphs2.jpg" id="img-artifact-bargraphs">
+            <img src="app/img/artifact_bargraphs2.jpg" id="img-artifact-bargraphs">
             <p style="text-decoration: underline">Tipp:</p>
             Versuchen Sie sich w&auml;hrend des Neurofeedbacks m&ouml;glichst wenig zu bewegen, damit die Signalqualit&auml;t gut ist und Sie ein pr&auml;zises Feedback erhalten.
         </p>
@@ -436,7 +436,7 @@
                 <li>
                     <div class="row">
                         <div class="col-xs-5 col-sm-4 col-lg-3">
-                            <img src="browser/img/Eeg_delta.svg" class="brainwaves-img">
+                            <img src="app/img/Eeg_delta.svg" class="brainwaves-img">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
                             <p class="big-font">Delta-Wellen (&delta;, 1 - 4 Hz): </p>
@@ -449,7 +449,7 @@
                 <li>
                     <div class="row top-margin-1">
                         <div class="col-xs-5 col-sm-4 col-lg-3">
-                            <img src="browser/img/Eeg_theta.svg" class="brainwaves-img">
+                            <img src="app/img/Eeg_theta.svg" class="brainwaves-img">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
                             <p class="big-font">Theta-Wellen (&theta;, 4 - 8 Hz): </p>
@@ -462,7 +462,7 @@
                 <li>
                     <div class="row top-margin-1">
                         <div class="col-xs-5 col-sm-4 col-lg-3">
-                            <img src="browser/img/Eeg_alpha.svg" class="brainwaves-img">
+                            <img src="app/img/Eeg_alpha.svg" class="brainwaves-img">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
                             <p class="big-font">Alpha-Wellen (&alpha;, 8 - 13 Hz): </p>
@@ -475,7 +475,7 @@
                 <li>
                     <div class="row top-margin-1">
                         <div class="col-xs-5 col-sm-4 col-lg-3">
-                            <img src="browser/img/Eeg_beta.svg" class="brainwaves-img">
+                            <img src="app/img/Eeg_beta.svg" class="brainwaves-img">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
                             <p class="big-font">Beta-Wellen (&beta;, 13 - 30 Hz): </p>
@@ -488,7 +488,7 @@
                 <li>
                     <div class="row top-margin-1">
                         <div class="col-xs-5 col-sm-4 col-lg-3">
-                            <img src="browser/img/Eeg_gamma.svg" class="brainwaves-img">
+                            <img src="app/img/Eeg_gamma.svg" class="brainwaves-img">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
                             <p class="big-font">Gamma-Wellen (&gamma;, > 30 Hz):</p>
@@ -517,17 +517,17 @@
 </div><!-- div.container --->
 
 <!-- load js dependencies -->
-<script src="browser/dependencies/socket.io-client/socket.io.js"></script>
-<script src="browser/dependencies/d3.v3.js" charset="utf-8"></script>
-<script src="browser/BoidData.js"></script>
-<script src="browser/vector.js"></script>
-<script src="browser/Container.js"></script>
-<script src="browser/boids.js"></script>
-<script src="browser/GraphicsController.js"></script>
-<script src="browser/sidebar-effects.js"></script>
-<script src="browser/Info.js"></script>
-<script src="browser/ExperimentUIController.js"></script>
-<script src="browser/UIController.js"></script>
+<script src="app/lib/socket.io-client/socket.io.js"></script>
+<script src="app/lib/d3.v3.js" charset="utf-8"></script>
+<script src="app/boid-data.js"></script>
+<script src="app/vector.js"></script>
+<script src="app/container.js"></script>
+<script src="app/boids.js"></script>
+<script src="app/graphics-controller.js"></script>
+<script src="app/sidebar-effects.js"></script>
+<script src="app/info.js"></script>
+<script src="app/experiment-ui-controller.js"></script>
+<script src="app/ui-controller.js"></script>
 
 </body>
 </html>
