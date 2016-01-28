@@ -1,14 +1,8 @@
-/**************************** Neurofeedback system: Brain2Boid **********************************/
+# Brain2Boid - An experimental Neurofeedback system
 
-/************************************************************************************************/
-/************************************************************************************************/
-WARNING: This system is not a clinical neurofeedback system. DO NOT USE IT FOR ANY MEDICAL PURPOSES AND
-ESPECIALLY NOT IF YOU DON'T KNOW WHAT YOU'RE DEALING WITH!
-The responsibility for the physical and mental health of this software's user lies completely within his or her
-own hands. No responsibility is taken by the author of this software for any physical or mental harm resulting
-through the use of this neurofeedback system.
-/************************************************************************************************/
-/************************************************************************************************/
+************************************************************************************************
+**WARNING: This system is not a clinical neurofeedback system. DO NOT USE IT FOR ANY MEDICAL PURPOSES AND ESPECIALLY NOT IF YOU DON'T KNOW WHAT YOU'RE DEALING WITH! The responsibility for the physical and mental health of this software's user lies completely within his or her own hands. No responsibility is taken by the author of this software for any physical or mental harm resulting through the use of this neurofeedback system.**
+************************************************************************************************
 
 This project is the result of my part practical, part theoretical bachelor thesis
 at the University of Applied Sciences Hamburg. The software is an EXPERIMENTAL! neurofeedback system,
@@ -49,47 +43,47 @@ further documenting the process (but as always this comes with NO GUARANTEE :) )
 
 /************************************************************************************************/
 /************************************************************************************************/
-WARNUNG: Dies ist kein klinisches Neurofeedbacksystem. DIE BENUTZUNG FÜR MEDIZINISCHE ZWECKE IST UNTERSAGT,
-INSBESONDERE WENN DU NICHT WEISST WORAUF DU DICH EINLÄSST!
-Die Verantwortung für körperliche und geistige Gesundheit des Benutzers dieser Software liegt nur beim Benutzer selbst.
-Die Autorin dieser Software übernimmt keine Verantwortung für aus der Benutzung resultierende körperliche oder
-psychische Beeinträchtigungen oder Schäden.
+WARNUNG: Dies ist kein klinisches Neurofeedbacksystem. DIE BENUTZUNG FÃœR MEDIZINISCHE ZWECKE IST UNTERSAGT,
+INSBESONDERE WENN DU NICHT WEISST WORAUF DU DICH EINLÃ„SST!
+Die Verantwortung fÃ¼r kÃ¶rperliche und geistige Gesundheit des Benutzers dieser Software liegt nur beim Benutzer selbst.
+Die Autorin dieser Software Ã¼bernimmt keine Verantwortung fÃ¼r aus der Benutzung resultierende kÃ¶rperliche oder
+psychische BeeintrÃ¤chtigungen oder SchÃ¤den.
 /************************************************************************************************/
 /************************************************************************************************/
 
 Dieses Projekt entstand im Zuge meiner Bachelorarbeit im Studiengang Media Systems an der Hochschule
-für Angewandte Wissenschaften Hamburg. Es handelt sich hierbei um ein Neurofeedbacksystem, das für die
-Verwendung mit dem Consumer-EEG-Gerät Muse(TM) entwickelt wurde.
-Um die Software nutzen zu können, muss zunächst Node.js (https://nodejs.org/) installiert werden.
-Zusätzlich müssen die Muse SDK Tools im Ordner "muse" in einen lokalen Ordner auf dem PC kopiert werden
+fÃ¼r Angewandte Wissenschaften Hamburg. Es handelt sich hierbei um ein Neurofeedbacksystem, das fÃ¼r die
+Verwendung mit dem Consumer-EEG-GerÃ¤t Muse(TM) entwickelt wurde.
+Um die Software nutzen zu kÃ¶nnen, muss zunÃ¤chst Node.js (https://nodejs.org/) installiert werden.
+ZusÃ¤tzlich mÃ¼ssen die Muse SDK Tools im Ordner "muse" in einen lokalen Ordner auf dem PC kopiert werden
 - vorausgesetzt es handelt sich um ein Windows Betriebssystem. Ist dies nicht der Fall, kann eine andere
 Version der Muse SDK Tools unter http://developer.choosemuse.com/ heruntergeladen
-werden. An dieser Stelle möchte ich noch darauf hinweisen, dass die hier mitgelieferte Version der SDK Tools
-schon etwas älter ist (Installer Version 3.4.0) und die Funktionalität der Software NICHT mit neueren Versionen
+werden. An dieser Stelle mÃ¶chte ich noch darauf hinweisen, dass die hier mitgelieferte Version der SDK Tools
+schon etwas Ã¤lter ist (Installer Version 3.4.0) und die FunktionalitÃ¤t der Software NICHT mit neueren Versionen
 getestet wurde und somit keine Garantie darauf besteht!
 
 Damit die Software auch von denjenigen ausprobiert werden kann, die keinen Muse(TM) besitzen, habe ich
-einige EEG-Aufnahmen dem Ordner "museplayer-scripts" hinzugefügt. Durch einen Klick auf das BATCH-Skript
+einige EEG-Aufnahmen dem Ordner "museplayer-scripts" hinzugefÃ¼gt. Durch einen Klick auf das BATCH-Skript
 (museplayerOSCReplayToUdp5002.bat) im selben Ordner wird die OSC Replay Datei "test-file3" durch das SDK Tool
 "MusePlayer" abgespielt (Infos zum Tool unter http://developer.choosemuse.com/research-tools/museplayer).
 Die EEG-Aufnahme wird dabei an den lokalen UDP Port 5002 weitergeleitet.
-Der nächste Schritt ist das Öffnen der "index.html" mit einem MODERNEN!! Browser. Getestet wurde die Software mit
+Der nÃ¤chste Schritt ist das Ã–ffnen der "index.html" mit einem MODERNEN!! Browser. Getestet wurde die Software mit
 Chrome 44 und Firefox 39.0.
-Zum Schluss wird dann der serverseitige Teil der Software gestartet, indem im Ordner "node" die Konsole (cmd) geöffnet und der
-Befehl "node main-controller.js" ausgeführt wird.
+Zum Schluss wird dann der serverseitige Teil der Software gestartet, indem im Ordner "node" die Konsole (cmd) geÃ¶ffnet und der
+Befehl "node main-controller.js" ausgefÃ¼hrt wird.
 Falls alles funktioniert hat, sollte in der Konsole nun "WebSocket connected..." erscheinen.
-Nun sollte man im Browser sehen, dass sich die Anzeige der Kontaktqualität in der linken oberen Ecke bunt färbtt.
+Nun sollte man im Browser sehen, dass sich die Anzeige der KontaktqualitÃ¤t in der linken oberen Ecke bunt fÃ¤rbtt.
 
-Diejenigen, die einen Muse(TM) besitzen, können ihn wie gewohnt per Bluetooth mit dem Computer verbinden. Danach muss
-die Datei "50hzUdp5001Udp5002.bat" im Ordner "museio-shell-scripts" ausgeführt werden. Es sollte anhand der Anzeige
-im Browser sichergestellt werden, dass die Kontaktqualität der Sensoren mit der Kopfhaut gut ist - bunt gefärbte Kreise
-bedeuten eine gute Signalqualität.
+Diejenigen, die einen Muse(TM) besitzen, kÃ¶nnen ihn wie gewohnt per Bluetooth mit dem Computer verbinden. Danach muss
+die Datei "50hzUdp5001Udp5002.bat" im Ordner "museio-shell-scripts" ausgefÃ¼hrt werden. Es sollte anhand der Anzeige
+im Browser sichergestellt werden, dass die KontaktqualitÃ¤t der Sensoren mit der Kopfhaut gut ist - bunt gefÃ¤rbte Kreise
+bedeuten eine gute SignalqualitÃ¤t.
 
 Um das "Neurofeedback Experiment" zu starten, muss das Experiment durch den Klick auf den Button in der linken unteren Ecke
 initialisiert werden. Im Popup kann dann Name und Alter (oder was auch immer...) eingegeben werden. Nach dem Klick auf
 Submit kann das Experiment gestartet werden.
-Falls weitere Erklärungen benötigt werden, kontaktiert mich hier auf github und ich werde schauen, was sich im Bezug auf
-eine genauere Beschreibung des Vorgangs machen lässt... (Aber wie immer gilt: KEINE GARANTIE! :) )
+Falls weitere ErklÃ¤rungen benÃ¶tigt werden, kontaktiert mich hier auf github und ich werde schauen, was sich im Bezug auf
+eine genauere Beschreibung des Vorgangs machen lÃ¤sst... (Aber wie immer gilt: KEINE GARANTIE! :) )
 
 
 
