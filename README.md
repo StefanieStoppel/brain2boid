@@ -1,22 +1,23 @@
-#Brain2Boid - An experimental Neurofeedback system
+#Brain2Boid
+## An experimental Neurofeedback system
 
 ***
 **WARNING: This system is not a clinical neurofeedback system. DO NOT USE IT FOR ANY MEDICAL PURPOSES AND ESPECIALLY NOT IF YOU DON'T KNOW WHAT YOU'RE DEALING WITH! The responsibility for the physical and mental health of this software's user lies completely within his or her own hands. No responsibility is taken by the author of this software for any physical or mental harm resulting through the use of this neurofeedback system.**
 ***
 
-## Introduction
+### Introduction
 
 This project is the result of my part practical, part theoretical bachelor thesis at the University of Applied Sciences Hamburg. 
 The software is an EXPERIMENTAL! neurofeedback system, which was developed to work with the consumer EEG device [Muse(TM)](http://www.choosemuse.com/).
 
-## What's the point of this neurofeedback system and experiment anyway?
+### What's the point of this neurofeedback system and experiment anyway?
 
 What I wanted to find out during my bachelor thesis was, whether it was possible to see an "increase of control" over a person's own brain activity after a very short training session (5 minutes). 
 All the books and papers i read claimed that one needed multiple Neurofeedback training sessions to improve the control over certain aspects of brain activity. 
 Since I didn't have enough time or ressources to test a lot of participants' improvement over a period of a few weeks and multiple sessions, I decided to try it with just a single one. 
 Obviously this isn't up to the "scientific standard", but it was a fun experiment and topic and I enjoyed working with the Muse(TM) headband a lot!
 
-## A little introduction to neurofeedback and a few tips
+### A little introduction to neurofeedback and a few tips
 
 Neurofeedback is a procedure for showing a person "what's going on in their head". Before you think someone will be able to read your thoughts: it doesn't quite work that way ;)
 During a Neurofeedback session an EEG device is placed on your head, which records your brain's electrical activity. This electrical activity is the result of the communication between your brain cells, also called neurons.
@@ -41,7 +42,7 @@ frequency bands. This approach has been used for a few years for treating certai
 My Neurofeedback system is - as stated at the top - NOT intended for such uses. It is merely a system which shows that building a cheaper and more user friendly alternative to the clinical Neurofeedback systems in use today is and will be possible in the future, as technology
 develops further. For now the Muse(TM) headband is not certified as a medical instrument and hence shouldn't be used for medical treatments in any way.
 
-## Prerequisites for using the Neurofeedback system
+### Prerequisites for using the Neurofeedback system
 
 To use this software, you first need to have [Node.js](https://nodejs.org/) installed on your system.
 In addition to that, you need to download and install the [Muse SDK tools](http://developer.choosemuse.com/) into a directory on your computer. 
@@ -49,16 +50,16 @@ In addition to that, you need to download and install the [Muse SDK tools](http:
 on other operating systems - haven't tested it, probably not going to either ;)
 Also the system was tested and used with an older version of the Muse SDK Tools (Installer version 3.4.0),so I DON'T GUARANTEE that it will work as expected - or at all - with newer versions!
 
-## First steps
+### First steps
 
 There is different first steps depending on whether you're using a Muse(TM) headband or not.
 
-### Without a Muse(TM) headband
+#### Without a Muse(TM) headband
 
 1a. For those of you who don't own a Muse(TM) headband, but still would like to try out the system, I made a few EEG recordings that you'll find in the *museplayer-scripts* directory. Run the batch script *museplayerOSCReplayToUdp5002.bat* in the same directory. The Muse SDK Tool called [MusePlayer](http://developer.choosemuse.com/research-tools/museplayer) will then start reading and
 broadcasting the recording *test-file3* to UDP port 5002.
 
-### With a Muse(TM) headband
+#### With a Muse(TM) headband
 
 1b. If you own a Muse(TM) headband you should connect it to your computer via bluetooth as you're used to. When the connection is established, execute the batch script *50hzUdp5001Udp5002.bat* inside the *museio-shell-scripts* directory. Put the headband on.
 
@@ -70,13 +71,13 @@ broadcasting the recording *test-file3* to UDP port 5002.
 
 4. Make sure you get a good connection by checking the quality indicators in the top left corner of your browser window - if they're coloured, it means you're getting a good signal and hence good data.
 
-## Using the neurofeedback system
+### Using the neurofeedback system
 
 1. To start the *Neurofeedback Experiment*, create a new experiment session by clicking on the button in the bottom left corner of the browser window.
 2. Type in your initials and age (or whatever...) and click *Submit*. 
 3. Now you can start the experiment by pressing the *Play button*.
 
-## What do I have to do?
+### What do I have to do?
 
 When you start the experiment, you will see a flock of triangles on the screen. The triangle's colour and movement speed indicate how well you're "controlling" your brain activity. If you're doing well, the triangles will get slower and turn blue.
 The default frequency bands measured are alpha vs. beta. The goal is to increase the alpha-beta-ratio, ergo to increase the activity in the alpha band while at the same time decreasing activity in the beta band. 
@@ -90,7 +91,7 @@ The system will calculate a unique threshold that you have to reach to turn the 
 * **Free neurofeedback**: This part will take 5 minutes. You should try to relax and just see whether you can come up with a strategy that works well for colouring the triangles blue. Don't worry if it seems random to you, it does to many. No points are awarded here.
 * **Test 2**: The second test is essentially the same as the first one. Maybe you have come up with a strategy that works well for changing the triangles and you can try to earn more points this time. Don't pressure yourself though, as this can kind of counteract the whole process!
 
-## And then what?
+### And then what?
 
 If everything worked and you made it through to the end, there should be a new file in the *csv* directory. This file shows you when you earned points for crossing your personal alpha-beta-threshold and you can see the amount of points you earned in test 1 and 2.
 You can now try to change the threshold in the sidebar settings that open when you click the button with the arrow on the right hand side of the screen. You can also change the frequency bands you want to train and do the experiment again (after reloading the page!) or just watch what happens when you blink ;)
