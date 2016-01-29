@@ -63,6 +63,7 @@ broadcasting the recording *test-file3* to UDP port 5002.
 
 1b. If you own a Muse(TM) headband you should connect it to your computer via bluetooth as you're used to. When the connection is established, execute the batch script *50hzUdp5001Udp5002.bat* inside the *museio-shell-scripts* directory. Put the headband on.
 
+### Make it work
 
 2. Open the *index.html* file inside the project's root directory with a MODERN! web browser. 
 
