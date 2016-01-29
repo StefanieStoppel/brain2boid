@@ -89,7 +89,7 @@ The experiment consists of 4 parts:
 
 * **Calibration**: Everybody's brainwaves are different. To establish your unique activity, the system will calibrate for 1 minute. Try to relax and sit as still as possible. Try to avoid talking, chewing or blinking rapidly - or any facial movements really.
 The system will calculate a unique threshold that you have to reach to turn the triangles blue and to make them move slower.
-* ** Test 1**: After the calibration you can begin with the first test which will take one minute as well. Your task is to make the triangles turn blue for as long as possible. For this you will be awarded points which are displayed at the bottom of the screen in yellow.
+* **Test 1**: After the calibration you can begin with the first test which will take one minute as well. Your task is to make the triangles turn blue for as long as possible. For this you will be awarded points which are displayed at the bottom of the screen in yellow.
 * **Free neurofeedback**: This part will take 5 minutes. You should try to relax and just see whether you can come up with a strategy that works well for colouring the triangles blue. Don't worry if it seems random to you, it does to many. No points are awarded here.
 * **Test 2**: The second test is essentially the same as the first one. Maybe you have come up with a strategy that works well for changing the triangles and you can try to earn more points this time. Don't pressure yourself though, as this can kind of counteract the whole process!
 
@@ -101,8 +101,10 @@ Enjoy!
 
 
 
-(C) Copyright 2015-2016 - Stefanie Stoppel
- Brain2Boid - an experimental neurofeedback system that works with the Muse(TM) headband.
+
+ 
+ 
+    Brain2Boid - an experimental neurofeedback system that works with the Muse(TM) headband.
     Copyright (C) 2016  Stefanie Stoppel
 
     This program is free software: you can redistribute it and/or modify
