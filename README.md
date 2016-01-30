@@ -13,16 +13,13 @@ The software is an EXPERIMENTAL! neurofeedback system, which was developed to wo
 ### What's the point of this neurofeedback system and experiment anyway?
 
 What I wanted to find out during my bachelor thesis was, whether it was possible to see an "increase of control" over a person's own brain activity after a very short training session (5 minutes). 
-All the books and papers i read claimed that one needed multiple Neurofeedback training sessions to improve the control over certain aspects of brain activity. 
-Since I didn't have enough time or ressources to test a lot of participants' improvement over a period of a few weeks and multiple sessions, I decided to try it with just a single one. 
-Obviously this isn't up to the "scientific standard", but it was a fun experiment and topic and I enjoyed working with the Muse(TM) headband a lot!
+All the books and papers i read claimed that one needed multiple Neurofeedback training sessions to improve the control over certain aspects of brain activity.
+Since I didn't have enough time or ressources to test a lot of participants' improvement over a period of a few weeks and multiple sessions, I decided to try it with just a single one. Obviously this isn't up to the "scientific standard", but it was a fun experiment and topic and I enjoyed working with the Muse(TM) headband a lot!
 
 ### A little introduction to neurofeedback and a few tips
 
 Neurofeedback is a procedure for showing a person "what's going on in their head". Before you think someone will be able to read your thoughts: it doesn't quite work that way ;)
-During a Neurofeedback session an EEG device is placed on your head, which records your brain's electrical activity. This electrical activity is the result of the communication between your brain cells, also called neurons.
-The electrical activity is in the range of µV - so very, very small and hard to measure. This means that the EEG device's signals are easily disturbed by so-called "noise" - unwanted signal parts that interfere and pollute
-the original measurements. There is ways of dealing with this, but since I don't want to write my whole bachelor thesis in the form of a README file again, I'll just give you one important tip:
+During a Neurofeedback session an EEG device is placed on your head, which records your brain's electrical activity. This electrical activity is the result of the communication between your brain cells, also called neurons. The electrical activity is in the range of µV - so very, very small and hard to measure. This means that the EEG device's signals are easily disturbed by so-called "noise" - unwanted signal parts that interfere and pollute the original measurements. There is ways of dealing with this, but since I don't want to write my whole bachelor thesis in the form of a README file again, I'll just give you one important tip:
 
 > You should sit as still as possible and try not to move your facial muscles too much while doing neurofeedback. 
 
@@ -37,8 +34,8 @@ What is left over are the frequency contents of the signal, which are devided in
 * Gamma
 
 Each of these bands is more noticeable in different states of consciousness. The delta band for instance is most present when one is sleeping.
-With Neurofeedback it is possible to train a person's "control" over one or more frequency bands by letting them know, when those frequency bands are present with a certain "strength". With enough training, the person can then - consciously or unconsciously - influence those
-frequency bands. This approach has been used for a few years for treating certain "disorders", that are often associated with brain activity that differs from the "average", if you can put it that way.
+
+With Neurofeedback it is possible to train a person's "control" over one or more frequency bands by letting them know, when those frequency bands are present with a certain "strength". With enough training, the person can then - consciously or unconsciously - influence those frequency bands. This approach has been used for a few years for treating certain "disorders", that are often associated with brain activity that differs from the "average", if you can put it that way.
 My Neurofeedback system is - as stated at the top - NOT intended for such uses. It is merely a system which shows that building a cheaper and more user friendly alternative to the clinical Neurofeedback systems in use today is and will be possible in the future, as technology
 develops further. For now the Muse(TM) headband is not certified as a medical instrument and hence shouldn't be used for medical treatments in any way.
 
@@ -65,6 +62,8 @@ broadcasting the recording *test-file3* to UDP port 5002.
 
 ### Make it work
 
+![Alt text](/readme-img/Screenshot-all-with-controls.jpg?raw=true "Web GUI of the Neurofeedback system")
+
 2. Open the *index.html* file inside the project's root directory with a MODERN! web browser. 
 
 > Definition of modern: if everything looks nice and stuff works, it's probably modern enough ;) Tested using Chrome 44 and 47 and Firefox 39.0.
@@ -77,6 +76,7 @@ broadcasting the recording *test-file3* to UDP port 5002.
 
 1. To start the *Neurofeedback Experiment*, create a new experiment session by clicking on the button in the bottom left corner of the browser window.
 2. Type in your initials and age (or whatever...) and click *Submit*. 
+![Alt text](/readme-img/subject-dialog.JPG?raw=true "Experiment setup dialogue")
 3. Now you can start the experiment by pressing the *Play button*.
 
 ### What do I have to do?
@@ -97,25 +97,24 @@ The system will calculate a unique threshold that you have to reach to turn the 
 
 If everything worked and you made it through to the end, there should be a new file in the *csv* directory. This file shows you when you earned points for crossing your personal alpha-beta-threshold and you can see the amount of points you earned in test 1 and 2.
 You can now try to change the threshold in the sidebar settings that open when you click the button with the arrow on the right hand side of the screen. You can also change the frequency bands you want to train and do the experiment again (after reloading the page!) or just watch what happens when you blink ;)
+
+![Alt text](/readme-img/Sidebar1.JPG?raw=true "Settings sidebar")
+
 Enjoy!
 
 
+Brain2Boid - an experimental neurofeedback system that works with the Muse(TM) headband.
+Copyright (C) 2016  Stefanie Stoppel
 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
- 
- 
-    Brain2Boid - an experimental neurofeedback system that works with the Muse(TM) headband.
-    Copyright (C) 2016  Stefanie Stoppel
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>
