@@ -1,6 +1,8 @@
 #Brain2Boid
 ## An experimental Neurofeedback system
 
+![Alt text](/readme-img/Screenshot-all-with-controls.jpg?raw=true "Web GUI of the Neurofeedback system")
+
 ***
 **WARNING: This system is not a clinical neurofeedback system. DO NOT USE IT FOR ANY MEDICAL PURPOSES AND ESPECIALLY NOT IF YOU DON'T KNOW WHAT YOU'RE DEALING WITH! The responsibility for the physical and mental health of this software's user lies completely within his or her own hands. No responsibility is taken by the author of this software for any physical or mental harm resulting through the use of this neurofeedback system.**
 ***
@@ -62,8 +64,6 @@ broadcasting the recording *test-file3* to UDP port 5002.
 
 ### Make it work
 
-![Alt text](/readme-img/Screenshot-all-with-controls.jpg?raw=true "Web GUI of the Neurofeedback system")
-
 2. Open the *index.html* file inside the project's root directory with a MODERN! web browser. 
 
 > Definition of modern: if everything looks nice and stuff works, it's probably modern enough ;) Tested using Chrome 44 and 47 and Firefox 39.0.
@@ -76,7 +76,7 @@ broadcasting the recording *test-file3* to UDP port 5002.
 
 1. To start the *Neurofeedback Experiment*, create a new experiment session by clicking on the button in the bottom left corner of the browser window.
 2. Type in your initials and age (or whatever...) and click *Submit*. 
-![Alt text](/readme-img/subject-dialog.JPG?raw=true "Experiment setup dialogue")
+![Alt text](/readme-img/subject_dialog.JPG?raw=true "Experiment setup dialogue")
 3. Now you can start the experiment by pressing the *Play button*.
 
 ### What do I have to do?
