@@ -100,6 +100,10 @@ You can now try to change the threshold in the sidebar settings that open when y
 
 ![Alt text](/readme-img/Sidebar1.JPG?raw=true "Settings sidebar")
 
+### One last thing...
+
+There is three branches (for now). Master is the main branch and offers the UI in English. develop-german hosts all the UI and info dialogues in German. develop is the main development branch (in English).
+
 Enjoy!
 
 
