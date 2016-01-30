@@ -1,4 +1,4 @@
 museplayer-scripts/test-file
 .idea/
-node/csv
+node/csv/*
 muse/*
