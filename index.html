@@ -84,7 +84,7 @@
                         <div class="col-xs-8 full-height">
                             <input type="hidden" name="hidden-experiment-mode" value="0">
                             <input type="hidden" name="experiment-duration" id="hidden-experiment-duration" value="60">
-                            <p id="experiment-mode-display">Kalibration</p>
+                            <p id="experiment-mode-display">Calibration</p>
                         </div>
                         <div class="col-xs-4 full-height">
                             <button type="button" class="blue-btn-gradient" id="general-info-btn" style="top: 14%; position: relative;">
@@ -103,7 +103,7 @@
         <div class="sidebar sb-blue col-xs-6 col-sm-5 col-lg-4 full-height">
             <div class="row">
                 <div class="col-xs-6  no-padding">
-                    <h3>Einstellungen</h3>
+                    <h3>Settings</h3>
                 </div>
                 <div class="col-xs-6 full-height">
                     <input type="checkbox" name="boids-running" id="running"/>
@@ -114,7 +114,7 @@
 
             <!-- CHANNEL PICKER -->
             <div class="row" style="margin-bottom: 0.5em;">
-                <h4>Kan&auml;le
+                <h4>EEG Channels
                     <button id="info-btn-channel-names" class="info-btn info-btn-sidebar blue-btn-gradient">
                         <i class="fa fa-info-circle info-icon-sb"></i>
                     </button>
@@ -137,13 +137,13 @@
 
             <!-- FREQUENCY BAND PICKER -->
             <div class="row">
-                <h4>Trainingsprotokoll
+                <h4>Training protocol
                     <button id="info-btn-training-protocol" class="info-btn info-btn-sidebar blue-btn-gradient">
                         <i class="fa fa-info-circle info-icon-sb"></i>
                     </button>
                 </h4>
                 <div class="fr-band-single no-padding col-xs-6">
-                    <h5 class="left-margin-1">Belohnung  <i class="fa fa-arrow-circle-up"></i></h5>
+                    <h5 class="left-margin-1">Reward  <i class="fa fa-arrow-circle-up"></i></h5>
                     <select id="select-fr-dividend" class="frequency-picker sidebar-select sb-blue-select left-margin-1">
                         <option name="fr-picker" class="fr-dividend" id="fr-dividend-delta" value="0">&delta; (Delta) </option>
                         <option name="fr-picker" class="fr-dividend" id="fr-dividend-theta" value="1">&theta; (Theta)</option>
@@ -153,7 +153,7 @@
                     </select>
                 </div>
                 <div class="fr-band-single no-padding col-xs-6">
-                    <h5 class="left-margin-1">Blockierung  <i class="fa fa-arrow-circle-down"></i></h5>
+                    <h5 class="left-margin-1">Inhibit  <i class="fa fa-arrow-circle-down"></i></h5>
                     <select id="select-fr-divisor" class="frequency-picker sidebar-select sb-blue-select left-margin-1">
                         <option name="fr-picker" class="fr-divisor" id="fr-divisor-none" value="-1"> - </option>
                         <option name="fr-picker" class="fr-divisor" id="fr-divisor-delta" value="0">&delta; (Delta) </option>
@@ -208,7 +208,7 @@
                         <input readonly type="number" name="ratio" class="sidebar-input sb-blue-input" id="ratio" value="0">
                     </div>
                     <div class="row">
-                        <label for="training-ratio">Trainingsquotient:</label>
+                        <label for="training-ratio">Training ratio:</label>
                     </div>
                     <div class="row">
                         <input type="number" name="training-ratio" class="sidebar-input sb-blue-input" id="training-ratio" value="0">
@@ -218,7 +218,7 @@
 
             </div>
             <div class="row">
-                <h4>Artefakte
+                <h4>Artifacts
                     <button id="info-btn-artifact" class="info-btn info-btn-sidebar blue-btn-gradient">
                         <i class="fa fa-info-circle info-icon-sb"></i>
                     </button>
@@ -227,7 +227,7 @@
             <div class="row">
                 <div class="col-xs-6 no-padding">
                     <div class="row">
-                        <span class="left-margin-1">Blinzeln</span>
+                        <span class="left-margin-1">Blinks</span>
                     </div>
                    <div class="row">
                        <svg id="blink-feedback" class="left-margin-1"></svg>
@@ -235,7 +235,7 @@
                 </div>
                 <div class="col-xs-6 no-padding">
                     <div class="row">
-                        <span class="left-margin-1">Muskeln</span>
+                        <span class="left-margin-1">Muscles</span>
                     </div>
                     <div class="row">
                         <svg id="jaw-clench-feedback" class="left-margin-1"></svg>
@@ -270,7 +270,7 @@
         <form action="" method="post">
             <div class="row">
                 <div class="col-xs-4">
-                    <label for="initials">Initialien</label>
+                    <label for="initials">Initials</label>
                 </div>
                 <div class="col-xs-8">
                     <input type="text" name="initials" class="sidebar-input sb-blue-input" id="initials">
@@ -278,7 +278,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-4">
-                    <label for="age-select">Alter</label>
+                    <label for="age-select">Age</label>
                 </div>
                 <div class="col-xs-8">
                     <input type="number" name="age" class="sidebar-input sb-blue-input" id="age-select">
@@ -287,7 +287,7 @@
 
             <div class="row">
                 <div class="col-xs-4">
-                    <label for="gender-selection">Geschlecht</label>
+                    <label for="gender-selection">Sex</label>
                 </div>
                 <div id="gender-selection">
                     <div class="col-xs-1">
@@ -301,7 +301,7 @@
                         <input type="radio" name="gender" class="sidebar-input sb-red-input" id="female" value="w">
                     </div>
                     <div class="col-xs-3">
-                        <label for="female">w</label>
+                        <label for="female">f</label>
                     </div>
                 </div>
                 <br>
@@ -315,16 +315,15 @@
 
     <div id="dialog-info-channels" class="blue-dialog" title="Info">
         <div id="channel-info-1">
-            <h3>Kontaktqualit&auml;t</h3>
-            <p>Ein guter Kontakt zwischen EEG-Sensoren und Kopfhaut ist wichtig f&uuml;r eine qualitativ hochwertige Messung und damit f&uuml;r
-                ein gutes Neurofeedback.<br>
-                Die Kreise in der linken oberen Ecke zeigen die Kontaktqualit&auml;t an:
+            <h3>Contact quality</h3>
+            <p>Good contact between skin and EEG sensors is essential for good readings and proper feedback.
+                The circles in the top left corner indicate the contact quality.
             </p>
             <div class="row">
                 <div class="col-xs-3"></div>
                 <div class="col-xs-6">
                     <img src="app/img/FP1_no_contact.jpg" class="channel-contact">
-                    Kein Kontakt.
+                    No contact.
                 </div>
                 <div class="col-xs-3"></div>
             </div>
@@ -332,7 +331,7 @@
                 <div class="col-xs-3"></div>
                 <div class="col-xs-6">
                     <img src="app/img/FP1_bad_contact.jpg" class="channel-contact">
-                    Schlechter Kontakt.
+                    Bad contact.
                 </div>
                 <div class="col-xs-3"></div>
             </div>
@@ -340,34 +339,34 @@
                 <div class="col-xs-3"></div>
                 <div class="col-xs-6">
                     <img src="app/img/FP1_good_contact.JPG" class="channel-contact">
-                    Guter Kontakt.
+                    Good contact.
                 </div>
                 <div class="col-xs-3"></div>
             </div>
             <br>
-            <p style="text-decoration: underline">Tipp:</p>
-            Je weniger Sie sich bewegen, desto einfacher wird es, einen guten Kontakt zwischen Kopfhaut und Elektroden herzustellen.
-            Versuchen Sie, sich w&auml;hrend der Messungen m&ouml;glichst wenig zu bewegen, indem Sie nicht sprechen und Ihre Augen so wenig wie m&ouml;glich bewegen.
+            <p style="text-decoration: underline">Tip:</p>
+            The less you move, the easier it gets to establish good contact between skin and electrodes.
+            Try to move as little as possible during measurements. Don't talk or move your eyes too much.
         </div>
     </div>
 
     <div id="dialog-info-channel-names" class="blue-dialog" title="Info">
         <div id="channel-name-1">
-            <h4>Wahl der Kan&auml;le</h4>
+            <h4>Choosing channels</h4>
             <p>
-                Hier werden die f&uuml;r das Neurofeedback verwendeten Elektroden ausgew&auml;hlt.<br>
-                Das EEG-Ger&auml;t, das deine Gehirnaktivit&auml;t misst, hat 4 davon:<br>
-                Zwei an den Ohren und zwei auf der Stirn.
+                Here you can choose the electrodes used for the feedback. The EEG devide that is measuring your brain
+                activity offers 4 of them:
+                Two behind the ears and two on the forehead.
             </p>
         </div>
         <div id="channel-name-2">
-            <h4>Warum haben die Elektrodenpositionen solche seltsamen Namen?</h4>
+            <h4>Why do the elctrode positions have such weird names?</h4>
             <p>
-                Die Namen der Elektrodenpositionen werden innerhalb der Kreise links auf dem Bildschirm angezeigt.<br>
-                Sie werden anhand des internationalen <a target="_blank" href="https://de.wikipedia.org/wiki/10-20-System" style="text-decoration: underline">10-20-Systems</a> festgelegt.<br>
-                Dieses System wurde entwickelt, da sich Sch&auml;delform und -gr&ouml;&szlig;e bei jedem Menschen unterscheiden.
-                Durch das 10-20-System wird es möglich, eine einheitliche Platzierung der Elektroden zu erreichen,
-                damit Messergebnisse von verschiedenen Personen verglichen werden k&ouml;nnen.
+                The names of the electrode positions are displayed inside the quality indicators on the top left side of the screen.
+                They are defined by the international <a target="_blank" href="https://de.wikipedia.org/wiki/10-20-System" style="text-decoration: underline">10-20-System</a>.
+                This system was developed because everyone's head shape and size is unique and there was need for a way of standardising the
+                positioning of electrodes on the head. This way the 10-20-System makes it possible to compare measurements of different people's
+                brain activity.
             </p>
         </div>
         <div class="btns-row row top-margin-1">
@@ -377,60 +376,62 @@
     </div>
 
     <div id="dialog-info-training-protocol" class="blue-dialog" title="Info">
-        <h3>Was wird trainiert?</h3>
+        <h3>What do I actually train?</h3>
         <p>
-            Beim Neurofeedback werden Frequenzb&auml;nder aus dem menschlichen EEG ausgesucht, die "trainiert" werden sollen.
-            Diese Auswahl findet hier statt.<br><br>
+            Frequency bands of the human EEG are picked and "trained" to be strengthened or weakened. The choice of
+            frequency bands happens here.<br><br>
             <img src="app/img/training_protocol_bargraph.JPG" id="img-training-protocol"/>
-            <br><br> Auf der linken Seite (Belohnung) wird das Band ausgew&auml;hlt, dessen Aktivit&auml;t verst&auml;rkt werden soll.
-            Auf der rechten Seite kann ein zweites Frequenzband ausgew&auml;hlt werden, dessen Aktivit&auml;t durch das Neurofeedback verringert werden soll.
+            <br><br> The band in which electrical activity is supposed to be increased is chosen on the left hand side (reward),
+            while the band that is supposed to be suppressed is chosen on the right (inhibit). You can also just train one
+            frequency band by choosing "-" on the right.
         </p>
     </div>
 
     <div id="dialog-info-feedback" class="blue-dialog" title="Info">
-        <h3>Wie funktioniert das Feedback &uuml;ber die Gehirnaktivit&auml;t?</h3>
-        <p>Die Farbe und Geschwindigkeit der Dreiecke auf dem Bildschirm ver&auml;ndert sich gleichzeitig mit dem Feedback-Balkengraphen.<br>
-            Der Stand des Graphen h&auml;ngt davon ab, wie viel Aktivit&auml;t es in den Frequenzb&auml;ndern gibt, die unter dem Punkt "Trainingsprotokoll"
-            ausgew&auml;hlt wurden.<br>
-            Je h&ouml;her der Graph &uuml;ber den schwarzen Balken kommt, desto satter wird die blaue F&auml;rbung der Dreiecke und desto langsamer bewegen sie sich. <br><br>
+        <h3>How does the feedback of brain activity work?</h3>
+        <p>The colour and movement speed of the triangles on the screen change together with the feedback graph in the sidebar.
+            The height of the bar graph depends on the activity in the frequency bands that were picked in section "training protocol".
+            <br>
+            The closer the bar gets to the black line, the more blue the triangles get and the slower they move.<br>
             <img src="app/img/Boidsblue.JPG" class="img-feedback">
             <img src="app/img/Feedback_Graph.jpg" class="img-feedback">
-            <p style="text-decoration: underline">Tipp:</p>
-            <p>Je l&auml;nger man es schafft, die Dreiecke blau zu f&auml;rben, desto mehr Punkte bekommt man.</p>
+            <p style="text-decoration: underline">Tip:</p>
+            <p>The longer you manage to turn the triangles blue, the more points you get.</p>
             <img id="img-points" src="app/img/points-display.JPG">
         </p>
     </div>
 
     <div id="dialog-info-artifacts" class="blue-dialog" title="Info">
-        <h3>Artefakte</h3>
+        <h3>Artifacts</h3>
         <p>
-            Bei der Messung von EEG kommt es oft zu St&ouml;rungen des Signals durch Muskel- und Augenbewegungen.
-            Die Signalverunreinigungen werden auch "Artefakte" genannt.<br>
-            Wenn Sie blinzeln oder Ihre Kieferknochen aufeinanderpressen, wird das anhand der Balkengraphen angezeigt.<br>
-            Zus&auml;tzlich werden auch die Dreicke durchsichtig, wenn Muskelbewegungen erfasst werden.<br><br>
+            While measuring EEG activity there often is so-called "noise" which is the result of muscle and eye movements.
+            These signal pollutions are also called "artifacts".<br>
+            When you blink or press your jaws together the bar graphs will show it.
+            In addition to that the triangles will become semi-transparent.<br><br>
             <img src="app/img/artifact_bargraphs2.jpg" id="img-artifact-bargraphs">
-            <p style="text-decoration: underline">Tipp:</p>
-            Versuchen Sie sich w&auml;hrend des Neurofeedbacks m&ouml;glichst wenig zu bewegen, damit die Signalqualit&auml;t gut ist und Sie ein pr&auml;zises Feedback erhalten.
+            <p style="text-decoration: underline">Tip:</p>
+            Try to move as little as possible during the Neurofeedback, so that the signal quality stays good and you get a
+            precise feedback.
         </p>
     </div>
 
     <div id="dialog-info-general" class="blue-dialog" title="Info">
         <div id="general-info-1">
-            <h3>Was ist Neurofeedback?</h3>
+            <h3>What is Neurofeedback?</h3>
             <p>
-                Beim Neurofeedback wird Ihre Gehirnaktivit&auml;t mit Hilfe eines EEG-Ger&auml;ts gemessen.
-                Sie erhalten anhand der Dreiecke auf dem Bildschirm eine R&uuml;ckmeldung dar&uuml;ber, was gerade in Ihrem Kopf passiert.<br>
-                Neurofeedback wird zu verschiedenen Zwecken angewendet. Dazu geh&ouml;ren z.B. die Behandlung von
-                ADHS (Aufmerksamkeits-Defizit-Hyperaktivit&auml;tsst&ouml;rung), Tinnitus, Migr&auml;ne und anderen Erkrankungen.<br>
-                Es kann aber auch in anderen Bereichen eingesetzt werden, wie beim Entspannungstraining.<br><br>
-                <p style="text-decoration: underline">Keine Sorge:</p> Das Ger&auml;t kann Ihre Gedanken nicht lesen.</p>
+                During Neurofeedback the electrical brain acitivity is measured using a EEG device.
+                You get a feedback of what's going on "in your head" through the triangles on the screen.<br>
+                Neurofeedback is used for different purposes. Some of those are the treatment of certain disorders, e.g.
+                ADHD, tinnitus, migraine and others. <br>
+                It can also be used in different areas, as in relaxation training.<br><br>
+                <p style="text-decoration: underline">Don't worry:</p> The device can't read your thoughts!</p>
             </p>
         </div>
         <div id="general-info-2" class="col-xs-12" style="font-size: 13px;">
-            <h3>Was wird beim Neurofeedback gemessen?</h3>
+            <h3>What is being measured during Neurofeedback?</h3>
             <p>
-                Die Gehirnaktivit&auml;t des Menschen l&auml;sst sich als "Schwingungen" mit Frequenzen von ungef&auml;hr 1 - 80 Hz beschreiben.
-                Die Aktivit&auml;t ist dabei in 5 Frequenzb&auml;nder aufgeteilt, die nach griechischen Buchstaben benannt sind und unterschiedliche Bedeutungen haben:
+                Human brain activity can be described as oscillations with frequencies of roughly 1 - 80 Hz.
+                The activity is divided into 5 frequency bands, which are all named after greek letters and have different meanings:
             </p>
             <ul style="padding-left: 10px;">
                 <li>
@@ -439,9 +440,9 @@
                             <img src="app/img/Eeg_delta.svg" class="brainwaves-img">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
-                            <p class="big-font">Delta-Wellen (&delta;, 1 - 4 Hz): </p>
+                            <p class="big-font">Delta waves (&delta;, 1 - 4 Hz): </p>
                             <p>
-                                Diese Wellen findet man bei Erwachsenen verst&auml;rkt in der Tiefschlafphase.
+                               These waves are present during deep sleep phases in adults.
                             </p>
                         </div>
                     </div>
@@ -452,9 +453,9 @@
                             <img src="app/img/Eeg_theta.svg" class="brainwaves-img">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
-                            <p class="big-font">Theta-Wellen (&theta;, 4 - 8 Hz): </p>
+                            <p class="big-font">Theta waves (&theta;, 4 - 8 Hz): </p>
                             <p>
-                                Beim &Uuml;bergang vom Wach- in den Schlafzustand treten Theta-Wellen vermehrt auf.
+                                Theta waves are mostly present when falling asleep or during deep relaxation.
                             </p>
                         </div>
                     </div>
@@ -465,9 +466,9 @@
                             <img src="app/img/Eeg_alpha.svg" class="brainwaves-img">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
-                            <p class="big-font">Alpha-Wellen (&alpha;, 8 - 13 Hz): </p>
+                            <p class="big-font">Alpha waves (&alpha;, 8 - 13 Hz): </p>
                             <p>
-                                Man misst diese Wellen vermehrt in Personen, die wach und relativ entspannt sind.
+                                You can measure these waves in persons that are awake but relaxed.
                             </p>
                         </div>
                     </div>
@@ -478,9 +479,9 @@
                             <img src="app/img/Eeg_beta.svg" class="brainwaves-img">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
-                            <p class="big-font">Beta-Wellen (&beta;, 13 - 30 Hz): </p>
+                            <p class="big-font">Beta waves (&beta;, 13 - 30 Hz): </p>
                             <p>
-                                Beta-Wellen kommen dann vermehrt vor, wenn sich eine Person konzentriert, also z.B. Matheaufgaben im Kopf l&ouml;st.
+                                Beta waves are increased when a person is concentrating, so f.e. solving math problems.
                             </p>
                         </div>
                     </div>
@@ -491,16 +492,16 @@
                             <img src="app/img/Eeg_gamma.svg" class="brainwaves-img">
                         </div>
                         <div class="col-xs-7 col-sm-8 col-lg-9">
-                            <p class="big-font">Gamma-Wellen (&gamma;, > 30 Hz):</p>
+                            <p class="big-font">Gamma waves (&gamma;, > 30 Hz):</p>
                             <p>
-                                Diese Wellen treten auf, wenn eine Person sich stark konzentriert oder gerade etwas Neues lernt.
+                                These waves show when a person is highly concentrated or learning something new.
                             </p>
                         </div>
                     </div>
                 </li>
                 <li>
                     <div class="row top-margin-05">
-                        <div style="font-size: 11px; padding-left: 15px;">Bildquelle:<br>
+                        <div style="font-size: 11px; padding-left: 15px;">Image source:<br>
                             <a href="https://commons.wikimedia.org/wiki/User:Hgamboa" target="_blank" style="text-shadow: none">Hgamboa</a>,
                             <a href="http://www.gnu.org/licenses/fdl-1.3.de.html" target="_blank" style="text-shadow: none">GNU Free Documentation License</a>
                         </div>
