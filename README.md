@@ -75,7 +75,8 @@ broadcasting the recording *test-file3* to UDP port 5002.
 ### Using the neurofeedback system
 
 1. To start the *Neurofeedback Experiment*, create a new experiment session by clicking on the button in the bottom left corner of the browser window.
-2. Type in your initials and age (or whatever...) and click *Submit*. 
+2. Type in your initials and age (or whatever...) and click *Submit*.
+
 ![Alt text](/readme-img/subject_dialog.JPG?raw=true "Experiment setup dialogue")
 3. Now you can start the experiment by pressing the *Play button*.
 
