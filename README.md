@@ -7,6 +7,9 @@
 **WARNING: This system is not a clinical neurofeedback system. DO NOT USE IT FOR ANY MEDICAL PURPOSES AND ESPECIALLY NOT IF YOU DON'T KNOW WHAT YOU'RE DEALING WITH! The responsibility for the physical and mental health of this software's user lies completely within his or her own hands. No responsibility is taken by the author of this software for any physical or mental harm resulting through the use of this neurofeedback system.**
 ***
 
+### Want to skip the introduction and find out how to set up the Neurofeedback system?
+Read on [here](https://github.com/StefanieStoppel/brain2boid#prerequisites-for-using-the-neurofeedback-system).
+
 ### Introduction
 
 This project is the result of my part practical, part theoretical bachelor thesis at the University of Applied Sciences Hamburg. 
