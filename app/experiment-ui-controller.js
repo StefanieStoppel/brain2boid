@@ -207,7 +207,7 @@ ExperimentUIController.prototype.automaticallyStopExperiment = function(data){
             case 0:
                 if(data.error){ //calibration failed
                     console.log(data.error);
-                    alert('Kalibration fehlgeschlagen! Bitte unescape("%FC")berprunescape("%FC")fen Sie den Kontakt zwischen Elektroden und Kopfhaut. Starten Sie dann die Kalibratione erneut.');
+                    alert('Calibration failed! Please("%FC")attempt again.("%FC")Make sure electrodes are making contact with the scalp and restart calibration.');
                     console.log('self.duration: ' + self.duration);
                     $('input[name="experiment-duration"]').val(self.duration);
                     //set countdown
@@ -217,25 +217,25 @@ ExperimentUIController.prototype.automaticallyStopExperiment = function(data){
                     self.updatePercentiles(data.percentiles);
 
                     console.log('received calibration data');
-                    self.displayExperimentModeState('Kalibration', 'Ende');
+                    self.displayExperimentModeState('Calibration', 'Complete');
                     self.calibrationFinished = true; //TODO: ADD ERROR HANDLING IN CASE OF NO RESULTS
                 }
                 break;
-            //TEST SCHWELLWERT
+            //THRESHOLD TEST
             case 1:
-                self.displayExperimentModeState('Schwellwert Test', 'Ende');
+                self.displayExperimentModeState('Threshold Test', 'Complete');
                 break;
             //TEST 1 finished
             case 2:
-                self.displayExperimentModeState('Test 1', 'Ende');
+                self.displayExperimentModeState('Test 1', 'Complete');
                 break;
             //FREE NEUROFEEDBACK finished
             case 3:
-                self.displayExperimentModeState('Neurofeedback', 'Ende');
+                self.displayExperimentModeState('Neurofeedback', 'Complete');
                 break;
             //TEST 2 finished
             case 4:
-                self.displayExperimentModeState('Test 2', 'Ende');
+                self.displayExperimentModeState('Test 2', 'Complete');
                 break;
 
         }
@@ -295,9 +295,9 @@ ExperimentUIController.prototype.onStartModeButtonClick = function(){
         if($(this).children('i.fa.fa-play').length !== 0){ //experiment was paused or stopped
             if(self.museConnected && self.experimentControllerExists){
                 if(self.experimentMode === 0)
-                    self.displayExperimentModeState('Kalibration','Start');
+                    self.displayExperimentModeState('Calibration','Start');
                 else if(self.experimentMode === 1)
-                    self.displayExperimentModeState('Schwellwert Test','Start');
+                    self.displayExperimentModeState('Threshold Test','Start');
                 else if(self.experimentMode === 2)
                     self.displayExperimentModeState('Test 1','Start');
                 else if(self.experimentMode === 3)
@@ -333,9 +333,9 @@ ExperimentUIController.prototype.onStartModeButtonClick = function(){
             }
         } else {//experiment was running and is to be paused
             if(self.experimentMode === 0)
-                self.displayExperimentModeState('Kalibration', 'Pause');
+                self.displayExperimentModeState('Calibration', 'Pause');
             else if(self.experimentMode === 1)
-                self.displayExperimentModeState('Schwellwert Test', 'Pause');
+                self.displayExperimentModeState('Threshold Test', 'Pause');
             else if(self.experimentMode === 2)
                 self.displayExperimentModeState('Test 1', 'Pause');
             else if(self.experimentMode === 3)
@@ -377,10 +377,10 @@ ExperimentUIController.prototype.onPreviousModeButtonClick = function(){
             $('input[name="hidden-experiment-mode"]').val(self.experimentMode);
             switch(self.experimentMode){
                 case 0:
-                    self.updateExperimentModeDisplayAndDuration('Kalibration', 60);
+                    self.updateExperimentModeDisplayAndDuration('Calibration', 60);
                     break;
                 case 1:
-                    self.updateExperimentModeDisplayAndDuration('Schwellwert Test' , 30);
+                    self.updateExperimentModeDisplayAndDuration('Threshold Test' , 30);
                     break;
                 case 2:
                     self.updateExperimentModeDisplayAndDuration('Test 1', 60);
@@ -422,10 +422,10 @@ ExperimentUIController.prototype.onNextModeButtonClick = function(){
             $('input[name="hidden-experiment-mode"]').val(self.experimentMode);
             switch(self.experimentMode){
                 case 0:
-                    self.updateExperimentModeDisplayAndDuration('Kalibration', 60);
+                    self.updateExperimentModeDisplayAndDuration('Calibration', 60);
                     break;
                 case 1:
-                    self.updateExperimentModeDisplayAndDuration('Schwellwert Test', 30);
+                    self.updateExperimentModeDisplayAndDuration('Threshold Test', 30);
                     break;
                 case 2:
                     self.updateExperimentModeDisplayAndDuration('Test 1', 60);
@@ -734,11 +734,11 @@ ExperimentUIController.prototype.enableSidebarSettings = function(bool){
 
 /****************** WARNING ALERTS ******************/
 ExperimentUIController.prototype.displayMuseNotConnected = function(){
-    alert('WARNING: Keine Verbindung zu Muse! Bitte verbinden Sie Muse und versuchen Sie es erneut.');
+    alert('WARNING: No connection to Muse! Please connect Muse and try again.');
 };
 
 ExperimentUIController.prototype.displayExperimentNotCreated = function(){
-    alert('WARNING: Es wurde noch kein Experiment erstellt! Bitte erstellen sie ein neues Experiment und evrsuchen Sie es erneut.');
+    alert('WARNING: No profile has been created for the experiment. Create a profile to proceed with the session.');
 };
 
 /******************************** BLUE SIDEBAR ****************************************************/
